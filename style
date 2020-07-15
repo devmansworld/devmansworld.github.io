@@ -1,5 +1,5 @@
 #principal {
-	background-image: url('fondo.png');
+	background-image: url('canvas.png');
 }
 
 
