@@ -18,6 +18,7 @@
             justify-content: center;
             height: 100vh;
             transition: all 0.5s ease;
+            font-family: 'Century Gothic', sans-serif; /* Ensure the font is loaded initially */
         }
         .container {
             width: 60%;
@@ -31,14 +32,16 @@
         }
         .toggles {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 10px;
+            padding-left: 10px;
         }
         .toggle input {
-            width: 20px;
+            width: 40px;
             height: 20px;
         }
         a {
@@ -51,25 +54,25 @@
         <h3>Media Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
         <p>Currently working on Computer Vision and text-based projects.</p>
-        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666icloud.com</a></p>
+        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
     </div>
     
     <div class="toggles">
         <label class="toggle">
             <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="minimal" onclick="setTheme('minimal')">
+                <input type="checkbox" class="custom-control-input" id="minimal" onchange="setTheme('minimal')">
                 <label class="custom-control-label" for="minimal">Minimal</label>
             </div>
         </label>
         <label class="toggle">
             <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="hello-kitty" onclick="setTheme('hello-kitty')">
+                <input type="checkbox" class="custom-control-input" id="hello-kitty" onchange="setTheme('hello-kitty')">
                 <label class="custom-control-label" for="hello-kitty">Hello Kitty</label>
             </div>
         </label>
         <label class="toggle">
             <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="unicorn" onclick="setTheme('unicorn')">
+                <input type="checkbox" class="custom-control-input" id="unicorn" onchange="setTheme('unicorn')">
                 <label class="custom-control-label" for="unicorn">Unicorn</label>
             </div>
         </label>
@@ -78,29 +81,31 @@
     
     <script>
         const themes = {
-            minimal: { background: "#f4f4f4", color: "#222", font: "Century Gothic", emailColor: "#1a73e8" },
-            "hello-kitty": { background: "#ffd1dc", color: "#ff69b4", font: "Comic Sans MS", emailColor: "#ff69b4" },
-            unicorn: { background: "#ffccff", color: "#9900cc", font: "Cursive", emailColor: "#9900cc" },
-            matrix: { background: "#000", color: "#0f0", font: "Courier New", emailColor: "#0f0" },
-            solarized: { background: "#002b36", color: "#839496", font: "Lucida Console", emailColor: "#839496" },
-            space: { background: "#121212", color: "#4fc3f7", font: "Orbitron", emailColor: "#4fc3f7" },
-            football: { background: "#008000", color: "#ffffff", font: "Impact", emailColor: "#ffffff" },
-            sky: { background: "#87ceeb", color: "#ffffff", font: "Arial", emailColor: "#ffffff" },
-            ice: { background: "#b3e0ff", color: "#003366", font: "Verdana", emailColor: "#003366" },
-            water: { background: "#0099cc", color: "#ffffff", font: "Tahoma", emailColor: "#ffffff" },
-            fire: { background: "#ff4500", color: "#ffdd00", font: "Georgia", emailColor: "#ffdd00" },
-            forest: { background: "#2e8b57", color: "#fffaf0", font: "Palatino", emailColor: "#fffaf0" }
+            minimal: { background: "#f4f4f4", color: "#222", font: "Century Gothic", emailColor: "#1a73e8", fontSize: "16px" },
+            "hello-kitty": { background: "#ffd1dc", color: "#ff69b4", font: "Comic Sans MS", emailColor: "#ff69b4", fontSize: "17px" },
+            unicorn: { background: "#ffccff", color: "#9900cc", font: "Cursive", emailColor: "#9900cc", fontSize: "18px" },
+            matrix: { background: "#000", color: "#0f0", font: "Courier New", emailColor: "#0f0", fontSize: "16px" },
+            solarized: { background: "#002b36", color: "#839496", font: "Lucida Console", emailColor: "#839496", fontSize: "16px" },
+            space: { background: "#121212", color: "#4fc3f7", font: "Orbitron", emailColor: "#4fc3f7", fontSize: "17px" },
+            football: { background: "#008000", color: "#ffffff", font: "Impact", emailColor: "#ffffff", fontSize: "16px" },
+            sky: { background: "#87ceeb", color: "#ffffff", font: "Arial", emailColor: "#ffffff", fontSize: "16px" },
+            ice: { background: "#b3e0ff", color: "#003366", font: "Verdana", emailColor: "#003366", fontSize: "16px" },
+            water: { background: "#0099cc", color: "#ffffff", font: "Tahoma", emailColor: "#ffffff", fontSize: "16px" },
+            fire: { background: "#ff4500", color: "#ffdd00", font: "Georgia", emailColor: "#ffdd00", fontSize: "16px" },
+            forest: { background: "#2e8b57", color: "#fffaf0", font: "Palatino", emailColor: "#fffaf0", fontSize: "16px" }
         };
-        
+
         function setTheme(theme) {
-            for (let key in themes) {
-                document.querySelector(`input[onclick="setTheme('${key}')"]`).checked = false;
-            }
-            document.querySelector(`input[onclick="setTheme('${theme}')"]`).checked = true;
-            
+            // Reset all toggles
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = false);
+            document.querySelector(`#${theme}`).checked = true;
+
+            // Apply theme styles
             document.body.style.background = themes[theme].background;
             document.body.style.color = themes[theme].color;
             document.body.style.fontFamily = themes[theme].font;
+            document.body.style.fontSize = themes[theme].fontSize;
             document.getElementById('email').style.color = themes[theme].emailColor;
         }
     </script>
@@ -111,3 +116,4 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
