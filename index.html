@@ -3,215 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Developer Bio</title>
+    <title>Developer Bio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'><path d='M9 0h6v4H9zm-3 6h12v4H6zm0 6h12v4H6zm0 6h12v4H6zm0 6h12v4H6zm-3-2h18v4H3zm0-6h18v4H3zm0-6h18v4H3z'/></svg>">
     <style>
+        /* General Layout */
         body {
             font-family: "Century Gothic", sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            background-color: #f0f0f0;
-            transition: background-color 0.5s;
-        }
-
-        /* Left Menu (Links) */
-        .left-menu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #333;
-            color: white;
-            width: 200px;
-            height: 100%;
-            padding-top: 20px;
-            text-align: left;
-        }
-
-        .left-menu a {
-            display: block;
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-        }
-
-        .left-menu a:hover {
-            background-color: #444;
-        }
-
-        /* Main Content */
-        .content {
-            margin-left: 220px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
             justify-content: center;
-            flex-grow: 1;
+            height: 100vh;
+            text-align: center;
+            transition: background-color 0.5s, color 0.5s;
         }
 
+        /* Biography Section */
         .bio-text {
+            max-width: 600px;
             margin-bottom: 20px;
         }
 
         .bio-text h3 {
+            font-size: 28px;
             margin-bottom: 10px;
         }
 
         .bio-text p {
             font-size: 16px;
-            margin-bottom: 10px;
+            line-height: 1.5;
         }
 
-        /* Color Change Menu (bottom) */
-        .color-menu {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background-color: transparent;
-            color: white;
-            padding: 10px;
-            text-align: left;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .color-menu label {
-            margin-left: 20px;
-            font-size: 10px;
-            color: #fff;
-        }
-
-        .color-menu input {
-            margin-right: 10px;
-        }
-
-        /* Color Mode Backgrounds */
-        .unicorn { background-color: #FF66FF; color: #4B4B4B; }
-        .minimalWhite { background-color: #FFFFFF; color: #4B4B4B; }
-        .solarized { background-color: #002b36; color: white; }
-        .black { background-color: #000000; color: white; }
-        .matrix { background-color: #000000; color: #00FF00; }
-        .fruit { background-color: #FF6347; color: white; }
-
-        /* Quotes */
-        .quotes {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            font-size: 14px;
-            font-style: italic;
-            color: #666;
+        .bio-text a {
+            color: inherit;
+            text-decoration: none;
+            font-weight: bold;
         }
 
         /* Image */
-        .bio-image-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .bio-image-container img {
-            width: 200px;
+        .bio-image {
+            width: 300px;
             height: auto;
             margin-top: 20px;
+            border-radius: 10px;
         }
 
-        /* Toggles Styling */
-        .toggle-group {
+        /* Toggles */
+        .color-menu {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
             display: flex;
             flex-direction: column;
+            gap: 10px;
         }
 
-        .toggle-group .form-check {
-            margin-bottom: 5px;
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
+
+        .form-check-input {
+            width: 30px;
+            height: 15px;
+        }
+
+        .form-check-label {
+            font-size: 12px;
+        }
+
+        /* Color Themes */
+        .unicorn { background-color: #FF66FF; color: #fff; }
+        .minimalWhite { background-color: #ffffff; color: #222; }
+        .solarized { background-color: #002b36; color: #93a1a1; }
+        .black { background-color: #000000; color: #f0f0f0; }
+        .matrix { background-color: #000000; color: #00FF00; }
+        .fruit { background-color: #FF6347; color: #fff; }
     </style>
 </head>
 <body>
 
-<!-- Left Menu (Links) -->
-<div class="left-menu">
-    <a href="#">Who Am I</a>
-    <a href="#">Work</a>
-    <a href="#">Where (Google Map)</a>
-</div>
-
-<!-- Main Content -->
-<div class="content">
-    <div class="bio-text">
-        <h3>Interactive Developer Santiago</h3>
-        <p>I am an interactive developer working on computer vision projects, with certifications in C++, Swift, and Objective-C.</p>
-        <p>Contact me for projects at <a href="mailto:sakayama234234@icloud.com">sakayama234234@icloud.com</a></p>
-    </div>
-    
-    <!-- Profile Image -->
-    <div class="bio-image-container">
-        <img src="00000000000000.PNG" alt="Profile Image">
-    </div>
-</div>
-
-<!-- Color Change Menu (bottom) -->
+<!-- Toggles -->
 <div class="color-menu">
-    <div class="toggle-group">
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="unicornToggle" onclick="changeColorMode('unicorn')">
-            <label class="form-check-label" for="unicornToggle">Unicorn</label>
-        </div>
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="minimalToggle" onclick="changeColorMode('minimalWhite')">
-            <label class="form-check-label" for="minimalToggle">Minimal</label>
-        </div>
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="solarizedToggle" onclick="changeColorMode('solarized')">
-            <label class="form-check-label" for="solarizedToggle">Solarized</label>
-        </div>
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="blackToggle" onclick="changeColorMode('black')">
-            <label class="form-check-label" for="blackToggle">Black</label>
-        </div>
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="matrixToggle" onclick="changeColorMode('matrix')">
-            <label class="form-check-label" for="matrixToggle">Matrix</label>
-        </div>
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="fruitToggle" onclick="changeColorMode('fruit')">
-            <label class="form-check-label" for="fruitToggle">Fruit</label>
-        </div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="unicornToggle" onclick="changeColorMode('unicorn')">
+        <label class="form-check-label" for="unicornToggle">Uni</label>
+    </div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="minimalToggle" onclick="changeColorMode('minimalWhite')">
+        <label class="form-check-label" for="minimalToggle">Min</label>
+    </div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="solarizedToggle" onclick="changeColorMode('solarized')">
+        <label class="form-check-label" for="solarizedToggle">Sol</label>
+    </div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="blackToggle" onclick="changeColorMode('black')">
+        <label class="form-check-label" for="blackToggle">Blk</label>
+    </div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="matrixToggle" onclick="changeColorMode('matrix')">
+        <label class="form-check-label" for="matrixToggle">Mtx</label>
+    </div>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="fruitToggle" onclick="changeColorMode('fruit')">
+        <label class="form-check-label" for="fruitToggle">Fru</label>
     </div>
 </div>
 
-<!-- Random Quote -->
-<div class="quotes">
-    <p>"The only limit to our realization of tomorrow is our doubts of today." - Franklin D. Roosevelt</p>
+<!-- Biography Section -->
+<div class="bio-text">
+    <h3>Interactive Developer Santiago</h3>
+    <p>I am an interactive developer working on computer vision projects, with certifications in C++, Swift, and Objective-C.</p>
+    <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com">sakayama666@icloud.com</a></p>
 </div>
+
+<!-- Profile Image -->
+<img class="bio-image" src="00000000000000.PNG" alt="Profile Image">
 
 <script>
-// Function to change the color mode
 function changeColorMode(mode) {
-    // Get all color toggles and uncheck them
-    const toggles = document.querySelectorAll('.form-check-input');
-    toggles.forEach(toggle => toggle.checked = false);
-
-    // Check the selected toggle
-    document.getElementById(`${mode}Toggle`).checked = true;
-
-    // Remove all color modes
-    const modes = ["unicorn", "minimalWhite", "solarized", "black", "matrix", "fruit"];
-    modes.forEach((m) => {
-        document.body.classList.remove(m);
-    });
-
-    // Add the selected color mode
-    document.body.classList.add(mode);
+    document.body.className = mode;
 }
 </script>
 
 </body>
 </html>
+
