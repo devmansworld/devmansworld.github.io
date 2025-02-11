@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Developer Bio</title>
+    <title>Interactive Developer</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'><path d='M9 0h6v4H9zm-3 6h12v4H6zm0 6h12v4H6zm0 6h12v4H6zm0 6h12v4H6zm-3-2h18v4H3zm0-6h18v4H3zm0-6h18v4H3z'/></svg>">
@@ -20,60 +19,38 @@
             transition: background-color 0.5s;
         }
 
-        /* Top Menu */
-        .top-menu {
-            display: flex;
-            justify-content: space-between;
+        /* Left Menu (Links) */
+        .left-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
             background-color: #333;
             color: white;
-            padding: 10px 20px;
-            text-align: center;
+            width: 200px;
+            height: 100%;
+            padding-top: 20px;
+            text-align: left;
         }
 
-        .top-menu a {
+        .left-menu a {
+            display: block;
             color: white;
-            text-decoration: none;
             padding: 10px;
+            text-decoration: none;
         }
 
-        .top-menu a:hover {
+        .left-menu a:hover {
             background-color: #444;
         }
 
-        /* Left Menu (Color Modes) */
-        .color-menu {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            background-color: #333;
-            padding-top: 20px;
-            color: white;
-            text-align: left;
-            width: 200px;
-            height: calc(100vh - 60px);
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .color-menu label {
-            margin-left: 20px;
-        }
-
-        .color-switch {
-            margin-left: 20px;
-            margin-bottom: 15px;
-        }
-
-        .color-menu input {
-            margin-right: 10px;
-        }
-
-        /* Main Content */
+        /* Profile Image and Bio */
         .content {
-            margin-left: 200px;
+            margin-left: 220px;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            justify-content: center;
             flex-grow: 1;
         }
 
@@ -98,33 +75,26 @@
             margin-bottom: 10px;
         }
 
-        /* Quote Section */
-        .quote-section {
+        /* Color Change Menu (bottom) */
+        .color-menu {
             position: fixed;
             bottom: 20px;
-            right: 20px;
-            font-size: 14px;
+            left: 0;
+            background-color: #333;
             color: white;
-            text-align: center;
             padding: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 5px;
-            width: 250px;
+            text-align: left;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
         }
 
-        .quote-btn {
-            font-size: 12px;
-            color: white;
-            background-color: #444;
-            border: none;
-            padding: 5px;
-            cursor: pointer;
-            margin-top: 5px;
-            border-radius: 5px;
+        .color-menu label {
+            margin-left: 20px;
         }
 
-        .quote-btn:hover {
-            background-color: #666;
+        .color-menu input {
+            margin-right: 10px;
         }
 
         /* Color Mode Backgrounds */
@@ -135,104 +105,46 @@
         .whiteFuchsia { background-color: #F0F8FF; color: #FF1493; }
         .blackGreyOrange { background-color: #343A40; color: #FFA500; }
         .grayscale { background-color: #DCDCDC; color: #A9A9A9; }
+
     </style>
 </head>
 <body>
 
-<!-- Top Menu -->
-<div class="top-menu">
-    <a href="#">About</a>
-    <a href="#">Repo</a>
-    <a href="#">Behance</a>
-    <a href="#">Music</a>
-    <a href="#">Instagram</a>
-</div>
-
-<!-- Left Menu (Color Modes) -->
-<div class="color-menu">
-    <div class="color-switch">
-        <label>Solarized</label>
-        <input type="checkbox" id="solarized" onchange="changeColorMode()">
-    </div>
-    <div class="color-switch">
-        <label>Kitty</label>
-        <input type="checkbox" id="helloKitty" onchange="changeColorMode()">
-    </div>
-    <div class="color-switch">
-        <label>White</label>
-        <input type="checkbox" id="minimalWhite" onchange="changeColorMode()">
-    </div>
-    <div class="color-switch">
-        <label>Green</label>
-        <input type="checkbox" id="blackGreen" onchange="changeColorMode()">
-    </div>
-    <div class="color-switch">
-        <label>Fuchsia</label>
-        <input type="checkbox" id="whiteFuchsia" onchange="changeColorMode()">
-    </div>
-    <div class="color-switch">
-        <label>Orange</label>
-        <input type="checkbox" id="blackGreyOrange" onchange="changeColorMode()">
-    </div>
-    <div class="color-switch">
-        <label>Gray</label>
-        <input type="checkbox" id="grayscale" onchange="changeColorMode()">
-    </div>
+<!-- Left Menu (Links) -->
+<div class="left-menu">
+    <a href="#">Who Am I</a>
+    <a href="#">Work</a>
+    <a href="#">Where (Google Map)</a>
 </div>
 
 <!-- Main Content -->
-<div class="content solarized">
+<div class="content">
     <div class="bio-image-container">
         <img src="00000000000000.PNG" alt="Profile Image">
         <div class="bio-text">
             <h3>Interactive Developer Santiago</h3>
-            <p>I am an interactive developer working on computer vision projects, with certifications in C++, Swift, and Objective-C.</p>
-            <p>Contact me for projects at <a href="mailto:sakayama234234@icloud.com">sakayama234234@icloud.com</a></p>
+            <p>I am an interactive developer working on computer vision projects, with certifications in Python, C++, Swift, and Objective-C.</p>
+            <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com">sakayama666@icloud.com</a></p>
         </div>
     </div>
 </div>
 
-<!-- Quote Section -->
-<div class="quote-section" id="quote-section"></div>
-<button class="quote-btn" onclick="getNewQuote()">Get another quote</button>
+<!-- Color Change Menu -->
+<div class="color-menu">
+    <div>
+        <label>Solarized</label>
+        <input type="radio" name="colorMode" value="solarized" onclick="changeColorMode('solarized')">
+    </div>
+    <div>
+        <label>Kitty</label>
+        <input type="radio" name="colorMode" value="kitty" onclick="changeColorMode('kitty')">
+    </div>
+    <div>
+        <label>White</label>
+        <input type="radio" name="colorMode" value="minimalWhite" onclick="changeColorMode('minimalWhite')">
+    </div>
+    <div>
+        <label>Green</label>
+        <input type="radio" name="colorMode" value="blackGreen" onclick="changeColorMode('blackGre
 
-<script>
-// Array of quotes (add more quotes as needed)
-const quotes = [
-    "The only way to do great work is to love what you do. - Steve Jobs",
-    "It is not length of life, but depth of life. - Ralph Waldo Emerson",
-    "Life is what happens when you're busy making other plans. - John Lennon",
-    "Be yourself; everyone else is already taken. - Oscar Wilde",
-    "In three words I can sum up everything I've learned about life: it goes on. - Robert Frost"
-];
-
-// Function to get a random quote
-function getNewQuote() {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    document.getElementById("quote-section").innerText = quotes[randomIndex];
-}
-
-// Call the function to display a quote initially
-getNewQuote();
-
-// Function to change color modes
-function changeColorMode() {
-    const modes = ["solarized", "kitty", "minimalWhite", "blackGreen", "whiteFuchsia", "blackGreyOrange", "grayscale"];
-    let activeMode = '';
-    
-    modes.forEach((mode) => {
-        if (document.getElementById(mode).checked) {
-            activeMode = mode;
-        }
-        document.body.classList.remove(mode);
-    });
-
-    if (activeMode) {
-        document.body.classList.add(activeMode);
-    }
-}
-</script>
-
-</body>
-</html>
 
