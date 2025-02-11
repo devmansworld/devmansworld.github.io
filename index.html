@@ -98,45 +98,45 @@
         }
 
         /* COLOR THEMES */
-        .unicorn { background-color: #FF66FF; color: #fff; }
-        .unicorn .bio-text h3 { color: #FFD700; }
-        .unicorn .bio-text p { color: #FFF5EE; }
-        .unicorn .bio-text a { color: #ffcc00; }
+        .theme-unicorn { background-color: #FF66FF; color: #fff; }
+        .theme-unicorn .bio-text h3 { color: #FFD700; }
+        .theme-unicorn .bio-text p { color: #FFF5EE; }
+        .theme-unicorn .bio-text a { color: #ffcc00; }
 
-        .hellokitty { background-color: #FFC0CB; color: #444; }
-        .hellokitty .bio-text h3 { color: #FF69B4; }
-        .hellokitty .bio-text p { color: #800080; }
-        .hellokitty .bio-text a { color: #DC143C; }
+        .theme-hello-kitty { background-color: #FFC0CB; color: #444; }
+        .theme-hello-kitty .bio-text h3 { color: #FF69B4; }
+        .theme-hello-kitty .bio-text p { color: #800080; }
+        .theme-hello-kitty .bio-text a { color: #DC143C; }
 
-        .fruits { background-color: #FFA500; color: #222; }
-        .fruits .bio-text h3 { color: #FFD700; }
-        .fruits .bio-text p { color: #FF4500; }
-        .fruits .bio-text a { color: #008000; }
+        .theme-fruits { background-color: #FFA500; color: #222; }
+        .theme-fruits .bio-text h3 { color: #FFD700; }
+        .theme-fruits .bio-text p { color: #FF4500; }
+        .theme-fruits .bio-text a { color: #008000; }
 
-        .matrix { background-color: #000000; color: #00FF00; }
-        .matrix .bio-text h3 { color: #33ff33; }
-        .matrix .bio-text p { color: #66ff66; }
-        .matrix .bio-text a { color: #99ff99; }
+        .theme-matrix { background-color: #000000; color: #00FF00; }
+        .theme-matrix .bio-text h3 { color: #33ff33; }
+        .theme-matrix .bio-text p { color: #66ff66; }
+        .theme-matrix .bio-text a { color: #99ff99; }
 
-        .solarized { background-color: #002b36; color: #93a1a1; }
-        .solarized .bio-text h3 { color: #eee8d5; }
-        .solarized .bio-text p { color: #839496; }
-        .solarized .bio-text a { color: #268bd2; }
+        .theme-solarized { background-color: #002b36; color: #93a1a1; }
+        .theme-solarized .bio-text h3 { color: #eee8d5; }
+        .theme-solarized .bio-text p { color: #839496; }
+        .theme-solarized .bio-text a { color: #268bd2; }
 
-        .minimal { background-color: #ffffff; color: #000; }
-        .minimal .bio-text h3 { color: #222; }
-        .minimal .bio-text p { color: #555; }
-        .minimal .bio-text a { color: #888; }
+        .theme-minimal { background-color: #ffffff; color: #000; }
+        .theme-minimal .bio-text h3 { color: #222; }
+        .theme-minimal .bio-text p { color: #555; }
+        .theme-minimal .bio-text a { color: #888; }
 
-        .grayscale { background-color: #777; color: #222; }
-        .grayscale .bio-text h3 { color: #333; }
-        .grayscale .bio-text p { color: #555; }
-        .grayscale .bio-text a { color: #999; }
+        .theme-grayscale { background-color: #777; color: #222; }
+        .theme-grayscale .bio-text h3 { color: #333; }
+        .theme-grayscale .bio-text p { color: #555; }
+        .theme-grayscale .bio-text a { color: #999; }
 
-        .greenorange { background-color: #228B22; color: #FFF8DC; }
-        .greenorange .bio-text h3 { color: #FF8C00; }
-        .greenorange .bio-text p { color: #FFD700; }
-        .greenorange .bio-text a { color: #FFA500; }
+        .theme-green-orange { background-color: #228B22; color: #FFF8DC; }
+        .theme-green-orange .bio-text h3 { color: #FF8C00; }
+        .theme-green-orange .bio-text p { color: #FFD700; }
+        .theme-green-orange .bio-text a { color: #FFA500; }
     </style>
 </head>
 <body>
@@ -144,19 +144,19 @@
 <!-- Toggle Menu -->
 <div class="color-menu">
     <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="unicornToggle" onclick="changeTheme('unicorn')">
+        <input class="form-check-input" type="checkbox" id="unicornToggle" onclick="changeTheme('theme-unicorn')">
         <label class="form-check-label" for="unicornToggle">Unicorn</label>
     </div>
     <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="hellokittyToggle" onclick="changeTheme('hellokitty')">
-        <label class="form-check-label" for="hellokittyToggle">Hello Kitty</label>
+        <input class="form-check-input" type="checkbox" id="helloKittyToggle" onclick="changeTheme('theme-hello-kitty')">
+        <label class="form-check-label" for="helloKittyToggle">Hello Kitty</label>
     </div>
     <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="fruitsToggle" onclick="changeTheme('fruits')">
+        <input class="form-check-input" type="checkbox" id="fruitsToggle" onclick="changeTheme('theme-fruits')">
         <label class="form-check-label" for="fruitsToggle">Fruits</label>
     </div>
     <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="matrixToggle" onclick="changeTheme('matrix')">
+        <input class="form-check-input" type="checkbox" id="matrixToggle" onclick="changeTheme('theme-matrix')">
         <label class="form-check-label" for="matrixToggle">Matrix</label>
     </div>
 </div>
@@ -174,9 +174,11 @@
 <img class="project-image" src="project-image.png" alt="Project Image">
 
 <script>
+const themes = ["theme-unicorn", "theme-hello-kitty", "theme-fruits", "theme-matrix", "theme-solarized", "theme-minimal", "theme-grayscale", "theme-green-orange"];
+
 function changeTheme(theme) {
     // Remove all active themes
-    document.body.classList.remove("unicorn", "hellokitty", "fruits", "matrix");
+    themes.forEach(t => document.body.classList.remove(t));
 
     // Apply the new theme
     document.body.classList.add(theme);
@@ -185,7 +187,7 @@ function changeTheme(theme) {
     document.querySelectorAll(".form-check-input").forEach(input => input.checked = false);
 
     // Activate the selected toggle
-    document.getElementById(theme + "Toggle").checked = true;
+    document.getElementById(theme.replace("theme-", "") + "Toggle").checked = true;
 }
 
 function resetTheme() {
@@ -196,5 +198,4 @@ function resetTheme() {
 
 </body>
 </html>
-
 
