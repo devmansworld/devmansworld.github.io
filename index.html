@@ -3,281 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leo - Interaction Developer & Media Artist</title>
+    <title>Leo - Interaction Developer</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* Global Styles */
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f5f5f5;
+            transition: background-color 0.3s ease;
+            color: #333;
             margin: 0;
             padding: 0;
-            transition: background-color 0.3s ease;
         }
 
-        /* Menu */
-        .menu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            height: 100%;
-            background-color: #444;
-            color: white;
-            padding-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            transition: transform 0.3s ease;
-        }
+        /* Mode Styles */
+        .white-mode { background-color: white; color: #333; }
+        .space-mode { background-color: #000; color: white; }
+        .clean-mode { background-color: #f5f5f5; color: #333; }
 
-        .menu a {
-            color: white;
-            text-decoration: none;
-            padding: 15px;
-            display: block;
-            width: 100%;
-        }
-
-        .menu a:hover {
-            background-color: #555;
-        }
-
-        /* Content */
+        /* Text Styling */
         .content {
-            margin-left: 250px;
             padding: 20px;
-        }
-
-        /* Section Styling */
-        .content section {
-            padding: 40px;
-            margin: 20px 0;
-            border-bottom: 1px solid #ddd;
-            background-color: white;
-            border-radius: 8px;
-        }
-
-        .content section h2 {
-            font-size: 2rem;
-            color: #333;
-        }
-
-        /* Header */
-        header {
-            background: #333;
-            color: white;
-            padding: 10px;
             text-align: center;
         }
 
-        .main-title {
-            font-size: 2.5rem;
-            font-weight: 600;
+        .content h1 {
+            font-size: 2rem;
+        }
+
+        .content p {
+            font-size: 1rem;
+            line-height: 1.6;
         }
 
         /* Mode Switcher */
         .mode-switcher {
-            margin-top: 20px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
+            font-weight: 600;
         }
 
-        /* Mode Styles */
-        .desert-mode { background-color: #f1e1a6; color: #c9a27d; }
-        .snoopy-mode { background-color: #f0f8ff; }
-        .sanrio-mode { background-color: #f9e6e6; }
-        .forest-mode { background-color: #d1e8d4; color: #456e4b; }
-        .gothic-mode { background-color: #3e3b31; color: #9f4b4b; }
-        .clean-mode { background-color: #f5f5f5; color: #333; }
-
-        /* SVG Animations */
-        .cloud-animation {
-            animation: moveClouds 10s linear infinite;
+        .mode-switcher a {
+            color: #333;
+            text-decoration: none;
         }
 
-        @keyframes moveClouds {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+        .mode-switcher a:hover {
+            color: #ff67ab;
         }
 
-        .soil-background {
-            width: 100%;
-            height: 150px;
-            background: linear-gradient(45deg, #87c480 30%, #82a52b 90%);
+        /* Animation Styles */
+        @keyframes rocketMovement {
+            0% { transform: translateY(100vh); }
+            100% { transform: translateY(-100vh); }
+        }
+
+        .rocket {
+            width: 50px;
+            animation: rocketMovement 5s linear infinite;
+        }
+
+        .planet {
+            width: 80px;
+            animation: movePlanet 10s linear infinite;
+        }
+
+        @keyframes movePlanet {
+            0% { transform: translateX(-200px); }
+            100% { transform: translateX(200px); }
+        }
+
+        /* Dune and Palm for Desert Mode */
+        .dune { width: 100%; height: 200px; background: #f3d1a1; border-radius: 5px; }
+
+        .palmera {
+            width: 50px;
+            height: 80px;
+            background: #228b22;
             border-radius: 10px;
+            position: absolute;
+            top: 100px;
+            left: 100px;
         }
 
+        /* SVG Images */
+        .svg-container {
+            margin: 20px;
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .gothic-mode svg, .space-mode svg {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+        }
+
+        .gothic-mode .kuromi {
+            fill: #333;
+        }
+
+        .gothic-mode .hello-kitty {
+            fill: #ff67ab;
+        }
     </style>
 </head>
-<body>
-    <!-- Side Menu -->
-    <div class="menu">
-        <h3 style="color: #fff; padding: 10px;">Menu</h3>
-        <a href="#section1">About Me</a>
-        <a href="#section2">Skills</a>
-        <a href="#section3">Hobbies</a>
-        <a href="#section4">Projects</a>
-        <a href="#section5">Contact</a>
-        <a href="freeware.html">Freeware</a>
+<body class="white-mode">
+    <div class="content">
+        <!-- Who I Am Section -->
+        <h1>Who I Am</h1>
+        <p>Media artist and interaction developer from Santiago. I enjoy designing, building, and learning.</p>
+        <p>In my free time, I read books and work on creative projects.</p>
+        <p>For inquiries, <a href="mailto:your-email@icloud.com" style="color: blue;">Mailito</a>.</p>
     </div>
 
-    <!-- Main Content -->
-    <div class="content clean-mode">
-        <header>
-            <h1 class="main-title">I Am an Interaction Developer & Media Artist</h1>
-        </header>
-
-        <!-- Section 1: About Me -->
-        <section id="section1">
-            <h2>About Me</h2>
-            <p>Hi! I'm Leo, an interaction developer and media artist from Santiago, Chile. My passion lies in blending technology with creative media to build things that engage and inspire. I love working on projects that allow me to experiment and learn new things, whether it’s using computer vision for installations or designing digital interfaces. In my free time, I enjoy reading books, building things, and learning new languages.</p>
-        </section>
-
-        <!-- Section 2: Skills -->
-        <section id="section2">
-            <h2>Skills</h2>
-            <ul>
-                <li>Computer Vision (Python, OpenCV)</li>
-                <li>Web Development (React, Node.js)</li>
-                <li>Interactive Design (SVG, CSS, HTML5)</li>
-                <li>Automation & Testing (Java, Selenium)</li>
-            </ul>
-        </section>
-
-        <!-- Section 3: Hobbies -->
-        <section id="section3">
-            <h2>Hobbies</h2>
-            <ul>
-                <li>DIY Projects and Building Things</li>
-                <li>Learning new languages</li>
-                <li>Digital and Physical Art</li>
-                <li>Car Enthusiast</li>
-            </ul>
-        </section>
-
-        <!-- Section 4: Projects -->
-        <section id="section4">
-            <h2>Projects</h2>
-            <ul>
-                <li>Interactive Art Installations</li>
-                <li>Computer Vision Applications</li>
-                <li>Data Visualization Platforms</li>
-            </ul>
-        </section>
-
-        <!-- Section 5: Contact -->
-        <section id="section5">
-            <h2>Contact</h2>
-            <p>If you'd like to collaborate or have a project in mind, feel free to contact me.</p>
-            <p><strong>Email:</strong> <a href="mailto:sakayama8880u09@icloud.com">sakayama8880u09@icloud.com</a></p>
-        </section>
-
-        <!-- Background with Soil -->
-        <div class="soil-background"></div>
+    <!-- Mode Switcher -->
+    <div class="mode-switcher">
+        <a href="javascript:void(0)" onclick="switchMode('white')">White Mode</a>
+        <a href="javascript:void(0)" onclick="switchMode('space')">Space Mode</a>
+        <a href="javascript:void(0)" onclick="switchMode('clean')">Clean Mode</a>
+        <a href="javascript:void(0)" onclick="switchMode('desert')">Desert Mode</a>
+        <a href="javascript:void(0)" onclick="switchMode('gothic')">Gothic Mode</a>
     </div>
 
-    <!-- Footer and Mode Switcher -->
-    <footer>
-        <div class="mode-switcher">
-            <h4>Choose Theme Mode</h4>
-            <!-- Bootstrap Switches for Mode Switching -->
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="radio" name="mode" id="desert" onchange="switchMode('desert')" checked>
-                <label class="form-check-label" for="desert">Desert Mode</label>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="radio" name="mode" id="snoopy" onchange="switchMode('snoopy')">
-                <label class="form-check-label" for="snoopy">Snoopy Mode</label>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="radio" name="mode" id="sanrio" onchange="switchMode('sanrio')">
-                <label class="form-check-label" for="sanrio">Sanrio Mode</label>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="radio" name="mode" id="forest" onchange="switchMode('forest')">
-                <label class="form-check-label" for="forest">Forest Mode</label>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="radio" name="mode" id="gothic" onchange="switchMode('gothic')">
-                <label class="form-check-label" for="gothic">Gothic Mode</label>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="radio" name="mode" id="clean" onchange="switchMode('clean')">
-                <label class="form-check-label" for="clean">Clean Mode</label>
-            </div>
-        </div>
-    </footer>
+    <!-- Space Mode SVGs -->
+    <div class="svg-container space-mode">
+        <svg class="rocket" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+            <path d="M12 1C6.48 1 3 3.58 3 6c0 1.58.58 2.85 1.52 3.86C4.59 10.69 4 11.92 4 13c0 2.78 2.22 5 5 5h6c2.78 0 5-2.22 5-5 0-1.08-.59-2.31-1.52-3.14C20.42 8.85 21 7.58 21 6c0-2.42-3.48-5-9-5z"></path>
+        </svg>
 
+        <!-- Planets -->
+        <svg class="planet" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="40" stroke="white" stroke-width="4" fill="purple" />
+        </svg>
+    </div>
+
+    <!-- Desert Mode SVGs -->
+    <div class="dune"></div>
+    <div class="palmera"></div>
+
+    <!-- Gothic Mode SVGs -->
+    <div class="svg-container gothic-mode">
+        <svg class="kuromi" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L3 7V14L12 22L21 14V7L12 2Z" />
+        </svg>
+        <svg class="hello-kitty" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" />
+        </svg>
+    </div>
+
+    <!-- Script for Mode Switching -->
     <script>
-        // Define SVGs as constants
-        const desertSoilSVG = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 300">
-                <!-- Desert Soil -->
-                <rect width="100%" height="100%" fill="saddlebrown" />
-                <circle cx="250" cy="150" r="60" fill="burlywood" />
-            </svg>
-        `;
-
-        const desertDuneSVG = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 300">
-                <!-- Desert Dune -->
-                <path d="M0 150 Q250 50 500 150 Z" fill="peru" />
-            </svg>
-        `;
-
-        const snoopySVG = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 300">
-                <!-- Snoopy Icon -->
-                <circle cx="100" cy="150" r="50" fill="#ff67ab"></circle>
-            </svg>
-        `;
-
-        const sanrioSVG = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 300">
-                <!-- Sanrio Character -->
-                <circle cx="100" cy="150" r="50" fill="#ff67ab"></circle>
-            </svg>
-        `;
-
-        const forestSVG = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 300">
-                <!-- Forest Background -->
-                <rect width="100%" height="100%" fill="#82e0aa"></rect>
-            </svg>
-        `;
-
-        const gothicSVG = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 300">
-                <!-- Gothic Background with Dark Clouds -->
-                <rect width="100%" height="100%" fill="#2d2a2a"></rect>
-                <circle cx="200" cy="50" r="20" fill="black" opacity="0.5"></circle>
-            </svg>
-        `;
-
-        // Store all SVGs in an object for easy access
-        const svgs = {
-            desertSoil: desertSoilSVG,
-            desertDune: desertDuneSVG,
-            snoopy: snoopySVG,
-            sanrio: sanrioSVG,
-            forest: forestSVG,
-            gothic: gothicSVG
-        };
-
         function switchMode(mode) {
             const body = document.body;
-            body.classList.remove('clean-mode', 'desert-mode', 'snoopy-mode', 'sanrio-mode', 'forest-mode', 'gothic-mode');
+            body.classList.remove('white-mode', 'space-mode', 'clean-mode', 'desert-mode', 'gothic-mode');
             body.classList.add(mode + '-mode');
-            hideAllSVG();
-            document.getElementById(mode + '-svg').style.display = 'block';
-        }
-
-        function hideAllSVG() {
-            const svgs = document.querySelectorAll('svg');
-            svgs.forEach(svg => svg.style.display = 'none');
         }
     </script>
 
@@ -286,6 +172,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
-
 
 
