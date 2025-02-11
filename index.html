@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hi!</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Include Google Fonts for Century Gothic -->
+    <link href="https://fonts.googleapis.com/css2?family=Century+Gothic&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -33,14 +37,12 @@
             flex-direction: column;
             gap: 5px;
         }
-        .toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
         .toggle input {
             width: 20px;
             height: 20px;
+        }
+        a {
+            transition: color 0.5s;
         }
     </style>
 </head>
@@ -49,38 +51,45 @@
         <h3>Media Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
         <p>Currently working on Computer Vision and text-based projects.</p>
-        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com">sakayama666icloud.com</a></p>
+        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666icloud.com</a></p>
     </div>
     
     <div class="toggles">
-        <label class="toggle"><input type="checkbox" onclick="setTheme('minimal')"> Minimal</label>
-        <label class="toggle"><input type="checkbox" onclick="setTheme('hello-kitty')"> Hello Kitty</label>
-        <label class="toggle"><input type="checkbox" onclick="setTheme('unicorn')"> Unicorn</label>
-        <label class="toggle"><input type="checkbox" onclick="setTheme('matrix')"> Matrix</label>
-        <label class="toggle"><input type="checkbox" onclick="setTheme('solarized')"> Solarized</label>
-        <label class="toggle"><input type="checkbox" onclick="setTheme('space')"> Space</label>
-        <label class="toggle"><input type="checkbox" onclick="setTheme('football')"> Football</label>
-        <label class="toggle"><input type="checkbox" onclick="setTheme('sky')"> Sky</label>
-        <label class="toggle"><input type="checkbox" onclick="setTheme('ice')"> Ice</label>
-        <label class="toggle"><input type="checkbox" onclick="setTheme('water')"> Water</label>
-        <label class="toggle"><input type="checkbox" onclick="setTheme('fire')"> Fire</label>
-        <label class="toggle"><input type="checkbox" onclick="setTheme('forest')"> Forest</label>
+        <label class="toggle">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="minimal" onclick="setTheme('minimal')">
+                <label class="custom-control-label" for="minimal">Minimal</label>
+            </div>
+        </label>
+        <label class="toggle">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="hello-kitty" onclick="setTheme('hello-kitty')">
+                <label class="custom-control-label" for="hello-kitty">Hello Kitty</label>
+            </div>
+        </label>
+        <label class="toggle">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="unicorn" onclick="setTheme('unicorn')">
+                <label class="custom-control-label" for="unicorn">Unicorn</label>
+            </div>
+        </label>
+        <!-- Add other themes similarly... -->
     </div>
     
     <script>
         const themes = {
-            minimal: { background: "#f4f4f4", color: "#222", font: "Century Gothic" },
-            "hello-kitty": { background: "#ffd1dc", color: "#ff69b4", font: "Comic Sans MS" },
-            unicorn: { background: "#ffccff", color: "#9900cc", font: "Cursive" },
-            matrix: { background: "#000", color: "#0f0", font: "Courier New" },
-            solarized: { background: "#002b36", color: "#839496", font: "Lucida Console" },
-            space: { background: "#121212", color: "#4fc3f7", font: "Orbitron" },
-            football: { background: "#008000", color: "#ffffff", font: "Impact" },
-            sky: { background: "#87ceeb", color: "#ffffff", font: "Arial" },
-            ice: { background: "#b3e0ff", color: "#003366", font: "Verdana" },
-            water: { background: "#0099cc", color: "#ffffff", font: "Tahoma" },
-            fire: { background: "#ff4500", color: "#ffdd00", font: "Georgia" },
-            forest: { background: "#2e8b57", color: "#fffaf0", font: "Palatino" }
+            minimal: { background: "#f4f4f4", color: "#222", font: "Century Gothic", emailColor: "#1a73e8" },
+            "hello-kitty": { background: "#ffd1dc", color: "#ff69b4", font: "Comic Sans MS", emailColor: "#ff69b4" },
+            unicorn: { background: "#ffccff", color: "#9900cc", font: "Cursive", emailColor: "#9900cc" },
+            matrix: { background: "#000", color: "#0f0", font: "Courier New", emailColor: "#0f0" },
+            solarized: { background: "#002b36", color: "#839496", font: "Lucida Console", emailColor: "#839496" },
+            space: { background: "#121212", color: "#4fc3f7", font: "Orbitron", emailColor: "#4fc3f7" },
+            football: { background: "#008000", color: "#ffffff", font: "Impact", emailColor: "#ffffff" },
+            sky: { background: "#87ceeb", color: "#ffffff", font: "Arial", emailColor: "#ffffff" },
+            ice: { background: "#b3e0ff", color: "#003366", font: "Verdana", emailColor: "#003366" },
+            water: { background: "#0099cc", color: "#ffffff", font: "Tahoma", emailColor: "#ffffff" },
+            fire: { background: "#ff4500", color: "#ffdd00", font: "Georgia", emailColor: "#ffdd00" },
+            forest: { background: "#2e8b57", color: "#fffaf0", font: "Palatino", emailColor: "#fffaf0" }
         };
         
         function setTheme(theme) {
@@ -92,7 +101,13 @@
             document.body.style.background = themes[theme].background;
             document.body.style.color = themes[theme].color;
             document.body.style.fontFamily = themes[theme].font;
+            document.getElementById('email').style.color = themes[theme].emailColor;
         }
     </script>
+    
+    <!-- Include Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
