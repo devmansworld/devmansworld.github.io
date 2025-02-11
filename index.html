@@ -11,11 +11,16 @@
         body {
             display: flex;
             min-height: 100vh;
-            font-family: 'Century Gothic', sans-serif;
-            background-color: white;
+            font-family: 'Roboto', sans-serif;
+            background-color: #fff5e6;
             color: #333;
             flex-direction: column;
-            transition: all 0.3s;
+        }
+        .sidebar {
+            width: 250px;
+            background: #ff9800;
+            color: white;
+            padding: 20px;
         }
         .content {
             flex-grow: 1;
@@ -31,6 +36,15 @@
             margin-top: 20px;
             border-radius: 10px;
         }
+        .dark-mode {
+            background-color: black !important;
+            color: white !important;
+        }
+        .gothic-mode {
+            font-family: 'Old English Text MT', cursive;
+            background-color: black !important;
+            color: white !important;
+        }
         .gallery {
             display: flex;
             flex-wrap: wrap;
@@ -44,200 +58,76 @@
             object-fit: cover;
             border-radius: 10px;
         }
-        .mode-toggle, .font-toggle {
-            margin: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .dark-mode {
-            background-color: black !important;
-            color: red !important;
-        }
-        .gothic-mode {
-            font-family: 'Old English Text MT', cursive !important;
-            background-color: black !important;
-            color: red !important;
-        }
-        .bauhaus-mode {
-            font-family: 'Times New Roman', serif !important;
-            background-color: black !important;
-            color: white !important;
-        }
-        .shoegaze-mode {
-            font-family: 'Century Gothic', sans-serif !important;
-            background-color: lightgray !important;
-            color: #333 !important;
-        }
-        .cursive-mode {
-            font-family: 'Brush Script MT', cursive !important;
-        }
-        .quote {
-            margin-top: 20px;
-            font-style: italic;
-        }
-        .secret-button {
-            display: none;
-        }
-        .secret-button.active {
-            display: block;
-        }
-        .quote-button, .secret-button {
-            background-color: #ff9800;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-        }
-        .quote-button:hover, .secret-button:hover {
-            background-color: #ff5722;
-        }
-        /* SVG Styles */
-        .sea-svg, .desert-svg, .gothic-svg {
+        #seaCanvas {
+            position: fixed;
+            bottom: 0;
             width: 100%;
-            height: 300px;
-            transition: all 0.3s;
-        }
-        /* Meme builder styles */
-        .meme-builder {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .meme-img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
+            height: 150px;
+            background: #87CEFA;
         }
     </style>
 </head>
 <body>
     <div class="content">
         <h1>Welcome to My GitHub Page</h1>
-        <img src="assets/your_main_image.png" alt="Main Image" style="width:300px; border-radius:15px;">
-        <p><a href="#study-info">WHAT DO I STUDY?</a></p>
-        <div id="study-info">
-            <h3>I study Computer Vision specialized in Python languages.</h3>
-        </div>
+        <img src="assets/00000000000000.PNG" alt="Salutation Image" style="width:300px; border-radius:15px;">
         <div id="p5-canvas"></div>
         <div id="map"></div>
-
         <h2>Image Gallery</h2>
         <div class="gallery" id="imageGallery"></div>
-
-        <div class="mode-toggle">
-            <button class="btn btn-dark" onclick="toggleDarkMode()">Toggle Gothic Style</button>
-            <button class="btn btn-dark" onclick="toggleBauhausMode()">Toggle Bauhaus Mode</button>
-            <button class="btn btn-dark" onclick="toggleShoegazeMode()">Toggle Shoegaze Mode</button>
-        </div>
-
-        <div class="font-toggle">
-            <button class="btn btn-dark" onclick="toggleFont()">Toggle Century Gothic Font</button>
-            <button class="btn btn-dark" onclick="toggleCursive()">Toggle Cursive Style</button>
-        </div>
-
-        <button class="quote-button" onclick="getRandomQuote()">Get Random Quote</button>
-        <p class="quote" id="quote"></p>
-
-        <button class="secret-button" id="secretButton" onclick="revealSecret()">Click for Secret Link</button>
-
-        <!-- SVG Simulated Environments -->
-        <div id="sea" class="sea-svg"></div>
-        <div id="desert" class="desert-svg"></div>
-        <div id="gothic" class="gothic-svg"></div>
-
-        <!-- Meme Builder Section -->
-        <div class="meme-builder">
-            <h3>Create a Meme</h3>
-            <input type="file" id="uploadImage" accept="image/*">
-            <button class="btn btn-primary" onclick="generateMeme()">Generate Meme</button>
-            <div id="memeContainer">
-                <img id="memeImg" class="meme-img" src="" alt="Generated Meme">
-            </div>
-        </div>
+        <p><a href="mailto:sakayama2343@icloud.com">Email Me</a></p>
+        <button class="btn btn-dark" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+        <button class="btn btn-dark" onclick="toggleGothicMode()">Toggle Gothic Mode</button>
     </div>
-
+    <canvas id="seaCanvas"></canvas>
     <script>
-        // Mode Toggles
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
-            document.body.classList.remove('gothic-mode', 'bauhaus-mode', 'shoegaze-mode');
-            hideSVGs();
         }
-
         function toggleGothicMode() {
             document.body.classList.toggle('gothic-mode');
-            document.body.classList.remove('dark-mode', 'bauhaus-mode', 'shoegaze-mode');
-            showGothicSVG();
         }
-
-        function toggleBauhausMode() {
-            document.body.classList.toggle('bauhaus-mode');
-            document.body.classList.remove('dark-mode', 'gothic-mode', 'shoegaze-mode');
-            hideSVGs();
-        }
-
-        function toggleShoegazeMode() {
-            document.body.classList.toggle('shoegaze-mode');
-            document.body.classList.remove('dark-mode', 'gothic-mode', 'bauhaus-mode');
-            showDesertSVG();
-        }
-
-        function toggleFont() {
-            document.body.style.fontFamily = document.body.style.fontFamily === 'Century Gothic' ? 'Arial, sans-serif' : 'Century Gothic';
-        }
-
-        function toggleCursive() {
-            document.body.classList.toggle('cursive-mode');
-        }
-
-        // Fetch Random Quote
-        function getRandomQuote() {
-            fetch('https://api.quotable.io/random?tags=poetry')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('quote').innerText = `"${data.content}" - ${data.author}`;
-                })
-                .catch(error => console.error('Error fetching quote:', error));
-        }
-
-        // Secret Button to YouTube link
-        function revealSecret() {
-            const secretButton = document.getElementById('secretButton');
-            secretButton.classList.add('active');
-            window.location.href = 'https://www.youtube.com/watch?v=pcUGDsf2P4o';
-        }
-
-        // SVG Simulations
-        function showSeaSVG() {
-            document.getElementById('sea').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="lightblue" /><circle cx="100" cy="100" r="80" fill="blue" /></svg>`;
-        }
-
-        function showDesertSVG() {
-            document.getElementById('desert').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="yellow" /><circle cx="100" cy="100" r="80" fill="tan" /></svg>`;
-        }
-
-        function showGothicSVG() {
-            document.getElementById('gothic').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="black" /><circle cx="100" cy="100" r="80" fill="red" /></svg>`;
-        }
-
-        function hideSVGs() {
-            document.getElementById('sea').innerHTML = '';
-            document.getElementById('desert').innerHTML = '';
-            document.getElementById('gothic').innerHTML = '';
-        }
-
-        // Meme Builder
-        function generateMeme() {
-            const fileInput = document.getElementById('uploadImage');
-            const file = fileInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const memeImg = document.getElementById('memeImg');
-                    memeImg.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+        function initMap() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+                    const map = new google.maps.Map(document.getElementById("map"), {
+                        zoom: 12,
+                        center: userLocation,
+                    });
+                    new google.maps.Marker({
+                        position: userLocation,
+                        map: map,
+                        title: "You are here!"
+                    });
+                });
+            } else {
+                document.getElementById("map").innerHTML = "Geolocation is not supported by your browser.";
             }
         }
+        function setup() {
+            let canvas = createCanvas(windowWidth, 150);
+            canvas.parent('seaCanvas');
+            noFill();
+        }
+        function draw() {
+            background('#87CEFA');
+            stroke(255);
+            strokeWeight(2);
+            for (let i = 0; i < width; i += 20) {
+                let y = sin(frameCount * 0.05 + i * 0.05) * 10 + 100;
+                line(i, y, i, 150);
+            }
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const gallery = document.getElementById("imageGallery");
+            for (let i = 11; i <= 17; i++) {
+                let img = document.createElement("img");
+                img.src = `assets/IMG_00${i}.png`;
+                img.alt = `Image ${i}`;
+                gallery.appendChild(img);
+            }
+        });
     </script>
 </body>
 </html>
