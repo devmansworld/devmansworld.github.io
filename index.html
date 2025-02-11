@@ -1,166 +1,233 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leo - Interaction Developer</title>
+    <title>Mi Portafolio</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
+            color: black;
             margin: 0;
             padding: 0;
-            display: flex;
+            text-align: center;
             height: 100vh;
-            background-color: #fff;
-        }
-        .sidebar {
-            width: 250px;
-            background-color: #333;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            padding-top: 20px;
-            position: fixed;
-            height: 100%;
-            padding-left: 20px;
-        }
-        .sidebar a {
-            color: white;
-            text-decoration: none;
-            padding: 10px;
-            width: 100%;
-            text-align: left;
-            border-bottom: 1px solid #444;
-        }
-        .sidebar a:hover {
-            background-color: #575757;
-        }
-        .main-content {
-            margin-left: 270px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            position: relative;
+            overflow-x: hidden;
         }
         .content {
-            text-align: center;
-            max-width: 800px;
+            position: relative;
+            z-index: 1;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.7);
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .content h1 {
-            margin-top: 0;
+        h1 {
+            color: darkgray;
         }
-        .content p {
-            font-size: 1.2em;
-        }
-        .footer {
-            text-align: center;
+        .image-container {
             margin-top: 20px;
+            max-width: 100%;
+            text-align: center;
         }
-        .footer a {
-            color: #333;
-            text-decoration: none;
-            font-weight: bold;
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
         }
-        .footer a:hover {
-            text-decoration: underline;
+
+        /* Lightbox Gallery */
+        .gallery {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .gallery img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        /* Mode-Specific Styles */
+        body.moon-mode {
+            background: url('moon-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.desert-mode {
+            background: url('desert-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.forest-mode {
+            background: url('forest-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.gothic-mode {
+            background: url('gothic-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.unicorn-mode {
+            background: url('unicorn-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.sanrio-mode {
+            background-color: pink;
+            background-image: url('hello-kitty.svg'), url('keroppi.svg');
+            background-position: center top, center bottom;
+            background-repeat: no-repeat;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background-color: #333;
+            color: white;
+            width: 200px;
+            height: 100%;
+            padding: 20px;
+            display: none;
+        }
+        .sidebar.active {
+            display: block;
+        }
+        .mode-icon {
+            cursor: pointer;
+            margin: 10px;
+            width: 40px;
+            height: 40px;
+        }
+
+        /* Contact Form */
+        .contact-form {
+            margin-top: 30px;
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            max-width: 400px;
+            width: 100%;
+        }
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .contact-form button {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Banner */
+        .banner {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
         }
     </style>
 </head>
-<body>
+<body class="white-mode">
+    <div class="content">
+        <h1>¡Hola! Soy Leo</h1>
+        <p>¡Hola! Soy Leo, un desarrollador de interactividad. Tengo una maestría en Artes Mediáticas y estoy especializado en Visión por Computadora y aplicaciones para interactividad. He enseñado cursos sobre Pure Data y software de Arduino en el Diplomado de Artes Sonoras en la UChile.</p>
+        <p>En mi tiempo libre, también soy ingeniero fintech (¡LOL!).</p>
 
-    <div class="sidebar">
-        <a href="#space" onclick="changeMode('space')">Space Mode</a>
-        <a href="#cartoon" onclick="changeMode('cartoon')">Cartoon Mode</a>
-        <a href="#nerd" onclick="changeMode('nerd')">Nerd Mode</a>
-        <a href="#clean" onclick="changeMode('clean')">Clean Mode</a>
-    </div>
+        <!-- Quote Section -->
+        <div id="quote-section">
+            <h3>Cita Aleatoria:</h3>
+            <p id="quote">Haz clic para obtener una cita</p>
+            <button onclick="fetchRandomQuote()">Obtener Cita</button>
+        </div>
 
-    <div class="main-content">
-        <div class="content" id="content">
-            <h1>Leo - Interaction Developer</h1>
-            <p>Media artist and interaction developer from Santiago. Passionate about design, technology, and creativity.</p>
-            <div class="footer">
-                <a href="mailto:sakayama8880u09@icloud.com">Contact Me</a>
-            </div>
+        <!-- Gallery with Lightbox -->
+        <h3>Galería de Imágenes</h3>
+        <div class="gallery">
+            <a href="001.jpg" data-lightbox="image-gallery" data-title="Imagen 1">
+                <img src="001.jpg" alt="Imagen 1">
+            </a>
+            <a href="002.jpg" data-lightbox="image-gallery" data-title="Imagen 2">
+                <img src="002.jpg" alt="Imagen 2">
+            </a>
+            <a href="003.jpg" data-lightbox="image-gallery" data-title="Imagen 3">
+                <img src="003.jpg" alt="Imagen 3">
+            </a>
+        </div>
+
+        <div class="image-container">
+            <h3>Aquí una muestra de mi trabajo:</h3>
+            <img src="00000.jpg" alt="Imagen relacionada con mi trabajo o hobby">
+        </div>
+
+        <!-- Contact Form -->
+        <div class="contact-form">
+            <h3>Contáctame</h3>
+            <form action="mailto:leo@correo.com" method="post" enctype="text/plain">
+                <input type="text" name="name" placeholder="Tu nombre" required>
+                <input type="email" name="email" placeholder="Tu correo" required>
+                <textarea name="message" rows="5" placeholder="Tu mensaje" required></textarea>
+                <button type="submit">Enviar</button>
+            </form>
         </div>
     </div>
 
-    <!-- P5.js Script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <!-- Mode Icons for Switching -->
+    <div class="sidebar">
+        <h2>Cambiar Modo</h2>
+        <img class="mode-icon" src="moon-icon.svg" alt="Modo Luna" onclick="setMode('moon')">
+        <img class="mode-icon" src="desert-icon.svg" alt="Modo Desierto" onclick="setMode('desert')">
+        <img class="mode-icon" src="forest-icon.svg" alt="Modo Bosque" onclick="setMode('forest')">
+        <img class="mode-icon" src="gothic-icon.svg" alt="Modo Gótico" onclick="setMode('gothic')">
+        <img class="mode-icon" src="unicorn-icon.svg" alt="Modo Unicornio" onclick="setMode('unicorn')">
+        <img class="mode-icon" src="sanrio-icon.svg" alt="Modo Sanrio" onclick="setMode('sanrio')">
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+
     <script>
-        let currentMode = 'space';
-
-        function setup() {
-            createCanvas(windowWidth, windowHeight);
-            background(0);
-            noStroke();
+        // Toggle sidebar visibility
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("active");
         }
 
-        function draw() {
-            if (currentMode === 'space') {
-                spaceMode();
-            } else if (currentMode === 'cartoon') {
-                cartoonMode();
-            } else if (currentMode === 'nerd') {
-                nerdMode();
-            } else if (currentMode === 'clean') {
-                cleanMode();
-            }
+        // Change modes dynamically
+        function setMode(mode) {
+            document.body.className = mode + '-mode';
         }
 
-        function changeMode(mode) {
-            currentMode = mode;
-            background(0); // Clear the background when switching modes
-        }
-
-        // Space Mode: Stars and Moon Animation
-        function spaceMode() {
-            fill(255, 255, 255, 50);
-            ellipse(width / 2, height / 2, 300, 300); // Moon
-            for (let i = 0; i < 500; i++) {
-                let x = random(width);
-                let y = random(height);
-                ellipse(x, y, 2, 2); // Stars
-            }
-        }
-
-        // Cartoon Mode: Moving Clouds (Sanrio)
-        function cartoonMode() {
-            fill(255, 255, 255, 100);
-            ellipse(frameCount % width, height / 4, 100, 60); // Cloud 1
-            ellipse((frameCount + 200) % width, height / 3, 120, 70); // Cloud 2
-        }
-
-        // Nerd Mode: Matrix Code Rain
-        function nerdMode() {
-            background(0, 100);
-            let cols = width / 20;
-            let rows = height / 20;
-            fill(0, 255, 0);
-            for (let i = 0; i < cols; i++) {
-                textSize(20);
-                text('1', i * 20, frameCount % height);
-            }
-        }
-
-        // Clean Mode: Moving Gradient Background
-        function cleanMode() {
-            let c1 = color(255, 255, 255);
-            let c2 = color(0, 0, 0);
-            for (let i = 0; i < width; i++) {
-                let inter = map(i, 0, width, 0, 1);
-                let c = lerpColor(c1, c2, inter);
-                stroke(c);
-                line(i, 0, i, height);
-            }
+        // Fetch a random quote from an API (example using a placeholder quote API)
+        function fetchRandomQuote() {
+            const quotes = [
+                "La vida es lo que pasa mientras estás ocupado haciendo otros planes. – John Lennon",
+                "El futuro pertenece a quienes creen en la belleza de sus sueños. – Eleanor Roosevelt",
+                "No llores porque terminó, sonríe porque sucedió. – Dr. Seuss",
+                "La felicidad no es algo hecho. Proviene de tus propias acciones. – Dalai Lama"
+            ];
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            document.getElementById("quote").innerText = quotes[randomIndex];
         }
     </script>
+
+    <!-- Banner -->
+    <div class="banner">
+        <p>© 2025 Todos los derechos reservados</p>
+    </div>
+
+    <!-- Button to toggle sidebar -->
+    <button onclick="toggleSidebar()" style="position: fixed; top: 20px; right: 20px; background: #333; color: white; padding: 10px;">Cambiar Modo</button>
 </body>
 </html>
+
 
