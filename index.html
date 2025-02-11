@@ -23,6 +23,12 @@
             margin: 0 auto;
         }
 
+        .bio-section {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
         .menu {
             position: fixed;
             left: 10px;
@@ -72,21 +78,19 @@
             color: #b58900;
         }
 
-        /* Typography */
-        .gothic-font {
-            font-family: "Gothic", sans-serif;
+        .matrix-mode {
+            background-color: #000000;
+            color: #00ff00;
         }
 
-        .roman-font {
-            font-family: "Times New Roman", serif;
+        .orange-mode {
+            background-color: #ff6600;
+            color: #ffffff;
         }
 
-        .adidas-font {
-            font-family: "Arial", sans-serif;
-        }
-
-        .console-font {
-            font-family: "Courier New", monospace;
+        .grey-mode {
+            background-color: #d3d3d3;
+            color: #333;
         }
 
         /* Sidebar with toggles */
@@ -128,6 +132,19 @@
             margin-top: 30px;
         }
 
+        /* Quote Section */
+        #quoteSection {
+            margin-top: 30px;
+        }
+
+        #quoteButton {
+            font-size: 12px;
+            background-color: transparent;
+            border: none;
+            color: #007bff;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body class="light-mode">
@@ -145,9 +162,8 @@
     <!-- Bio Section -->
     <div class="bio-section">
         <h1>Interactive Developer Santiago</h1>
-        <p>Working on computer vision projects</p>
-        <p>Certifications in C++, Objective-C, and Swift</p>
-        <p>Email me to speak about projects at <a href="mailto:CORREO">CORREO</a></p>
+        <p>I'm a passionate developer working on various projects, particularly in computer vision and artificial intelligence. My journey includes certifications in C++, Objective-C, and Swift, and I continue to learn and grow in this ever-evolving field. Feel free to reach out to discuss exciting projects!</p>
+        <p>Email me at <a href="mailto:CORREO">CORREO</a></p>
         <img class="center-image" src="00000000000000.PNG" alt="A text reading app">
     </div>
 
@@ -156,10 +172,6 @@
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" id="colorSwitch" onchange="toggleColorMode()">
             <label class="form-check-label" for="colorSwitch">Toggle Color</label>
-        </div>
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="typographySwitch" onchange="toggleTypography()">
-            <label class="form-check-label" for="typographySwitch">Toggle Typography</label>
         </div>
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" id="fontSizeSwitch" onchange="toggleFontSize()">
@@ -174,67 +186,88 @@
     <div id="quoteSection">
         <p id="quoteText"></p>
         <p id="quoteAuthor"></p>
+        <button id="quoteButton" onclick="displayRandomQuote()">Get another quote</button>
     </div>
 
     <!-- Footer Section with Random Quote -->
     <footer>
         <div class="footer-quote" id="footerQuote"></div>
-        <button class="btn btn-primary" onclick="displayRandomQuote()">Q</button>
         <p>&copy; All rights reserved</p>
     </footer>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&libraries=&v=weekly" async></script>
     <script>
-
-       const quotes = [
-            { quote: "In the end, we will remember not the words of our enemies, but the silence of our friends.", author: "Martin Luther King Jr." },
-            { quote: "To be, or not to be, that is the question.", author: "William Shakespeare" },
-            { quote: "The only way to deal with this life meaningfully is to find one's passion.", author: "Mark Twain" },
-            { quote: "Music can change the world because it can change people.", author: "Bono" },
-            { quote: "The greatest wealth is to live content with little.", author: "Plato" },
-            { quote: "You must be the change you wish to see in the world.", author: "Mahatma Gandhi" },
-            { quote: "It is never too late to be what you might have been.", author: "George Eliot" },
-            { quote: "Do not go where the path may lead, go instead where there is no path and leave a trail.", author: "Ralph Waldo Emerson" },
-            { quote: "Be the change that you wish to see in the world.", author: "Mahatma Gandhi" },
-            { quote: "Success is not final, failure is not fatal: It is the courage to continue that counts.", author: "Winston Churchill" },
-            { quote: "The best way to predict the future is to invent it.", author: "Alan Kay" },
-            { quote: "Life is what happens when you're busy making other plans.", author: "John Lennon" },
-            { quote: "Keep your face always toward the sunshine—and shadows will fall behind you.", author: "Walt Whitman" },
-            { quote: "Success usually comes to those who are too busy to be looking for it.", author: "Henry David Thoreau" },
-            { quote: "You have as many hours in the day as Beyoncé.", author: "Unknown" },
-            { quote: "If you want to go fast, go alone. If you want to go far, go together.", author: "African Proverb" },
-            { quote: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
-            { quote: "Do one thing every day that scares you.", author: "Eleanor Roosevelt" },
-            { quote: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
-            { quote: "Strive not to be a success, but rather to be of value.", author: "Albert Einstein" },
-            { quote: "The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to have it make some difference that you have lived and lived well.", author: "Ralph Waldo Emerson" },
-            { quote: "Your time is limited, so don’t waste it living someone else’s life.", author: "Steve Jobs" },
-            { quote: "Everything you can imagine is real.", author: "Pablo Picasso" },
-            { quote: "The only impossible journey is the one you never begin.", author: "Tony Robbins" },
-            { quote: "You don’t have to be great to start, but you have to start to be great.", author: "Zig Ziglar" },
-            { quote: "Whether you think you can, or you think you can’t – you’re right.", author: "Henry Ford" },
-            { quote: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
-            { quote: "Act as if what you do makes a difference. It does.", author: "William James" },
-            { quote: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
-            { quote: "Do what you can with all you have, wherever you are.", author: "Theodore Roosevelt" },
-            { quote: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
-            { quote: "You miss 100% of the shots you don’t take.", author: "Wayne Gretzky" },
-            { quote: "Life is 10% what happens to us and 90% how we react to it.", author: "Charles R. Swindoll" },
-            { quote: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
-            { quote: "I find that the harder I work, the more luck I seem to have.", author: "Thomas Jefferson" },
-            { quote: "Nothing in the world can take the place of Persistence. Talent will not; nothing is more common than unsuccessful men with talent.", author: "Calvin Coolidge" },
-            { quote: "I am not a product of my circumstances. I am a product of my decisions.", author: "Stephen R. Covey" },
-            { quote: "The best revenge is massive success.", author: "Frank Sinatra" },
-            { quote: "Hardships often prepare ordinary people for an extraordinary destiny.", author: "C.S. Lewis" },
-            { quote: "Success is not how high you have climbed, but how you make a positive difference to the world.", author: "Roy T. Bennett" },
-            { quote: "In the middle of every difficulty lies opportunity.", author: "Albert Einstein" },
-            { quote: "Don't limit yourself. Many people limit themselves to what they think they can do. You can go as far as your mind lets you.", author: "Mary Kay Ash" }
-        ];
-
+        const quotes = [
+    { quote: "It is not our abilities that show what we truly are… it is our choices.", author: "J.K. Rowling, Harry Potter and the Chamber of Secrets" },
+    { quote: "In three words I can sum up everything I've learned about life: it goes on.", author: "Robert Frost" },
+    { quote: "We are all fools in love.", author: "Jane Austen, Pride and Prejudice" },
+    { quote: "Two things are infinite: the universe and human stupidity; and I'm not sure about the universe.", author: "Albert Einstein" },
+    { quote: "So many books, so little time.", author: "Frank Zappa" },
+    { quote: "A room without books is like a body without a soul.", author: "Marcus Tullius Cicero" },
+    { quote: "Good friends, good books, and a sleepy conscience: this is the ideal life.", author: "Mark Twain" },
+    { quote: "I have lived a thousand lives and I've loved a thousand loves. I've walked on distant worlds and seen the end of time. Because I read.", author: "George R.R. Martin" },
+    { quote: "The world was hers for the reading.", author: "Betty Smith, A Tree Grows in Brooklyn" },
+    { quote: "There is no friend as loyal as a book.", author: "Ernest Hemingway" },
+    { quote: "La vie est un défi, relève-le!", author: "Mère Teresa, La vie de Mère Teresa" },  // French
+    { quote: "Il cuore ha le sue ragioni che la ragione non conosce.", author: "Blaise Pascal, Pensieri" },  // Italian
+    { quote: "Solo con il cuore si può vedere bene; l’essenziale è invisibile agli occhi.", author: "Antoine de Saint-Exupéry, Il piccolo principe" },  // Italian
+    { quote: "La felicidad no es algo hecho. Viene de tus propias acciones.", author: "Dalai Lama" },  // Spanish
+    { quote: "En un lugar de la Mancha, de cuyo nombre no quiero acordarme...", author: "Miguel de Cervantes, Don Quijote de la Mancha" },  // Spanish
+    { quote: "Un libro è un giardino che puoi portare nella tua tasca.", author: "Proverbio arabo" },  // Italian
+    { quote: "Les mots sont, bien plus que les choses, les instruments de l’émotion humaine.", author: "Marcel Proust, À la recherche du temps perdu" },  // French
+    { quote: "Man ist nur dort wirklich frei, wo man sich selbst zu verwirklichen versteht.", author: "Johann Wolfgang von Goethe, Faust" },  // German
+    { quote: "Vivi come se dovessi morire domani. Impara come se dovessi vivere per sempre.", author: "Mahatma Gandhi" },  // Italian
+    { quote: "L’immensité de l’univers n’est rien comparée à l’immensité de l’âme humaine.", author: "Victor Hugo, Les Misérables" },  // French
+    { quote: "C’est en écrivant que l’on devient écrivain.", author: "Françoise Sagan, Bonjour tristesse" },  // French
+    { quote: "La realtà è ciò che accade quando non siamo distratti.", author: "Italo Calvino, Le città invisibili" },  // Italian
+    { quote: "Un libro è un sogno che tieni in mano.", author: "Neil Gaiman" },  // Italian
+    { quote: "No hay camino para la paz; la paz es el camino.", author: "Mahatma Gandhi" },  // Spanish
+    { quote: "Cada día nos ofrece una nueva oportunidad para comenzar de nuevo.", author: "Paulo Coelho, El Alquimista" },  // Spanish
+    { quote: "I can resist anything except temptation.", author: "Oscar Wilde, The Picture of Dorian Gray" },
+    { quote: "A person who won't read has no advantage over one who can't read.", author: "Mark Twain" },
+    { quote: "It is not what we have in life, but who we have in our life that matters.", author: "J.K. Rowling" },
+    { quote: "All that is gold does not glitter, not all those who wander are lost.", author: "J.R.R. Tolkien, The Fellowship of the Ring" },
+    { quote: "The only impossible journey is the one you never begin.", author: "Tony Robbins" },
+    { quote: "A reader lives a thousand lives before he dies. The man who never reads lives only one.", author: "George R.R. Martin" },
+    { quote: "Time is a great teacher, but unfortunately it kills all its pupils.", author: "Louis Hector Berlioz" },
+    { quote: "The most beautiful things in life are not seen, but felt with the heart.", author: "Helen Keller" },
+    { quote: "What is a friend? A single soul dwelling in two bodies.", author: "Aristotle" },
+    { quote: "There is no remedy for love but to love more.", author: "Henry David Thoreau" },
+    { quote: "Do not go where the path may lead, go instead where there is no path and leave a trail.", author: "Ralph Waldo Emerson" },
+    { quote: "Be yourself; everyone else is already taken.", author: "Oscar Wilde" },
+    { quote: "Books are a uniquely portable magic.", author: "Stephen King, On Writing" },
+    { quote: "The only thing you absolutely have to know is the location of the library.", author: "Albert Einstein" },
+    { quote: "So it goes.", author: "Kurt Vonnegut, Slaughterhouse-Five" },
+    { quote: "I am not afraid of storms, for I am learning how to sail my ship.", author: "Louisa May Alcott, Little Women" },
+    { quote: "The truth is rarely pure and never simple.", author: "Oscar Wilde, The Importance of Being Earnest" },
+    { quote: "Who controls the past controls the future. Who controls the present controls the past.", author: "George Orwell, 1984" },
+    { quote: "To be, or not to be, that is the question.", author: "William Shakespeare, Hamlet" },
+    { quote: "Life is what happens when you’re busy making other plans.", author: "John Lennon" },
+    { quote: "That which does not kill us makes us stronger.", author: "Friedrich Nietzsche" },
+    { quote: "You know that when I hate you, it is because I love you to a point of passion that unhinges my soul.", author: "Julie de Lespinasse, Letters to Count de Bussy" },
+    { quote: "The only way to deal with this life meaningfully is to find one's passion.", author: "Fyodor Dostoevsky" },
+    { quote: "We are always the same age inside.", author: "Gertrude Stein" },
+    { quote: "I could be bounded in a nutshell, and count myself a king of infinite space.", author: "William Shakespeare, Hamlet" },
+    { quote: "Do I dare disturb the universe?", author: "T.S. Eliot, The Love Song of J. Alfred Prufrock" },
+    { quote: "A friend to all is a friend to none.", author: "Aristotle" },
+    { quote: "I am not what happened to me, I am what I choose to become.", author: "Carl Jung" },
+    { quote: "The opposite of love is not hate, it’s indifference.", author: "Elie Wiesel" },
+    { quote: "To love oneself is the beginning of a lifelong romance.", author: "Oscar Wilde" },
+    { quote: "An eye for an eye only ends up making the whole world blind.", author: "Mahatma Gandhi" },
+    { quote: "L’amore è come il vento, non puoi vederlo ma puoi sentirlo.", author: "Nicholas Sparks, A Walk to Remember" },  // Italian
+    { quote: "Siamo tutti nella fogna, ma alcuni di noi guardano alle stelle.", author: "Oscar Wilde, The Happy Prince" },  // Italian
+    { quote: "La vita è bella nonostante le sue difficoltà.", author: "Luigi Pirandello" },  // Italian
+    { quote: "Vivere senza speranza è come vivere senza aria.", author: "Victor Hugo, Les Misérables" },  // French
+    { quote: "Il cielo sopra Berlino è grigio, ma i sogni sono colorati.", author: "Peter Handke" },  // Italian
+    { quote: "La dignità non consiste nel possedere onori, ma nel meritarli.", author: "Aristotele" },  // Italian
+    { quote: "Non si vede bene che col cuore. L’essenziale è invisibile agli occhi.", author: "Antoine de Saint-Exupéry, Il piccolo principe" },  // French
+    { quote: "Tutto ciò che è oro non luccica, non tutte le persone che vagano sono perdute.", author: "J.R.R. Tolkien" },  // Italian
+    { quote: "L'unico modo di fare un ottimo lavoro è amare quello che fai.", author: "Steve Jobs" },
+    // Add more quotes here up to 300...
+];
 
         let currentFontSize = 'medium-text';
         let currentColorMode = 'light-mode';
-        let currentTypography = 'adidas-font';
 
         function displayRandomQuote() {
             const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -255,18 +288,6 @@
             }
         }
 
-        function toggleTypography() {
-            if (document.getElementById('typographySwitch').checked) {
-                document.body.classList.remove(currentTypography);
-                document.body.classList.add('gothic-font');
-                currentTypography = 'gothic-font';
-            } else {
-                document.body.classList.remove(currentTypography);
-                document.body.classList.add('adidas-font');
-                currentTypography = 'adidas-font';
-            }
-        }
-
         function toggleFontSize() {
             if (document.getElementById('fontSizeSwitch').checked) {
                 document.body.classList.remove(currentFontSize);
@@ -280,23 +301,24 @@
         }
 
         function initMap() {
+            const location = { lat: 40.4237, lng: -3.7136 };  // Puente del Arzobispo, Providencia coordinates
             const map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: -33.4372, lng: -70.6506 }, // Coordinates for Puente del Arzobispo Providencia
                 zoom: 15,
+                center: location,
+            });
+            const marker = new google.maps.Marker({
+                position: location,
+                map: map,
             });
         }
 
-        window.onload = () => {
+        window.onload = function() {
             displayRandomQuote();
-        }
-    </script>
+        };
 
+    </script>
 </body>
 </html>
-
-
-
-
 
 
 
