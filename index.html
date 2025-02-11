@@ -81,35 +81,23 @@
             background-size: cover;
         }
 
-        /* Sidebar Switches */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            right: 0;
+        /* Sidebar with Mode Switchers */
+        .mode-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .mode-button {
+            padding: 10px 20px;
             background-color: #333;
             color: white;
-            width: 200px;
-            height: 100%;
-            padding: 20px;
-            display: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        .sidebar.active {
-            display: block;
-        }
-        .sidebar h2 {
-            font-size: 20px;
-            margin-bottom: 20px;
-        }
-        .switch {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        .switch input {
-            transform: scale(1.5);
-        }
-        .switch label {
-            font-size: 18px;
+        .mode-button:hover {
+            background-color: #444;
         }
 
         /* Banner */
@@ -162,45 +150,27 @@
             <h3>Aquí una muestra de mi trabajo:</h3>
             <img src="00000.jpg" alt="Imagen relacionada con mi trabajo o hobby">
         </div>
+
+        <!-- Mode Switch Buttons -->
+        <div class="mode-buttons">
+            <button class="mode-button" onclick="setMode('moon')">Modo Luna</button>
+            <button class="mode-button" onclick="setMode('desert')">Modo Desierto</button>
+            <button class="mode-button" onclick="setMode('forest')">Modo Bosque</button>
+            <button class="mode-button" onclick="setMode('gothic')">Modo Gótico</button>
+            <button class="mode-button" onclick="setMode('unicorn')">Modo Unicornio</button>
+            <button class="mode-button" onclick="setMode('sanrio')">Modo Sanrio</button>
+            <button class="mode-button" onclick="setMode('orange-black')">Modo Naranja y Negro</button>
+        </div>
     </div>
 
-    <!-- Sidebar with Mode Switchers -->
-    <div class="sidebar" id="sidebar">
-        <h2>Cambiar Modo</h2>
-        <div class="switch">
-            <label for="moon-mode">Modo Luna</label>
-            <input type="checkbox" id="moon-mode" onchange="setMode('moon')">
-        </div>
-        <div class="switch">
-            <label for="desert-mode">Modo Desierto</label>
-            <input type="checkbox" id="desert-mode" onchange="setMode('desert')">
-        </div>
-        <div class="switch">
-            <label for="forest-mode">Modo Bosque</label>
-            <input type="checkbox" id="forest-mode" onchange="setMode('forest')">
-        </div>
-        <div class="switch">
-            <label for="gothic-mode">Modo Gótico</label>
-            <input type="checkbox" id="gothic-mode" onchange="setMode('gothic')">
-        </div>
-        <div class="switch">
-            <label for="unicorn-mode">Modo Unicornio</label>
-            <input type="checkbox" id="unicorn-mode" onchange="setMode('unicorn')">
-        </div>
-        <div class="switch">
-            <label for="sanrio-mode">Modo Sanrio</label>
-            <input type="checkbox" id="sanrio-mode" onchange="setMode('sanrio')">
-        </div>
+    <!-- Banner -->
+    <div class="banner">
+        <p>© 2025 Todos los derechos reservados</p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
 
     <script>
-        // Toggle sidebar visibility
-        function toggleSidebar() {
-            document.getElementById("sidebar").classList.toggle("active");
-        }
-
         // Change modes dynamically
         function setMode(mode) {
             document.body.className = mode + '-mode';
@@ -218,15 +188,8 @@
             document.getElementById("quote").innerText = quotes[randomIndex];
         }
     </script>
-
-    <!-- Banner -->
-    <div class="banner">
-        <p>© 2025 Todos los derechos reservados</p>
-    </div>
-
-    <!-- Button to toggle sidebar -->
-    <button onclick="toggleSidebar()" style="position: fixed; top: 20px; right: 20px; background: #333; color: white; padding: 10px;">Cambiar Modo</button>
 </body>
 </html>
+
 
 
