@@ -6,17 +6,56 @@
     <title>Mi Portafolio</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            color: black;
+        body, html {
             margin: 0;
             padding: 0;
-            text-align: center;
-            height: 100vh;
-            overflow-x: hidden;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            color: black;
+            background-color: white;
         }
+
+        /* Main content area */
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
         h1 {
-            color: darkgray;
+            font-size: 3em;
+            color: #333;
+            cursor: pointer;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        h1:hover {
+            opacity: 0;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #666;
+            cursor: pointer;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        p:hover {
+            opacity: 0;
+        }
+
+        /* Text grows and shrinks on click */
+        .grow-shrink-text {
+            cursor: pointer;
+            transition: transform 0.5s ease;
+        }
+
+        .grow-shrink-text.clicked {
+            transform: scale(1.5);
         }
 
         /* Gallery */
@@ -35,80 +74,117 @@
             border-radius: 10px;
         }
 
-        /* Mode-Specific Styles */
-        body.moon-mode {
-            background: url('moon-mode.svg') no-repeat center center fixed;
-            background-size: cover;
-        }
-        body.space-mode {
-            background: url('space-mode.svg') no-repeat center center fixed;
-            background-size: cover;
-        }
-        body.cartoon-mode {
-            background-color: #ffeb3b; /* A lighter yellow */
-            background-image: url('cartoon-icon.svg'); /* Placeholder for cartoon animation */
-            background-position: center center;
-            background-repeat: no-repeat;
-            animation: cartoonAnimation 3s infinite;
-        }
-
-        /* Simple Animation for Cartoon Mode */
-        @keyframes cartoonAnimation {
-            0% {
-                background-color: #ffeb3b;
-            }
-            50% {
-                background-color: #ffcc00;
-            }
-            100% {
-                background-color: #ffeb3b;
-            }
-        }
-
-        /* Banner */
-        .banner {
-            background-color: #333;
-            color: white;
-            padding: 10px 0;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        /* Sidebar Switches */
+        /* Hidden Sidebar - Blended into the background */
         .sidebar {
             position: fixed;
             top: 0;
             right: 0;
-            background-color: #333;
-            color: white;
-            width: 200px;
+            background-color: rgba(0, 0, 0, 0.3);
+            width: 250px;
             height: 100%;
-            padding: 20px;
-            display: none;
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%);
         }
+
         .sidebar.active {
-            display: block;
+            transform: translateX(0);
         }
-        .switch {
+
+        .sidebar .switch {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin: 20px 10px;
         }
+
+        .switch label {
+            font-size: 18px;
+            color: white;
+        }
+
         .switch input {
             transform: scale(1.5);
         }
-        .switch label {
-            font-size: 18px;
+
+        /* Full-screen Canvas Mode */
+        .canvas-mode {
+            background-color: #222;
+            background-image: url('space-mode.svg'); /* Placeholder for the background image */
+            background-position: center;
+            background-size: cover;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* Invisible button to open the sidebar */
+        .open-sidebar-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Media Queries for Mobile */
+        @media screen and (max-width: 768px) {
+            .content {
+                font-size: 1.5em;
+            }
+
+            .grow-shrink-text {
+                display: inline-block;
+                margin: 10px 0;
+            }
+
+            /* Pop-Up Effect on Mobile */
+            .content p.clicked {
+                display: block;
+                position: relative;
+                animation: popUp 0.5s ease-out;
+            }
+
+            /* Animation for Pop-Up */
+            @keyframes popUp {
+                0% {
+                    transform: scale(0);
+                }
+                100% {
+                    transform: scale(1);
+                }
+            }
         }
     </style>
 </head>
-<body class="space-mode">
+<body class="canvas-mode">
+    <!-- Sidebar with mode switchers -->
+    <div class="sidebar" id="sidebar">
+        <div class="switch">
+            <label for="moon-mode">Modo Luna</label>
+            <input type="checkbox" id="moon-mode" onchange="setMode('moon')">
+        </div>
+        <div class="switch">
+            <label for="space-mode">Modo Espacio</label>
+            <input type="checkbox" id="space-mode" onchange="setMode('space')">
+        </div>
+        <div class="switch">
+            <label for="cartoon-mode">Modo Cartoon</label>
+            <input type="checkbox" id="cartoon-mode" onchange="setMode('cartoon')">
+        </div>
+        <div class="switch">
+            <a href="https://www.yourmusicpage.com" target="_blank">Música</a>
+        </div>
+        <div class="switch">
+            <a href="https://www.behance.net/yourprofile" target="_blank">Behance</a>
+        </div>
+    </div>
+
+    <!-- Main content -->
     <div class="content">
-        <h1>¡Hola! Soy Leo</h1>
-        <p>Desarrollador interactivo, especializado en Visión por Computadora y proyectos musicales.</p>
+        <h1 class="grow-shrink-text" onclick="toggleGrowShrink()">¡Hola! Soy Leo</h1>
+        <p class="grow-shrink-text" onclick="toggleTextPopup()">Desarrollador interactivo, especializado en Visión por Computadora y proyectos musicales.</p>
 
         <!-- Gallery with Lightbox -->
         <h3>Galería de Imágenes</h3>
@@ -125,45 +201,39 @@
         </div>
     </div>
 
-    <!-- Sidebar with Mode Switchers -->
-    <div class="sidebar" id="sidebar">
-        <h2>Cambiar Modo</h2>
-        <div class="switch">
-            <label for="moon-mode">Modo Luna</label>
-            <input type="checkbox" id="moon-mode" onchange="setMode('moon')">
-        </div>
-        <div class="switch">
-            <label for="space-mode">Modo Espacio</label>
-            <input type="checkbox" id="space-mode" onchange="setMode('space')">
-        </div>
-        <div class="switch">
-            <label for="cartoon-mode">Modo Cartoon</label>
-            <input type="checkbox" id="cartoon-mode" onchange="setMode('cartoon')">
-        </div>
-    </div>
+    <!-- Invisible button to toggle sidebar visibility -->
+    <button class="open-sidebar-btn" onclick="toggleSidebar()">☰ Cambiar Modo</button>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
 
     <script>
-        // Toggle sidebar visibility
+        // Toggle the sidebar visibility
         function toggleSidebar() {
-            document.getElementById("sidebar").classList.toggle("active");
+            document.getElementById('sidebar').classList.toggle('active');
         }
 
         // Change modes dynamically
         function setMode(mode) {
-            document.body.className = mode + '-mode';
+            if (mode === 'moon') {
+                document.body.className = 'moon-mode';
+            } else if (mode === 'space') {
+                document.body.className = 'space-mode';
+            } else if (mode === 'cartoon') {
+                document.body.className = 'cartoon-mode';
+            }
+        }
+
+        // Toggle text grow/shrink effect
+        function toggleGrowShrink() {
+            document.querySelector('h1').classList.toggle('clicked');
+        }
+
+        // Toggle pop-up text effect for mobile
+        function toggleTextPopup() {
+            let textElement = document.querySelector('p');
+            textElement.classList.toggle('clicked');
         }
     </script>
-
-    <!-- Banner -->
-    <div class="banner">
-        <p>© 2025 Todos los derechos reservados</p>
-    </div>
-
-    <!-- Button to toggle sidebar -->
-    <button onclick="toggleSidebar()" style="position: fixed; top: 20px; right: 20px; background: #333; color: white; padding: 10px;">Cambiar Modo</button>
 </body>
 </html>
-
 
