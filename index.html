@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Bio</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Interactive Portfolio</title>
     <style>
-        /* General Layout */
         body {
-            font-family: "Century Gothic", sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
@@ -16,190 +13,87 @@
             align-items: center;
             justify-content: center;
             height: 100vh;
-            text-align: center;
-            transition: background-color 0.5s, color 0.5s;
+            transition: all 0.5s ease;
         }
-
-        /* Project Image */
-        .project-image {
+        .container {
+            width: 60%;
+            text-align: left;
+        }
+        img {
             width: 100%;
-            max-width: 800px; /* Larger Image */
-            height: auto;
-            margin-top: 20px;
-            display: block;
-            transition: transform 0.5s;
-        }
-
-        /* Biography Section */
-        .bio-text {
             max-width: 600px;
-            margin-bottom: 20px;
-            background: transparent;
+            display: block;
+            margin: 20px auto;
         }
-
-        .bio-text h3 {
-            font-size: 32px;
-            margin-bottom: 10px;
-            transition: color 0.5s;
-        }
-
-        .bio-text p {
-            font-size: 18px;
-            line-height: 1.6;
-            transition: color 0.5s;
-        }
-
-        .bio-text a {
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.5s;
-        }
-
-        /* Toggles */
-        .color-menu {
-            position: absolute;
+        .toggles {
+            position: fixed;
             bottom: 20px;
             left: 20px;
             display: flex;
             flex-direction: column;
             gap: 5px;
         }
-
-        .form-check {
+        .toggle {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 10px;
         }
-
-        .form-check-input {
-            width: 30px;
-            height: 15px;
+        .toggle input {
+            width: 20px;
+            height: 20px;
         }
-
-        .form-check-label {
-            font-size: 12px;
-            transition: color 0.5s;
-        }
-
-        /* Reset Button */
-        .reset-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: none;
-            background-color: #555;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .reset-button:hover {
-            background-color: #777;
-        }
-
-        /* COLOR THEMES */
-        .theme-unicorn { background-color: #FF66FF; color: #fff; }
-        .theme-unicorn .bio-text h3 { color: #FFD700; }
-        .theme-unicorn .bio-text p { color: #FFF5EE; }
-        .theme-unicorn .bio-text a { color: #ffcc00; }
-
-        .theme-hello-kitty { background-color: #FFC0CB; color: #444; }
-        .theme-hello-kitty .bio-text h3 { color: #FF69B4; }
-        .theme-hello-kitty .bio-text p { color: #800080; }
-        .theme-hello-kitty .bio-text a { color: #DC143C; }
-
-        .theme-fruits { background-color: #FFA500; color: #222; }
-        .theme-fruits .bio-text h3 { color: #FFD700; }
-        .theme-fruits .bio-text p { color: #FF4500; }
-        .theme-fruits .bio-text a { color: #008000; }
-
-        .theme-matrix { background-color: #000000; color: #00FF00; }
-        .theme-matrix .bio-text h3 { color: #33ff33; }
-        .theme-matrix .bio-text p { color: #66ff66; }
-        .theme-matrix .bio-text a { color: #99ff99; }
-
-        .theme-solarized { background-color: #002b36; color: #93a1a1; }
-        .theme-solarized .bio-text h3 { color: #eee8d5; }
-        .theme-solarized .bio-text p { color: #839496; }
-        .theme-solarized .bio-text a { color: #268bd2; }
-
-        .theme-minimal { background-color: #ffffff; color: #000; }
-        .theme-minimal .bio-text h3 { color: #222; }
-        .theme-minimal .bio-text p { color: #555; }
-        .theme-minimal .bio-text a { color: #888; }
-
-        .theme-grayscale { background-color: #777; color: #222; }
-        .theme-grayscale .bio-text h3 { color: #333; }
-        .theme-grayscale .bio-text p { color: #555; }
-        .theme-grayscale .bio-text a { color: #999; }
-
-        .theme-green-orange { background-color: #228B22; color: #FFF8DC; }
-        .theme-green-orange .bio-text h3 { color: #FF8C00; }
-        .theme-green-orange .bio-text p { color: #FFD700; }
-        .theme-green-orange .bio-text a { color: #FFA500; }
     </style>
 </head>
 <body>
-
-<!-- Toggle Menu -->
-<div class="color-menu">
-    <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="unicornToggle" onclick="changeTheme('theme-unicorn')">
-        <label class="form-check-label" for="unicornToggle">Unicorn</label>
+    <div class="container">
+        <h1>Who??</h1>
+        <img src="project-image.jpg" alt="CV with Tesseract OCR">
+        <p>I am an interactive developer working on computer vision and text-based projects,</p>
+        <p>with certifications in Python, C++, Swift, and Objective-C.</p>
+        <p>Contact me for media arts projects at <a href="mailto:sakayama666@icloud.com">sakayama666@icloud.com</a></p>
     </div>
-    <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="helloKittyToggle" onclick="changeTheme('theme-hello-kitty')">
-        <label class="form-check-label" for="helloKittyToggle">Hello Kitty</label>
+    
+    <div class="toggles">
+        <label class="toggle"><input type="checkbox" onclick="setTheme('minimal')"> Minimal</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('hello-kitty')"> Hello Kitty</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('unicorn')"> Unicorn</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('matrix')"> Matrix</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('solarized')"> Solarized</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('space')"> Space</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('football')"> Football</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('sky')"> Sky</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('ice')"> Ice</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('water')"> Water</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('fire')"> Fire</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('forest')"> Forest</label>
     </div>
-    <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="fruitsToggle" onclick="changeTheme('theme-fruits')">
-        <label class="form-check-label" for="fruitsToggle">Fruits</label>
-    </div>
-    <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="matrixToggle" onclick="changeTheme('theme-matrix')">
-        <label class="form-check-label" for="matrixToggle">Matrix</label>
-    </div>
-</div>
-
-<!-- Reset Button -->
-<button class="reset-button" onclick="resetTheme()">Reset</button>
-
-<!-- Bio Section -->
-<div class="bio-text">
-    <h3>Interactive Developer Santiago</h3>
-    <img class="img-fluid" src="00000000000000.PNG" alt="Reading with Tesseract OCR">
-
-    <p>I am an interactive developer working on computer vision  and text based projects, </p>
-     <p>   with certifications in C++, Swift, and Objective-C.</p>
-    <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com">sakayama66634@icloud.com</a></p>
-</div>
-
-
-
-
-<script>
-const themes = ["theme-unicorn", "theme-hello-kitty", "theme-fruits", "theme-matrix", "theme-solarized", "theme-minimal", "theme-grayscale", "theme-green-orange"];
-
-function changeTheme(theme) {
-    // Remove all active themes
-    themes.forEach(t => document.body.classList.remove(t));
-
-    // Apply the new theme
-    document.body.classList.add(theme);
-
-    // Reset all toggles
-    document.querySelectorAll(".form-check-input").forEach(input => input.checked = false);
-
-    // Activate the selected toggle
-    document.getElementById(theme.replace("theme-", "") + "Toggle").checked = true;
-}
-
-function resetTheme() {
-    document.body.className = "";
-    document.querySelectorAll(".form-check-input").forEach(input => input.checked = false);
-}
-</script>
-
+    
+    <script>
+        const themes = {
+            minimal: { background: "#f4f4f4", color: "#222", font: "Century Gothic" },
+            "hello-kitty": { background: "#ffd1dc", color: "#ff69b4", font: "Comic Sans MS" },
+            unicorn: { background: "#ffccff", color: "#9900cc", font: "Cursive" },
+            matrix: { background: "#000", color: "#0f0", font: "Courier New" },
+            solarized: { background: "#002b36", color: "#839496", font: "Lucida Console" },
+            space: { background: "#121212", color: "#4fc3f7", font: "Orbitron" },
+            football: { background: "#008000", color: "#ffffff", font: "Impact" },
+            sky: { background: "#87ceeb", color: "#ffffff", font: "Arial" },
+            ice: { background: "#b3e0ff", color: "#003366", font: "Verdana" },
+            water: { background: "#0099cc", color: "#ffffff", font: "Tahoma" },
+            fire: { background: "#ff4500", color: "#ffdd00", font: "Georgia" },
+            forest: { background: "#2e8b57", color: "#fffaf0", font: "Palatino" }
+        };
+        
+        function setTheme(theme) {
+            for (let key in themes) {
+                document.querySelector(`input[onclick="setTheme('${key}')"]`).checked = false;
+            }
+            document.querySelector(`input[onclick="setTheme('${theme}')"]`).checked = true;
+            
+            document.body.style.background = themes[theme].background;
+            document.body.style.color = themes[theme].color;
+            document.body.style.fontFamily = themes[theme].font;
+        }
+    </script>
 </body>
 </html>
-
