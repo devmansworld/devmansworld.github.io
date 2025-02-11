@@ -3,130 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My GitHub Page</title>
+    <title>AI/ML Engineer Portfolio</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <style>
         body {
-            display: flex;
-            min-height: 100vh;
-            font-family: 'Roboto', sans-serif;
-            background-color: #fff5e6;
+            font-family: 'Century Gothic', sans-serif;
+            background-color: #fff;
             color: #333;
+            display: flex;
             flex-direction: column;
-        }
-        .sidebar {
-            width: 250px;
-            background: #ff9800;
-            color: white;
-            padding: 20px;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
         }
         .content {
             flex-grow: 1;
             padding: 20px;
             text-align: center;
         }
-        .canvas-container {
-            text-align: center;
+        .main-menu {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
         }
-        #map {
-            height: 300px;
-            width: 100%;
-            margin-top: 20px;
-            border-radius: 10px;
+        .main-menu li {
+            margin: 10px 0;
         }
-        .dark-mode {
-            background-color: black !important;
-            color: white !important;
+        .main-menu a {
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
         }
-        .gothic-mode {
-            font-family: 'Old English Text MT', cursive;
-            background-color: black !important;
-            color: white !important;
+        .main-menu a:hover {
+            color: #007BFF;
         }
-        .gallery {
+        .chart {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
             justify-content: center;
             margin-top: 20px;
+        }
+        .chart-bar {
+            width: 100px;
+            margin: 0 10px;
+            text-align: center;
+        }
+        .bar {
+            width: 100%;
+            height: 20px;
+            background-color: #007BFF;
+        }
+        .bar-text {
+            position: relative;
+            top: -20px;
+            color: #333;
+        }
+        .bio, .hobbies {
+            margin-top: 20px;
+        }
+        .bio p, .hobbies p {
+            margin: 10px 0;
         }
         .gallery img {
             width: 150px;
             height: 150px;
             object-fit: cover;
             border-radius: 10px;
+            margin: 10px;
         }
-        #seaCanvas {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 150px;
-            background: #87CEFA;
+        .language-selector {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="content">
-        <h1>Welcome to My GitHub Page</h1>
+        <h1>Welcome to My Portfolio</h1>
         <img src="assets/00000000000000.PNG" alt="Salutation Image" style="width:300px; border-radius:15px;">
-        <div id="p5-canvas"></div>
-        <div id="map"></div>
-        <h2>Image Gallery</h2>
-        <div class="gallery" id="imageGallery"></div>
+        
+        <ul class="main-menu">
+            <li><a href="#bio">Biography</a></li>
+            <li><a href="#languages">Languages</a></li>
+            <li><a href="#chart">Skill Levels</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#hobbies">Hobbies</a></li>
+            <li><a href="#projects">Projects</a></li>
+        </ul>
+
+        <div id="bio" class="bio">
+            <h2>About Me</h2>
+            <p>I am a Software Engineer with a Master's degree in Media Arts, passionate about AI/ML. I work across various languages and technologies.</p>
+            <p><strong>Languages:</strong> English, Italian, Spanish, French, German, Polish</p>
+        </div>
+
+        <div id="languages" class="language-selector">
+            <h3>Languages Spoken</h3>
+            <ul>
+                <li>English</li>
+                <li>Italian</li>
+                <li>Spanish</li>
+                <li>French</li>
+                <li>German</li>
+                <li>Polish</li>
+            </ul>
+        </div>
+
+        <div id="chart" class="chart">
+            <div class="chart-bar">
+                <div class="bar" style="height: 80%;"></div>
+                <div class="bar-text">Python 80%</div>
+            </div>
+            <div class="chart-bar">
+                <div class="bar" style="height: 65%;"></div>
+                <div class="bar-text">JavaScript 65%</div>
+            </div>
+            <div class="chart-bar">
+                <div class="bar" style="height: 55%;"></div>
+                <div class="bar-text">Java 55%</div>
+            </div>
+            <div class="chart-bar">
+                <div class="bar" style="height: 80%;"></div>
+                <div class="bar-text">Swift 80%</div>
+            </div>
+            <div class="chart-bar">
+                <div class="bar" style="height: 85%;"></div>
+                <div class="bar-text">Objective-C 85%</div>
+            </div>
+            <div class="chart-bar">
+                <div class="bar" style="height: 33%;"></div>
+                <div class="bar-text">C++ 33%</div>
+            </div>
+        </div>
+
+        <div id="gallery" class="gallery">
+            <h2>Image Gallery</h2>
+            <div>
+                <img src="assets/IMG_001.png" alt="Drawing 1">
+                <img src="assets/IMG_002.png" alt="Drawing 2">
+                <img src="assets/IMG_003.png" alt="Drawing 3">
+                <!-- More images can be added here -->
+            </div>
+        </div>
+
+        <div id="hobbies" class="hobbies">
+            <h2>Hobbies</h2>
+            <p>I am a car enthusiast, especially into rally cars and Group B. I also enjoy drawing and painting with watercolors.</p>
+        </div>
+
+        <div id="projects">
+            <h2>Main Project</h2>
+            <p>Check out my <a href="https://your-project-page.com" target="_blank">Musical Project</a></p>
+        </div>
     </div>
-    <canvas id="seaCanvas"></canvas>
+
     <script>
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-        }
-        function toggleGothicMode() {
-            document.body.classList.toggle('gothic-mode');
-        }
-        function initMap() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    const userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
-                    const map = new google.maps.Map(document.getElementById("map"), {
-                        zoom: 12,
-                        center: userLocation,
-                    });
-                    new google.maps.Marker({
-                        position: userLocation,
-                        map: map,
-                        title: "You are here!"
-                    });
-                });
-            } else {
-                document.getElementById("map").innerHTML = "Geolocation is not supported by your browser.";
-            }
-        }
-        function setup() {
-            let canvas = createCanvas(windowWidth, 150);
-            canvas.parent('seaCanvas');
-            noFill();
-        }
-        function draw() {
-            background('#87CEFA');
-            stroke(255);
-            strokeWeight(2);
-            for (let i = 0; i < width; i += 20) {
-                let y = sin(frameCount * 0.05 + i * 0.05) * 10 + 100;
-                line(i, y, i, 150);
-            }
-        }
         document.addEventListener("DOMContentLoaded", () => {
             const gallery = document.getElementById("imageGallery");
-            for (let i = 11; i <= 17; i++) {
-                let img = document.createElement("img");
-                img.src = `assets/IMG_00${i}.png`;
-                img.alt = `Image ${i}`;
-                gallery.appendChild(img);
-            }
+            // Add more images dynamically if needed
         });
     </script>
 </body>
 </html>
+
 
 
