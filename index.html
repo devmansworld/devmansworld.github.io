@@ -1,73 +1,91 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Developer </title>
+    <title>Interactive Developer Bio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'><path d='M9 0h6v4H9zm-3 6h12v4H6zm0 6h12v4H6zm0 6h12v4H6zm0 6h12v4H6zm-3-2h18v4H3zm0-6h18v4H3zm0-6h18v4H3z'/></svg>">
     <style>
         body {
             font-family: "Century Gothic", sans-serif;
-            background-color: #f0f0f0;
-            transition: background-color 0.3s, color 0.3s;
             margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: row;
+            background-color: #f0f0f0;
+            transition: background-color 0.5s;
         }
 
-        /* Sidebar Menu */
+        /* Menu */
         .menu {
             position: fixed;
             left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 250px;
+            top: 0;
+            height: 100%;
+            width: 200px;
             background-color: #333;
-            color: white;
             padding-top: 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         }
 
         .menu a {
             color: white;
-            padding: 8px 16px;
+            padding: 10px;
             text-decoration: none;
             display: block;
         }
 
         .menu a:hover {
-            background-color: #575757;
+            background-color: #444;
         }
 
         /* Main Content */
         .content {
-            margin-left: 270px;
+            margin-left: 200px;
+            width: calc(100% - 200px);
             padding: 20px;
-            margin-top: 50px;
             display: flex;
-            align-items: center;
-            justify-content: flex-start;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: background-color 0.5s;
         }
 
-        .image-container {
+        /* Bio and Image */
+        .bio-image-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .bio-image-container img {
+            width: 150px;
+            height: auto;
             margin-right: 20px;
         }
 
-        .image-container img {
-            max-width: 300px;
+        .bio-text h3 {
+            margin-bottom: 10px;
         }
 
-        .bio-text {
-            max-width: 500px;
+        .bio-text p {
+            font-size: 16px;
+            margin-bottom: 10px;
         }
 
         /* Quote Section */
         .quote-section {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 10px;
+            right: 10px;
             font-size: 12px;
             color: white;
-            text-align: right;
+            text-align: center;
             padding: 10px;
             background-color: rgba(0, 0, 0, 0.6);
             border-radius: 5px;
@@ -75,56 +93,37 @@
         }
 
         .quote-btn {
-            font-size: 12px;
+            font-size: 10px;
             color: white;
             background-color: #444;
             border: none;
             padding: 5px;
             cursor: pointer;
+            margin-top: 5px;
+            border-radius: 5px;
         }
 
         .quote-btn:hover {
             background-color: #666;
         }
 
-        /* Footer Section */
-        .footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            padding: 10px;
-            background-color: #333;
-            color: white;
-        }
-
         /* Color Scheme Switches */
         .color-switches {
-            position: fixed;
-            right: 20px;
-            bottom: 20px;
-            background-color: black;
-            padding: 10px;
-            border-radius: 5px;
+            margin-top: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: flex-start;
-            color: white;
         }
 
         .switch {
             margin-bottom: 10px;
-            font-size: 10px;
-        }
-
-        .switch label {
-            margin-right: 10px;
             font-size: 12px;
-            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 150px;
         }
 
-        /* Color Scheme Toggle */
         .switch input {
             opacity: 0;
             width: 0;
@@ -132,27 +131,25 @@
         }
 
         .switch .slider {
-            position: absolute;
+            position: relative;
             cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            width: 34px;
+            height: 20px;
             background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
+            border-radius: 50px;
+            transition: background-color 0.3s;
         }
 
         .switch .slider:before {
-            position: absolute;
             content: "";
+            position: absolute;
             height: 12px;
             width: 12px;
             border-radius: 50%;
             left: 4px;
             bottom: 4px;
             background-color: white;
-            transition: .4s;
+            transition: transform 0.4s;
         }
 
         input:checked + .slider {
@@ -163,11 +160,28 @@
             transform: translateX(14px);
         }
 
+        /* Footer Section */
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+
+        /* Color Mode Backgrounds */
+        .solarized { background-color: #002b36; color: white; }
+        .kitty { background-color: #F7A7D4; color: #4B4B4B; }
+        .minimalWhite { background-color: #FFFFFF; color: #4B4B4B; }
+        .blackGreen { background-color: #2E8B57; color: white; }
+        .whiteFuchsia { background-color: #F0F8FF; color: #FF1493; }
+        .blackGreyOrange { background-color: #343A40; color: #FFA500; }
+        .grayscale { background-color: #DCDCDC; color: #A9A9A9; }
     </style>
 </head>
 <body>
 
-<!-- Sidebar Menu -->
+<!-- Menu -->
 <div class="menu">
     <a href="#">About</a>
     <a href="#">Repo</a>
@@ -176,67 +190,70 @@
     <a href="#">Instagram</a>
 </div>
 
-<!-- Main Content Area -->
-<div class="content">
-    <div class="image-container">
-        <img src="00000000000000.PNG" alt="A text reading app">
+<!-- Main Content -->
+<div class="content solarized">
+    <div class="bio-image-container">
+        <img src="00000000000000.PNG" alt="Profile Image">
+        <div class="bio-text">
+            <h3>Interactive Developer Santiago</h3>
+            <p>I am an interactive developer working on computer vision projects, with certifications in C++, Swift, and Objective-C.</p>
+            <p>Contact me for projects at <a href="mailto:sakayama234234@icloud.com">sakayama234234@icloud.com</a></p>
+        </div>
     </div>
-    <div class="bio-text">
-        <h3>Interactive Developer Santiago</h3>
-        <p>I am an interactive developer working on computer vision projects, with certifications in C++, Swift, and Objective-C.</p>
-        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com">sakayama666@icloud.com</a></p>
+
+    <!-- Color Scheme Toggles -->
+    <div class="color-switches">
+        <div class="switch">
+            <label>Solarized</label>
+            <input type="checkbox" id="solarized" onchange="changeColorMode()">
+            <span class="slider"></span>
+        </div>
+        <div class="switch">
+            <label>Kitty</label>
+            <input type="checkbox" id="helloKitty" onchange="changeColorMode()">
+            <span class="slider"></span>
+        </div>
+        <div class="switch">
+            <label>White</label>
+            <input type="checkbox" id="minimalWhite" onchange="changeColorMode()">
+            <span class="slider"></span>
+        </div>
+        <div class="switch">
+            <label>Green</label>
+            <input type="checkbox" id="blackGreen" onchange="changeColorMode()">
+            <span class="slider"></span>
+        </div>
+        <div class="switch">
+            <label>Fuchsia</label>
+            <input type="checkbox" id="whiteFuchsia" onchange="changeColorMode()">
+            <span class="slider"></span>
+        </div>
+        <div class="switch">
+            <label>Orange</label>
+            <input type="checkbox" id="blackGreyOrange" onchange="changeColorMode()">
+            <span class="slider"></span>
+        </div>
+        <div class="switch">
+            <label>Gray</label>
+            <input type="checkbox" id="grayscale" onchange="changeColorMode()">
+            <span class="slider"></span>
+        </div>
     </div>
 </div>
 
-<!-- Color Scheme Toggles -->
-<div class="color-switches">
-    <div class="switch">
-        <label>Solarized</label>
-        <input type="checkbox" id="solarized">
-        <span class="slider"></span>
-    </div>
-    <div class="switch">
-        <label>Kitty</label>
-        <input type="checkbox" id="helloKitty">
-        <span class="slider"></span>
-    </div>
-    <div class="switch">
-        <label>White</label>
-        <input type="checkbox" id="minimalWhite">
-        <span class="slider"></span>
-    </div>
-    <div class="switch">
-        <label>Green</label>
-        <input type="checkbox" id="blackGreen">
-        <span class="slider"></span>
-    </div>
-    <div class="switch">
-        <label>Fuchsia</label>
-        <input type="checkbox" id="whiteFuchsia">
-        <span class="slider"></span>
-    </div>
-    <div class="switch">
-        <label>Orange</label>
-        <input type="checkbox" id="blackGreyOrange">
-        <span class="slider"></span>
-    </div>
-    <div class="switch">
-        <label>Gray</label>
-        <input type="checkbox" id="grayscale">
-        <span class="slider"></span>
-    </div>
-</div>
+<!-- Quote Section -->
+<div class="quote-section" id="quote-section"></div>
+<button class="quote-btn" onclick="getNewQuote()">Get another quote</button>
 
-<!-- Footer Section -->
+<!-- Footer -->
 <div class="footer">
     <p>All rights reserved ©</p>
 </div>
 
-<!-- Quotes Section -->
-<div class="quote-section" id="quote-section"></div>
-<button class="quote-btn" onclick="getNewQuote()">Get another quote</button>
-
 <script>
+// Array of quotes (add more quotes as needed)
+
+
 
 const quotes = [
     { quote: "It is not our abilities that show what we truly are… it is our choices.", author: "J.K. Rowling, Harry Potter and the Chamber of Secrets" },
@@ -309,44 +326,36 @@ const quotes = [
 
 
 
-// Display a random quote
+// Function to get a random quote
 function getNewQuote() {
     const randomIndex = Math.floor(Math.random() * quotes.length);
-    const quote = quotes[randomIndex];
-    document.getElementById('quote-section').innerText = quote;
+    document.getElementById("quote-section").innerText = quotes[randomIndex];
 }
 
-// Initial quote display
+// Call the function to display a quote initially
 getNewQuote();
 
-// Color scheme toggle logic
-const colorSchemes = {
-    solarized: ['#002b36', '#fdf6e3'],
-    helloKitty: ['#f8bbd0', '#ff69b4'],
-    minimalWhite: ['#ffffff', '#f0f0f0'],
-    blackGreen: ['#000000', '#4caf50'],
-    whiteFuchsia: ['#ffffff', '#d500f9'],
-    blackGreyOrange: ['#000000', '#9e9e9e'],
-    grayscale: ['#888888', '#f5f5f5']
-};
+// Function to change color modes
+function changeColorMode() {
+    const modes = ["solarized", "kitty", "minimalWhite", "blackGreen", "whiteFuchsia", "blackGreyOrange", "grayscale"];
+    let activeMode = '';
+    
+    modes.forEach((mode) => {
+        if (document.getElementById(mode).checked) {
+            activeMode = mode;
+        }
+        document.body.classList.remove(mode);
+    });
 
-function applyColorScheme() {
-    const currentScheme = Object.keys(colorSchemes).filter(scheme => document.getElementById(scheme).checked);
-    if (currentScheme.length > 0) {
-        document.body.style.backgroundColor = colorSchemes[currentScheme[0]][0];
-        document.body.style.color = colorSchemes[currentScheme[0]][1];
-    } else {
-        document.body.style.backgroundColor = '#f0f0f0';
-        document.body.style.color = '#000000';
+    if (activeMode) {
+        document.body.classList.add(activeMode);
     }
 }
-
-// Apply color schemes based on toggle
-document.querySelectorAll('.switch input').forEach(input => {
-    input.addEventListener('change', applyColorScheme);
-});
 </script>
+
 </body>
 </html>
+
+
 
 
