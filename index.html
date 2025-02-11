@@ -79,26 +79,10 @@
 
         /* Mode Switcher */
         .mode-switcher {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            margin-top: 20px;
             display: flex;
-            gap: 10px;
-        }
-
-        .mode-switcher label {
-            font-size: 1rem;
-            color: #333;
-        }
-
-        .mode-switcher input {
-            display: none;
-        }
-
-        .mode-switcher input:checked + .mode-label {
-            font-weight: bold;
-            color: #007bff;
+            flex-direction: column;
+            gap: 15px;
         }
 
         /* Mode Styles */
@@ -198,18 +182,32 @@
     <!-- Footer and Mode Switcher -->
     <footer>
         <div class="mode-switcher">
-            <label for="desert" class="mode-label">Desert Mode</label>
-            <input type="radio" id="desert" name="mode" onchange="switchMode('desert')">
-            <label for="snoopy" class="mode-label">Snoopy Mode</label>
-            <input type="radio" id="snoopy" name="mode" onchange="switchMode('snoopy')">
-            <label for="sanrio" class="mode-label">Sanrio Mode</label>
-            <input type="radio" id="sanrio" name="mode" onchange="switchMode('sanrio')">
-            <label for="forest" class="mode-label">Forest Mode</label>
-            <input type="radio" id="forest" name="mode" onchange="switchMode('forest')">
-            <label for="gothic" class="mode-label">Gothic Mode</label>
-            <input type="radio" id="gothic" name="mode" onchange="switchMode('gothic')">
-            <label for="clean" class="mode-label">Clean Mode</label>
-            <input type="radio" id="clean" name="mode" checked onchange="switchMode('clean')">
+            <h4>Choose Theme Mode</h4>
+            <!-- Bootstrap Switches for Mode Switching -->
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="radio" name="mode" id="desert" onchange="switchMode('desert')" checked>
+                <label class="form-check-label" for="desert">Desert Mode</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="radio" name="mode" id="snoopy" onchange="switchMode('snoopy')">
+                <label class="form-check-label" for="snoopy">Snoopy Mode</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="radio" name="mode" id="sanrio" onchange="switchMode('sanrio')">
+                <label class="form-check-label" for="sanrio">Sanrio Mode</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="radio" name="mode" id="forest" onchange="switchMode('forest')">
+                <label class="form-check-label" for="forest">Forest Mode</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="radio" name="mode" id="gothic" onchange="switchMode('gothic')">
+                <label class="form-check-label" for="gothic">Gothic Mode</label>
+            </div>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="radio" name="mode" id="clean" onchange="switchMode('clean')">
+                <label class="form-check-label" for="clean">Clean Mode</label>
+            </div>
         </div>
     </footer>
 
@@ -232,9 +230,8 @@
 
         const snoopySVG = `
             <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 300">
-                <!-- Snoopy Character -->
-                <circle cx="100" cy="100" r="40" fill="white"></circle>
-                <rect x="90" y="90" width="20" height="20" fill="black"></rect>
+                <!-- Snoopy Icon -->
+                <circle cx="100" cy="150" r="50" fill="#ff67ab"></circle>
             </svg>
         `;
 
@@ -283,9 +280,12 @@
             svgs.forEach(svg => svg.style.display = 'none');
         }
     </script>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
-
 
 
 
