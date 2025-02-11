@@ -43,7 +43,7 @@
             background-color: #444;
         }
 
-        /* Profile Image and Bio */
+        /* Main Content */
         .content {
             margin-left: 220px;
             padding: 20px;
@@ -54,16 +54,8 @@
             flex-grow: 1;
         }
 
-        .bio-image-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .bio-image-container img {
-            width: 150px;
-            height: auto;
-            margin-right: 20px;
+        .bio-text {
+            margin-bottom: 20px;
         }
 
         .bio-text h3 {
@@ -78,7 +70,7 @@
         /* Color Change Menu (bottom) */
         .color-menu {
             position: fixed;
-            bottom: 20px;
+            bottom: 10px;
             left: 0;
             background-color: #333;
             color: white;
@@ -91,6 +83,7 @@
 
         .color-menu label {
             margin-left: 20px;
+            font-size: 12px;
         }
 
         .color-menu input {
@@ -98,14 +91,36 @@
         }
 
         /* Color Mode Backgrounds */
-        .solarized { background-color: #002b36; color: white; }
-        .kitty { background-color: #F7A7D4; color: #4B4B4B; }
+        .unicorn { background-color: #FF66FF; color: #4B4B4B; }
         .minimalWhite { background-color: #FFFFFF; color: #4B4B4B; }
-        .blackGreen { background-color: #2E8B57; color: white; }
-        .whiteFuchsia { background-color: #F0F8FF; color: #FF1493; }
-        .blackGreyOrange { background-color: #343A40; color: #FFA500; }
-        .grayscale { background-color: #DCDCDC; color: #A9A9A9; }
+        .solarized { background-color: #002b36; color: white; }
+        .black { background-color: #000000; color: white; }
+        .matrix { background-color: #000000; color: #00FF00; }
+        .fruit { background-color: #FF6347; color: white; }
 
+        /* Quotes */
+        .quotes {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 14px;
+            font-style: italic;
+            color: #666;
+        }
+
+        /* Image */
+        .bio-image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .bio-image-container img {
+            width: 200px;
+            height: auto;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -119,52 +134,55 @@
 
 <!-- Main Content -->
 <div class="content">
+    <div class="bio-text">
+        <h3>Interactive Developer Santiago</h3>
+        <p>I am an interactive developer working on computer vision projects, with certifications in C++, Swift, and Objective-C.</p>
+        <p>Contact me for projects at <a href="mailto:sakayama234234@icloud.com">sakayama234234@icloud.com</a></p>
+    </div>
+    
+    <!-- Profile Image -->
     <div class="bio-image-container">
         <img src="00000000000000.PNG" alt="Profile Image">
-        <div class="bio-text">
-            <h3>Interactive Developer Santiago</h3>
-            <p>I am an interactive developer working on computer vision projects, with certifications in C++, Swift, Objective-C and Python.</p>
-            <p>Contact me for projects at <a href="mailto:sakayama666icloud.com">sakayama666@icloud.com</a></p>
-        </div>
     </div>
 </div>
 
-<!-- Color Change Menu -->
+<!-- Color Change Menu (bottom) -->
 <div class="color-menu">
+    <div>
+        <label>Unicorn</label>
+        <input type="radio" name="colorMode" value="unicorn" onclick="changeColorMode('unicorn')">
+    </div>
+    <div>
+        <label>Minimal</label>
+        <input type="radio" name="colorMode" value="minimalWhite" onclick="changeColorMode('minimalWhite')">
+    </div>
     <div>
         <label>Solarized</label>
         <input type="radio" name="colorMode" value="solarized" onclick="changeColorMode('solarized')">
     </div>
     <div>
-        <label>Kitty</label>
-        <input type="radio" name="colorMode" value="kitty" onclick="changeColorMode('kitty')">
+        <label>Black</label>
+        <input type="radio" name="colorMode" value="black" onclick="changeColorMode('black')">
     </div>
     <div>
-        <label>White</label>
-        <input type="radio" name="colorMode" value="minimalWhite" onclick="changeColorMode('minimalWhite')">
+        <label>Matrix</label>
+        <input type="radio" name="colorMode" value="matrix" onclick="changeColorMode('matrix')">
     </div>
     <div>
-        <label>Green</label>
-        <input type="radio" name="colorMode" value="blackGreen" onclick="changeColorMode('blackGreen')">
+        <label>Fruit</label>
+        <input type="radio" name="colorMode" value="fruit" onclick="changeColorMode('fruit')">
     </div>
-    <div>
-        <label>Fuchsia</label>
-        <input type="radio" name="colorMode" value="whiteFuchsia" onclick="changeColorMode('whiteFuchsia')">
-    </div>
-    <div>
-        <label>Orange</label>
-        <input type="radio" name="colorMode" value="blackGreyOrange" onclick="changeColorMode('blackGreyOrange')">
-    </div>
-    <div>
-        <label>Gray</label>
-        <input type="radio" name="colorMode" value="grayscale" onclick="changeColorMode('grayscale')">
-    </div>
+</div>
+
+<!-- Random Quote -->
+<div class="quotes">
+    <p>"The only limit to our realization of tomorrow is our doubts of today." - Franklin D. Roosevelt</p>
 </div>
 
 <script>
 // Function to change the color mode
 function changeColorMode(mode) {
-    const modes = ["solarized", "kitty", "minimalWhite", "blackGreen", "whiteFuchsia", "blackGreyOrange", "grayscale"];
+    const modes = ["unicorn", "minimalWhite", "solarized", "black", "matrix", "fruit"];
     // Remove all color modes
     modes.forEach((m) => {
         document.body.classList.remove(m);
@@ -177,3 +195,4 @@ function changeColorMode(mode) {
 
 </body>
 </html>
+
