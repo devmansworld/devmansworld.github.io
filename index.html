@@ -1,135 +1,166 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leo - Interaction Developer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Global Styles */
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            transition: background-color 0.3s ease;
+            display: flex;
+            height: 100vh;
+            background-color: #fff;
         }
-
-        /* White and Black Mode Styles */
-        .white-mode { background-color: white; color: #333; }
-        .black-mode { background-color: black; color: white; }
-
-        /* Content Sections */
-        .content {
-            padding: 20px;
-            text-align: center;
-        }
-
-        .content h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-
-        .content p {
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-
-        /* Navigation and Links */
-        .mode-switcher {
-            position: fixed;
-            top: 20px;
-            right: 20px;
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: white;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            font-weight: 600;
+            align-items: flex-start;
+            padding-top: 20px;
+            position: fixed;
+            height: 100%;
+            padding-left: 20px;
         }
-
-        .mode-switcher a {
-            color: #333;
-            text-decoration: none;
-        }
-
-        .mode-switcher a:hover {
-            color: #ff67ab;
-        }
-
-        /* Bio, Whois, Setlist Styles */
-        .bio, .whois, .setlist {
-            margin: 20px 0;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        /* Main Section */
-        .main-clickable {
-            margin-top: 50px;
-            background-color: #ff67ab;
-            padding: 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .main-clickable a {
+        .sidebar a {
             color: white;
+            text-decoration: none;
+            padding: 10px;
+            width: 100%;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+        .main-content {
+            margin-left: 270px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            position: relative;
+        }
+        .content {
+            text-align: center;
+            max-width: 800px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .content h1 {
+            margin-top: 0;
+        }
+        .content p {
+            font-size: 1.2em;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .footer a {
+            color: #333;
             text-decoration: none;
             font-weight: bold;
         }
-
-        .main-clickable a:hover {
+        .footer a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
-<body class="white-mode">
-    <!-- Content Sections -->
-    <div class="content">
-        <!-- Bio Section -->
-        <div class="bio">
-            <h1>Who I Am</h1>
-            <p>I'm a media artist and interaction developer from Santiago. Passionate about design, technology, and creativity. In my free time, I enjoy reading, traveling, and creating art.</p>
-        </div>
+<body>
 
-        <!-- Whois Section -->
-        <div class="whois">
-            <h1>Whois</h1>
-            <p>Currently focused on interactive designs and coding. I enjoy solving complex problems with creative solutions. I work with open-source technologies and am always eager to learn more.</p>
-        </div>
+    <div class="sidebar">
+        <a href="#space" onclick="changeMode('space')">Space Mode</a>
+        <a href="#cartoon" onclick="changeMode('cartoon')">Cartoon Mode</a>
+        <a href="#nerd" onclick="changeMode('nerd')">Nerd Mode</a>
+        <a href="#clean" onclick="changeMode('clean')">Clean Mode</a>
+    </div>
 
-        <!-- Setlist Section -->
-        <div class="setlist">
-            <h1>Setlist</h1>
-            <p>Exploring different coding languages, frameworks, and design methodologies. Passionate about creating intuitive user experiences and functional systems.</p>
-        </div>
-
-        <!-- Main Clickable Section -->
-        <div class="main-clickable">
-            <a href="mailto:your-email@icloud.com">Contact Me</a>
+    <div class="main-content">
+        <div class="content" id="content">
+            <h1>Leo - Interaction Developer</h1>
+            <p>Media artist and interaction developer from Santiago. Passionate about design, technology, and creativity.</p>
+            <div class="footer">
+                <a href="mailto:sakayama8880u09@icloud.com">Contact Me</a>
+            </div>
         </div>
     </div>
 
-    <!-- Mode Switcher -->
-    <div class="mode-switcher">
-        <a href="javascript:void(0)" onclick="switchMode('white')">White Mode</a>
-        <a href="javascript:void(0)" onclick="switchMode('black')">Black Mode</a>
-    </div>
-
-    <!-- Script for Mode Switching -->
+    <!-- P5.js Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script>
-        function switchMode(mode) {
-            const body = document.body;
-            body.classList.remove('white-mode', 'black-mode');
-            body.classList.add(mode + '-mode');
+        let currentMode = 'space';
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            background(0);
+            noStroke();
+        }
+
+        function draw() {
+            if (currentMode === 'space') {
+                spaceMode();
+            } else if (currentMode === 'cartoon') {
+                cartoonMode();
+            } else if (currentMode === 'nerd') {
+                nerdMode();
+            } else if (currentMode === 'clean') {
+                cleanMode();
+            }
+        }
+
+        function changeMode(mode) {
+            currentMode = mode;
+            background(0); // Clear the background when switching modes
+        }
+
+        // Space Mode: Stars and Moon Animation
+        function spaceMode() {
+            fill(255, 255, 255, 50);
+            ellipse(width / 2, height / 2, 300, 300); // Moon
+            for (let i = 0; i < 500; i++) {
+                let x = random(width);
+                let y = random(height);
+                ellipse(x, y, 2, 2); // Stars
+            }
+        }
+
+        // Cartoon Mode: Moving Clouds (Sanrio)
+        function cartoonMode() {
+            fill(255, 255, 255, 100);
+            ellipse(frameCount % width, height / 4, 100, 60); // Cloud 1
+            ellipse((frameCount + 200) % width, height / 3, 120, 70); // Cloud 2
+        }
+
+        // Nerd Mode: Matrix Code Rain
+        function nerdMode() {
+            background(0, 100);
+            let cols = width / 20;
+            let rows = height / 20;
+            fill(0, 255, 0);
+            for (let i = 0; i < cols; i++) {
+                textSize(20);
+                text('1', i * 20, frameCount % height);
+            }
+        }
+
+        // Clean Mode: Moving Gradient Background
+        function cleanMode() {
+            let c1 = color(255, 255, 255);
+            let c2 = color(0, 0, 0);
+            for (let i = 0; i < width; i++) {
+                let inter = map(i, 0, width, 0, 1);
+                let c = lerpColor(c1, c2, inter);
+                stroke(c);
+                line(i, 0, i, height);
+            }
         }
     </script>
-
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
+
