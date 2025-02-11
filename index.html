@@ -6,65 +6,40 @@
     <title>Mi Portafolio</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
+        body {
             font-family: Arial, sans-serif;
             color: black;
-            background-color: white;
-        }
-
-        /* Main content area */
-        .content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            margin: 0;
+            padding: 0;
             text-align: center;
-            transition: all 0.3s ease;
+            height: 100vh;
+            overflow-x: hidden;
         }
-
+        .content {
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+        }
         h1 {
-            font-size: 3em;
-            color: #333;
-            cursor: pointer;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            color: darkgray;
+        }
+        .image-container {
+            margin-top: 20px;
+            max-width: 100%;
+            text-align: center;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
         }
 
-        h1:hover {
-            opacity: 0;
-        }
-
-        p {
-            font-size: 1.2em;
-            color: #666;
-            cursor: pointer;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
-        p:hover {
-            opacity: 0;
-        }
-
-        /* Text grows and shrinks on click */
-        .grow-shrink-text {
-            cursor: pointer;
-            transition: transform 0.5s ease;
-        }
-
-        .grow-shrink-text.clicked {
-            transform: scale(1.5);
-        }
-
-        /* Gallery */
+        /* Lightbox Gallery */
         .gallery {
             display: flex;
             justify-content: center;
             gap: 20px;
             flex-wrap: wrap;
-            margin-top: 20px;
         }
         .gallery img {
             width: 200px;
@@ -74,117 +49,100 @@
             border-radius: 10px;
         }
 
-        /* Hidden Sidebar - Blended into the background */
+        /* Mode-Specific Styles */
+        body.moon-mode {
+            background: url('moon-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.desert-mode {
+            background: url('desert-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.forest-mode {
+            background: url('forest-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.gothic-mode {
+            background: url('gothic-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.unicorn-mode {
+            background: url('unicorn-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.sanrio-mode {
+            background-color: pink;
+            background-image: url('hello-kitty.svg'), url('keroppi.svg');
+            background-position: center top, center bottom;
+            background-repeat: no-repeat;
+        }
+        body.orange-black-mode {
+            background: url('orange-black-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        /* Sidebar Switches */
         .sidebar {
             position: fixed;
             top: 0;
             right: 0;
-            background-color: rgba(0, 0, 0, 0.3);
-            width: 250px;
+            background-color: #333;
+            color: white;
+            width: 200px;
             height: 100%;
-            transition: transform 0.3s ease-in-out;
-            transform: translateX(100%);
+            padding: 20px;
+            display: none;
         }
-
         .sidebar.active {
-            transform: translateX(0);
+            display: block;
         }
-
-        .sidebar .switch {
+        .sidebar h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .switch {
             display: flex;
             justify-content: space-between;
-            margin: 20px 10px;
+            margin-bottom: 10px;
         }
-
-        .switch label {
-            font-size: 18px;
-            color: white;
-        }
-
         .switch input {
             transform: scale(1.5);
         }
-
-        /* Full-screen Canvas Mode */
-        .canvas-mode {
-            background-color: #222;
-            background-image: url('space-mode.svg'); /* Placeholder for the background image */
-            background-position: center;
-            background-size: cover;
-            width: 100vw;
-            height: 100vh;
+        .switch label {
+            font-size: 18px;
         }
 
-        /* Invisible button to open the sidebar */
-        .open-sidebar-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: rgba(0, 0, 0, 0.5);
+        /* Banner */
+        .banner {
+            background-color: #333;
             color: white;
-            padding: 10px;
-            border: none;
-            cursor: pointer;
-            z-index: 10;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
         }
 
-        /* Media Queries for Mobile */
-        @media screen and (max-width: 768px) {
-            .content {
-                font-size: 1.5em;
-            }
-
-            .grow-shrink-text {
-                display: inline-block;
-                margin: 10px 0;
-            }
-
-            /* Pop-Up Effect on Mobile */
-            .content p.clicked {
-                display: block;
-                position: relative;
-                animation: popUp 0.5s ease-out;
-            }
-
-            /* Animation for Pop-Up */
-            @keyframes popUp {
-                0% {
-                    transform: scale(0);
-                }
-                100% {
-                    transform: scale(1);
-                }
-            }
+        /* Quote Section */
+        #quote-section {
+            margin-top: 20px;
+            font-style: italic;
         }
     </style>
 </head>
-<body class="canvas-mode">
-    <!-- Sidebar with mode switchers -->
-    <div class="sidebar" id="sidebar">
-        <div class="switch">
-            <label for="moon-mode">Modo Luna</label>
-            <input type="checkbox" id="moon-mode" onchange="setMode('moon')">
-        </div>
-        <div class="switch">
-            <label for="space-mode">Modo Espacio</label>
-            <input type="checkbox" id="space-mode" onchange="setMode('space')">
-        </div>
-        <div class="switch">
-            <label for="cartoon-mode">Modo Cartoon</label>
-            <input type="checkbox" id="cartoon-mode" onchange="setMode('cartoon')">
-        </div>
-        <div class="switch">
-            <a href="https://www.yourmusicpage.com" target="_blank">Música</a>
-        </div>
-        <div class="switch">
-            <a href="https://www.behance.net/yourprofile" target="_blank">Behance</a>
-        </div>
-    </div>
-
-    <!-- Main content -->
+<body class="sanrio-mode">
     <div class="content">
-        <h1 class="grow-shrink-text" onclick="toggleGrowShrink()">¡Hola! Soy Leo</h1>
-        <p class="grow-shrink-text" onclick="toggleTextPopup()">Desarrollador interactivo, especializado en Visión por Computadora y proyectos musicales.</p>
+        <h1>¡Hola! Soy Leo</h1>
+        <p>¡Hola! Soy Leo, un desarrollador de interactividad. Tengo una maestría en Artes Mediáticas y estoy especializado en Visión por Computadora y aplicaciones para interactividad. He enseñado cursos sobre Pure Data y software de Arduino en el Diplomado de Artes Sonoras en la UChile.</p>
+        <p>En mi tiempo libre, también soy ingeniero fintech (¡LOL!).</p>
+        
+        <!-- Quote Generator -->
+        <div id="quote-section">
+            <h3>Cita Aleatoria:</h3>
+            <p id="quote">Haz clic para obtener una cita</p>
+            <button onclick="fetchRandomQuote()">Obtener Cita</button>
+        </div>
 
         <!-- Gallery with Lightbox -->
         <h3>Galería de Imágenes</h3>
@@ -199,41 +157,76 @@
                 <img src="003.jpg" alt="Imagen 3">
             </a>
         </div>
+
+        <div class="image-container">
+            <h3>Aquí una muestra de mi trabajo:</h3>
+            <img src="00000.jpg" alt="Imagen relacionada con mi trabajo o hobby">
+        </div>
     </div>
 
-    <!-- Invisible button to toggle sidebar visibility -->
-    <button class="open-sidebar-btn" onclick="toggleSidebar()">☰ Cambiar Modo</button>
+    <!-- Sidebar with Mode Switchers -->
+    <div class="sidebar" id="sidebar">
+        <h2>Cambiar Modo</h2>
+        <div class="switch">
+            <label for="moon-mode">Modo Luna</label>
+            <input type="checkbox" id="moon-mode" onchange="setMode('moon')">
+        </div>
+        <div class="switch">
+            <label for="desert-mode">Modo Desierto</label>
+            <input type="checkbox" id="desert-mode" onchange="setMode('desert')">
+        </div>
+        <div class="switch">
+            <label for="forest-mode">Modo Bosque</label>
+            <input type="checkbox" id="forest-mode" onchange="setMode('forest')">
+        </div>
+        <div class="switch">
+            <label for="gothic-mode">Modo Gótico</label>
+            <input type="checkbox" id="gothic-mode" onchange="setMode('gothic')">
+        </div>
+        <div class="switch">
+            <label for="unicorn-mode">Modo Unicornio</label>
+            <input type="checkbox" id="unicorn-mode" onchange="setMode('unicorn')">
+        </div>
+        <div class="switch">
+            <label for="sanrio-mode">Modo Sanrio</label>
+            <input type="checkbox" id="sanrio-mode" onchange="setMode('sanrio')">
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
 
     <script>
-        // Toggle the sidebar visibility
+        // Toggle sidebar visibility
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById("sidebar").classList.toggle("active");
         }
 
         // Change modes dynamically
         function setMode(mode) {
-            if (mode === 'moon') {
-                document.body.className = 'moon-mode';
-            } else if (mode === 'space') {
-                document.body.className = 'space-mode';
-            } else if (mode === 'cartoon') {
-                document.body.className = 'cartoon-mode';
-            }
+            document.body.className = mode + '-mode';
         }
 
-        // Toggle text grow/shrink effect
-        function toggleGrowShrink() {
-            document.querySelector('h1').classList.toggle('clicked');
-        }
-
-        // Toggle pop-up text effect for mobile
-        function toggleTextPopup() {
-            let textElement = document.querySelector('p');
-            textElement.classList.toggle('clicked');
+        // Fetch a random quote from an API (example using a placeholder quote API)
+        function fetchRandomQuote() {
+            const quotes = [
+                "La vida es lo que pasa mientras estás ocupado haciendo otros planes. – John Lennon",
+                "El futuro pertenece a quienes creen en la belleza de sus sueños. – Eleanor Roosevelt",
+                "No llores porque terminó, sonríe porque sucedió. – Dr. Seuss",
+                "La felicidad no es algo hecho. Proviene de tus propias acciones. – Dalai Lama"
+            ];
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            document.getElementById("quote").innerText = quotes[randomIndex];
         }
     </script>
+
+    <!-- Banner -->
+    <div class="banner">
+        <p>© 2025 Todos los derechos reservados</p>
+    </div>
+
+    <!-- Button to toggle sidebar -->
+    <button onclick="toggleSidebar()" style="position: fixed; top: 20px; right: 20px; background: #333; color: white; padding: 10px;">Cambiar Modo</button>
 </body>
 </html>
+
 
