@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hi</title>
+    <title>Interactive Bio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* General Layout */
@@ -20,45 +20,49 @@
             transition: background-color 0.5s, color 0.5s;
         }
 
+        /* Project Image */
+        .project-image {
+            width: 100%;
+            max-width: 800px; /* Larger Image */
+            height: auto;
+            margin-top: 20px;
+            display: block;
+            transition: transform 0.5s;
+        }
+
         /* Biography Section */
         .bio-text {
             max-width: 600px;
             margin-bottom: 20px;
+            background: transparent;
         }
 
         .bio-text h3 {
-            font-size: 28px;
+            font-size: 32px;
             margin-bottom: 10px;
+            transition: color 0.5s;
         }
 
         .bio-text p {
-            font-size: 16px;
-            line-height: 1.5;
+            font-size: 18px;
+            line-height: 1.6;
+            transition: color 0.5s;
         }
 
         .bio-text a {
-            color: inherit;
             text-decoration: none;
             font-weight: bold;
-        }
-
-        /* Image */
-        .bio-image {
-            width: 300px;
-            height: auto;
-            margin-top: 20px;
-            border-radius: 10px;
+            transition: color 0.5s;
         }
 
         /* Toggles */
         .color-menu {
             position: absolute;
+            bottom: 20px;
             left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 5px;
         }
 
         .form-check {
@@ -74,64 +78,123 @@
 
         .form-check-label {
             font-size: 12px;
+            transition: color 0.5s;
         }
 
-        /* Color Themes */
+        /* Reset Button */
+        .reset-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #555;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .reset-button:hover {
+            background-color: #777;
+        }
+
+        /* COLOR THEMES */
         .unicorn { background-color: #FF66FF; color: #fff; }
-        .minimalWhite { background-color: #ffffff; color: #222; }
-        .solarized { background-color: #002b36; color: #93a1a1; }
-        .black { background-color: #000000; color: #f0f0f0; }
+        .unicorn .bio-text h3 { color: #FFD700; }
+        .unicorn .bio-text p { color: #FFF5EE; }
+        .unicorn .bio-text a { color: #ffcc00; }
+
+        .hellokitty { background-color: #FFC0CB; color: #444; }
+        .hellokitty .bio-text h3 { color: #FF69B4; }
+        .hellokitty .bio-text p { color: #800080; }
+        .hellokitty .bio-text a { color: #DC143C; }
+
+        .fruits { background-color: #FFA500; color: #222; }
+        .fruits .bio-text h3 { color: #FFD700; }
+        .fruits .bio-text p { color: #FF4500; }
+        .fruits .bio-text a { color: #008000; }
+
         .matrix { background-color: #000000; color: #00FF00; }
-        .fruit { background-color: #FF6347; color: #fff; }
+        .matrix .bio-text h3 { color: #33ff33; }
+        .matrix .bio-text p { color: #66ff66; }
+        .matrix .bio-text a { color: #99ff99; }
+
+        .solarized { background-color: #002b36; color: #93a1a1; }
+        .solarized .bio-text h3 { color: #eee8d5; }
+        .solarized .bio-text p { color: #839496; }
+        .solarized .bio-text a { color: #268bd2; }
+
+        .minimal { background-color: #ffffff; color: #000; }
+        .minimal .bio-text h3 { color: #222; }
+        .minimal .bio-text p { color: #555; }
+        .minimal .bio-text a { color: #888; }
+
+        .grayscale { background-color: #777; color: #222; }
+        .grayscale .bio-text h3 { color: #333; }
+        .grayscale .bio-text p { color: #555; }
+        .grayscale .bio-text a { color: #999; }
+
+        .greenorange { background-color: #228B22; color: #FFF8DC; }
+        .greenorange .bio-text h3 { color: #FF8C00; }
+        .greenorange .bio-text p { color: #FFD700; }
+        .greenorange .bio-text a { color: #FFA500; }
     </style>
 </head>
 <body>
 
-<!-- Toggles -->
+<!-- Toggle Menu -->
 <div class="color-menu">
     <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="unicornToggle" onclick="changeColorMode('unicorn')">
-        <label class="form-check-label" for="unicornToggle">Uni</label>
+        <input class="form-check-input" type="checkbox" id="unicornToggle" onclick="changeTheme('unicorn')">
+        <label class="form-check-label" for="unicornToggle">Unicorn</label>
     </div>
     <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="minimalToggle" onclick="changeColorMode('minimalWhite')">
-        <label class="form-check-label" for="minimalToggle">Min</label>
+        <input class="form-check-input" type="checkbox" id="hellokittyToggle" onclick="changeTheme('hellokitty')">
+        <label class="form-check-label" for="hellokittyToggle">Hello Kitty</label>
     </div>
     <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="solarizedToggle" onclick="changeColorMode('solarized')">
-        <label class="form-check-label" for="solarizedToggle">Sol</label>
+        <input class="form-check-input" type="checkbox" id="fruitsToggle" onclick="changeTheme('fruits')">
+        <label class="form-check-label" for="fruitsToggle">Fruits</label>
     </div>
     <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="blackToggle" onclick="changeColorMode('black')">
-        <label class="form-check-label" for="blackToggle">Blk</label>
-    </div>
-    <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="matrixToggle" onclick="changeColorMode('matrix')">
-        <label class="form-check-label" for="matrixToggle">Mtx</label>
-    </div>
-    <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="fruitToggle" onclick="changeColorMode('fruit')">
-        <label class="form-check-label" for="fruitToggle">Fru</label>
+        <input class="form-check-input" type="checkbox" id="matrixToggle" onclick="changeTheme('matrix')">
+        <label class="form-check-label" for="matrixToggle">Matrix</label>
     </div>
 </div>
 
-<!-- Biography Section -->
+<!-- Reset Button -->
+<button class="reset-button" onclick="resetTheme()">Reset</button>
+
+<!-- Bio Section -->
 <div class="bio-text">
-    <h3>Interactive Developer from SCL</h3>
-     <p>I Work in Computer Vision and Text applications </p>
-     <p> Certified in Python, C++, Swift, and Objective-C.</p>
-    <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com">sakayama666@icloud.com</a></p>
+    <h3>Interactive Developer Santiago</h3>
+    <p>I work on advanced UI design projects, specializing in React, JavaScript, and UI/UX.</p>
 </div>
 
-<!-- Profile Image -->
-<img class="img-fluid" src="00000000000000.PNG" alt="Computer Vision Project">
+<!-- Project Image -->
+<img class="project-image" src="project-image.png" alt="Project Image">
 
 <script>
-function changeColorMode(mode) {
-    document.body.className = mode;
+function changeTheme(theme) {
+    // Remove all active themes
+    document.body.classList.remove("unicorn", "hellokitty", "fruits", "matrix");
+
+    // Apply the new theme
+    document.body.classList.add(theme);
+
+    // Reset all toggles
+    document.querySelectorAll(".form-check-input").forEach(input => input.checked = false);
+
+    // Activate the selected toggle
+    document.getElementById(theme + "Toggle").checked = true;
+}
+
+function resetTheme() {
+    document.body.className = "";
+    document.querySelectorAll(".form-check-input").forEach(input => input.checked = false);
 }
 </script>
 
 </body>
 </html>
+
 
