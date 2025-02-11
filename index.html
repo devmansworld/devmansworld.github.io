@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Fun Portfolio</title>
+    <title>Mi Portafolio</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,6 +13,7 @@
             padding: 0;
             text-align: center;
             height: 100vh;
+            overflow-x: hidden;
         }
         .content {
             position: relative;
@@ -31,7 +33,22 @@
             height: auto;
             border-radius: 10px;
         }
-        
+
+        /* Lightbox Gallery */
+        .gallery {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .gallery img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
         /* Mode-Specific Styles */
         body.moon-mode {
             background: url('moon-mode.svg') no-repeat center center fixed;
@@ -63,74 +80,153 @@
             background: url('orange-black-mode.svg') no-repeat center center fixed;
             background-size: cover;
         }
-        /* SVG Character Styles */
-        .sanrio-characters {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
+
+        /* Sidebar Switches */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background-color: #333;
+            color: white;
+            width: 200px;
+            height: 100%;
+            padding: 20px;
+            display: none;
         }
-        .sanrio-characters svg {
-            width: 100px;
-            height: 100px;
+        .sidebar.active {
+            display: block;
+        }
+        .sidebar h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .switch {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .switch input {
+            transform: scale(1.5);
+        }
+        .switch label {
+            font-size: 18px;
+        }
+
+        /* Banner */
+        .banner {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Quote Section */
+        #quote-section {
+            margin-top: 20px;
+            font-style: italic;
         }
     </style>
 </head>
 <body class="sanrio-mode">
     <div class="content">
-        <h1>Hello, I'm a Software Engineer!</h1>
-        <p>Hi to the llama, I'm a software engineer and media artist. I work on computer vision projects in Python, and I also create interactive projects. I enjoy working with modular software like Pure Data and Max MSP.</p>
-        <p>I have certifications in Python, C++, Objective-C, Swift, and C.</p>
-        <p>In my free time, I'm a car enthusiast and I enjoy reading police novels.</p>
-
-        <div class="image-container">
-            <h3>Here's a glimpse of my work:</h3>
-            <img src="00000.jpg" alt="Image related to my work or hobby">
+        <h1>¡Hola! Soy Leo</h1>
+        <p>¡Hola! Soy Leo, un desarrollador de interactividad. Tengo una maestría en Artes Mediáticas y estoy especializado en Visión por Computadora y aplicaciones para interactividad. He enseñado cursos sobre Pure Data y software de Arduino en el Diplomado de Artes Sonoras en la UChile.</p>
+        <p>En mi tiempo libre, también soy ingeniero fintech (¡LOL!).</p>
+        
+        <!-- Quote Generator -->
+        <div id="quote-section">
+            <h3>Cita Aleatoria:</h3>
+            <p id="quote">Haz clic para obtener una cita</p>
+            <button onclick="fetchRandomQuote()">Obtener Cita</button>
         </div>
 
-        <!-- Sanrio Characters Section -->
-        <div class="sanrio-characters">
-            <div>
-                <h3>Hello Kitty</h3>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100" height="100">
-                    <circle cx="100" cy="100" r="80" fill="#ffffff"/>
-                    <circle cx="60" cy="80" r="12" fill="#000000"/>
-                    <circle cx="140" cy="80" r="12" fill="#000000"/>
-                    <path d="M50,130 Q100,160 150,130" stroke="#000000" fill="transparent" stroke-width="5"/>
-                </svg>
-            </div>
-            <div>
-                <h3>Keroppi</h3>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100" height="100">
-                    <circle cx="100" cy="100" r="90" fill="#6ce24d"/>
-                    <circle cx="70" cy="70" r="15" fill="#ffffff"/>
-                    <circle cx="130" cy="70" r="15" fill="#ffffff"/>
-                    <circle cx="70" cy="70" r="6" fill="#000000"/>
-                    <circle cx="130" cy="70" r="6" fill="#000000"/>
-                    <path d="M50,130 Q100,160 150,130" stroke="#000000" fill="transparent" stroke-width="5"/>
-                </svg>
-            </div>
-            <div>
-                <h3>Snoopy</h3>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100" height="100">
-                    <circle cx="100" cy="100" r="90" fill="#ffffff"/>
-                    <circle cx="65" cy="75" r="15" fill="#000000"/>
-                    <circle cx="135" cy="75" r="15" fill="#000000"/>
-                    <path d="M45,130 Q100,160 155,130" stroke="#000000" fill="transparent" stroke-width="5"/>
-                </svg>
-            </div>
+        <!-- Gallery with Lightbox -->
+        <h3>Galería de Imágenes</h3>
+        <div class="gallery">
+            <a href="001.jpg" data-lightbox="image-gallery" data-title="Imagen 1">
+                <img src="001.jpg" alt="Imagen 1">
+            </a>
+            <a href="002.jpg" data-lightbox="image-gallery" data-title="Imagen 2">
+                <img src="002.jpg" alt="Imagen 2">
+            </a>
+            <a href="003.jpg" data-lightbox="image-gallery" data-title="Imagen 3">
+                <img src="003.jpg" alt="Imagen 3">
+            </a>
+        </div>
+
+        <div class="image-container">
+            <h3>Aquí una muestra de mi trabajo:</h3>
+            <img src="00000.jpg" alt="Imagen relacionada con mi trabajo o hobby">
         </div>
     </div>
 
-    <!-- JavaScript to Change Themes -->
+    <!-- Sidebar with Mode Switchers -->
+    <div class="sidebar" id="sidebar">
+        <h2>Cambiar Modo</h2>
+        <div class="switch">
+            <label for="moon-mode">Modo Luna</label>
+            <input type="checkbox" id="moon-mode" onchange="setMode('moon')">
+        </div>
+        <div class="switch">
+            <label for="desert-mode">Modo Desierto</label>
+            <input type="checkbox" id="desert-mode" onchange="setMode('desert')">
+        </div>
+        <div class="switch">
+            <label for="forest-mode">Modo Bosque</label>
+            <input type="checkbox" id="forest-mode" onchange="setMode('forest')">
+        </div>
+        <div class="switch">
+            <label for="gothic-mode">Modo Gótico</label>
+            <input type="checkbox" id="gothic-mode" onchange="setMode('gothic')">
+        </div>
+        <div class="switch">
+            <label for="unicorn-mode">Modo Unicornio</label>
+            <input type="checkbox" id="unicorn-mode" onchange="setMode('unicorn')">
+        </div>
+        <div class="switch">
+            <label for="sanrio-mode">Modo Sanrio</label>
+            <input type="checkbox" id="sanrio-mode" onchange="setMode('sanrio')">
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+
     <script>
-        // Example: Switch to 'Sanrio Mode' or any other mode using classes
+        // Toggle sidebar visibility
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("active");
+        }
+
+        // Change modes dynamically
         function setMode(mode) {
             document.body.className = mode + '-mode';
         }
+
+        // Fetch a random quote from an API (example using a placeholder quote API)
+        function fetchRandomQuote() {
+            const quotes = [
+                "La vida es lo que pasa mientras estás ocupado haciendo otros planes. – John Lennon",
+                "El futuro pertenece a quienes creen en la belleza de sus sueños. – Eleanor Roosevelt",
+                "No llores porque terminó, sonríe porque sucedió. – Dr. Seuss",
+                "La felicidad no es algo hecho. Proviene de tus propias acciones. – Dalai Lama"
+            ];
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            document.getElementById("quote").innerText = quotes[randomIndex];
+        }
     </script>
+
+    <!-- Banner -->
+    <div class="banner">
+        <p>© 2025 Todos los derechos reservados</p>
+    </div>
+
+    <!-- Button to toggle sidebar -->
+    <button onclick="toggleSidebar()" style="position: fixed; top: 20px; right: 20px; background: #333; color: white; padding: 10px;">Cambiar Modo</button>
 </body>
 </html>
-
 
 
