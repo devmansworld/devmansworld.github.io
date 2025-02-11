@@ -14,6 +14,7 @@
             font-family: 'Roboto', sans-serif;
             background-color: #fff5e6;
             color: #333;
+            flex-direction: column;
         }
         .sidebar {
             width: 250px;
@@ -24,6 +25,7 @@
         .content {
             flex-grow: 1;
             padding: 20px;
+            text-align: center;
         }
         .canvas-container {
             text-align: center;
@@ -56,79 +58,31 @@
             object-fit: cover;
             border-radius: 10px;
         }
+        #seaCanvas {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 150px;
+            background: #87CEFA;
+        }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h2>My Projects</h2>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a href="#python" class="nav-link text-light">Python</a></li>
-            <li class="nav-item"><a href="#javascript" class="nav-link text-light">JavaScript</a></li>
-            <li class="nav-item"><a href="#java" class="nav-link text-light">Java</a></li>
-            <li class="nav-item"><a href="#web" class="nav-link text-light">Web Projects</a></li>
-            <li class="nav-item"><a href="#gallery" class="nav-link text-light">Nerd Image Gallery</a></li>
-            <li class="nav-item"><a href="#video" class="nav-link text-light">Video Page</a></li>
-            <li class="nav-item"><a href="#diary" class="nav-link text-light">Diary</a></li>
-            <li class="nav-item"><a href="#contact" class="nav-link text-light">Contact</a></li>
-        </ul>
-        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
-        <button onclick="toggleGothicMode()">Gothic Mode</button>
-    </div>
     <div class="content">
         <h1>Welcome to My GitHub Page</h1>
-        <div class="canvas-container">
-            <div id="p5-canvas"></div>
-        </div>
+        <img src="assets/00000000000000.PNG" alt="Salutation Image" style="width:300px; border-radius:15px;">
+        <div id="p5-canvas"></div>
         <div id="map"></div>
         <h2>Image Gallery</h2>
         <div class="gallery" id="imageGallery"></div>
     </div>
+    <canvas id="seaCanvas"></canvas>
     <script>
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
         }
         function toggleGothicMode() {
             document.body.classList.toggle('gothic-mode');
-        }
-        let fishSprites = [];
-        let fishObjects = [];
-        let bgSprites = [];
-        function preload() {
-            for (let i = 18; i <= 117; i += 2) {
-                fishSprites.push([loadImage(`assets/IMG_0${i}.png`), loadImage(`assets/IMG_0${i+1}.png`)]);
-            }
-            for (let i = 11; i <= 17; i++) {
-                bgSprites.push(loadImage(`assets/IMG_00${i}.png`));
-            }
-        }
-        function setup() {
-            let canvas = createCanvas(windowWidth, windowHeight);
-            canvas.parent('p5-canvas');
-            for (let i = 0; i < fishSprites.length; i++) {
-                fishObjects.push({
-                    x: random(width),
-                    y: random(height),
-                    speed: random(1, 3),
-                    size: random(50, 150),
-                    frame: 0
-                });
-            }
-        }
-        function draw() {
-            let bg = random(bgSprites);
-            background(bg);
-            for (let i = 0; i < fishObjects.length; i++) {
-                let fish = fishObjects[i];
-                let sprite = fishSprites[i % fishSprites.length][fish.frame];
-                image(sprite, fish.x, fish.y, fish.size, fish.size);
-                fish.x += fish.speed;
-                if (fish.x > width) {
-                    fish.x = -fish.size;
-                    fish.y = random(height);
-                    fish.size = random(50, 150);
-                }
-                fish.frame = (frameCount % 20 < 10) ? 0 : 1;
-            }
         }
         function initMap() {
             if (navigator.geolocation) {
@@ -146,6 +100,20 @@
                 });
             } else {
                 document.getElementById("map").innerHTML = "Geolocation is not supported by your browser.";
+            }
+        }
+        function setup() {
+            let canvas = createCanvas(windowWidth, 150);
+            canvas.parent('seaCanvas');
+            noFill();
+        }
+        function draw() {
+            background('#87CEFA');
+            stroke(255);
+            strokeWeight(2);
+            for (let i = 0; i < width; i += 20) {
+                let y = sin(frameCount * 0.05 + i * 0.05) * 10 + 100;
+                line(i, y, i, 150);
             }
         }
         document.addEventListener("DOMContentLoaded", () => {
