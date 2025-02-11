@@ -12,40 +12,51 @@
             font-family: "Century Gothic", sans-serif;
             background-color: #f0f0f0;
             transition: background-color 0.3s, color 0.3s;
+            margin: 0;
         }
+
+        /* Sidebar Menu */
         .menu {
             position: fixed;
             left: 0;
             top: 50%;
             transform: translateY(-50%);
-            height: auto;
             width: 250px;
             background-color: #333;
             color: white;
             padding-top: 20px;
         }
+
         .menu a {
             color: white;
             padding: 8px 16px;
             text-decoration: none;
             display: block;
         }
+
         .menu a:hover {
             background-color: #575757;
         }
+
+        /* Main Content */
         .content {
             margin-left: 270px;
             padding: 20px;
+            margin-top: 50px;
         }
+
         .image-container {
             display: flex;
             justify-content: center;
             align-items: center;
             margin-bottom: 20px;
         }
+
         .image-container img {
             max-width: 300px;
         }
+
+        /* Quote Section */
         .quote-section {
             position: absolute;
             bottom: 20px;
@@ -59,6 +70,7 @@
             border-radius: 5px;
             width: 90%;
         }
+
         .quote-btn {
             font-size: 12px;
             color: white;
@@ -67,9 +79,12 @@
             padding: 5px;
             cursor: pointer;
         }
+
         .quote-btn:hover {
             background-color: #666;
         }
+
+        /* Footer Section */
         .footer {
             position: fixed;
             bottom: 0;
@@ -79,21 +94,36 @@
             background-color: #333;
             color: white;
         }
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 34px;
-            height: 20px;
-            margin-right: 10px;
+
+        /* Color Scheme Switches */
+        .color-switches {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: black;
+            padding: 10px;
+            border-radius: 5px;
         }
 
+        .switch {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .switch label {
+            color: white;
+            font-size: 14px;
+        }
+
+        /* Color Scheme Toggle */
         .switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
 
-        .slider {
+        .switch .slider {
             position: absolute;
             cursor: pointer;
             top: 0;
@@ -105,7 +135,7 @@
             border-radius: 34px;
         }
 
-        .slider:before {
+        .switch .slider:before {
             position: absolute;
             content: "";
             height: 12px;
@@ -124,6 +154,7 @@
         input:checked + .slider:before {
             transform: translateX(14px);
         }
+
     </style>
 </head>
 <body>
@@ -147,49 +178,44 @@
         <p>I am an interactive developer working on computer vision projects, with certifications in C++, Swift, and Objective-C.</p>
         <p>Contact me for projects at <a href="mailto:sakayama234234@icloud.com">sakayama234234@icloud.com</a></p>
     </div>
+</div>
 
-    <!-- Color Scheme Toggles -->
-    <div style="position: fixed; bottom: 50px; left: 15px; background-color: black; padding: 10px;">
-        <div>
-            <h6 style="color: white;">Color Scheme</h6>
-            <label class="switch">
-                <input type="checkbox" id="solarized">
-                <span class="slider round"></span> Solarized
-            </label>
-            <label class="switch">
-                <input type="checkbox" id="helloKitty">
-                <span class="slider round"></span> Hello Kitty
-            </label>
-            <label class="switch">
-                <input type="checkbox" id="minimalWhite">
-                <span class="slider round"></span> Minimal White
-            </label>
-            <label class="switch">
-                <input type="checkbox" id="blackGreen">
-                <span class="slider round"></span> Black & Green Yellow
-            </label>
-            <label class="switch">
-                <input type="checkbox" id="whiteFuchsia">
-                <span class="slider round"></span> White & Fuchsia Red
-            </label>
-            <label class="switch">
-                <input type="checkbox" id="blackGreyOrange">
-                <span class="slider round"></span> Black & Grey with Orange
-            </label>
-            <label class="switch">
-                <input type="checkbox" id="grayscale">
-                <span class="slider round"></span> Grayscale
-            </label>
-        </div>
+<!-- Color Scheme Toggles -->
+<div class="color-switches">
+    <div class="switch">
+        <label>Solarized</label>
+        <input type="checkbox" id="solarized">
+        <span class="slider"></span>
     </div>
-
-    <!-- Map Container -->
-    <div class="map-container">
-        <h5>My Location</h5>
-        <iframe
-            src="https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=Puente+del+Arzobispo,+Providencia"
-            width="100%" height="300" frameborder="0" style="border:0;" allowfullscreen="">
-        </iframe>
+    <div class="switch">
+        <label>Hello Kitty</label>
+        <input type="checkbox" id="helloKitty">
+        <span class="slider"></span>
+    </div>
+    <div class="switch">
+        <label>Minimal White</label>
+        <input type="checkbox" id="minimalWhite">
+        <span class="slider"></span>
+    </div>
+    <div class="switch">
+        <label>Black & Green Yellow</label>
+        <input type="checkbox" id="blackGreen">
+        <span class="slider"></span>
+    </div>
+    <div class="switch">
+        <label>White & Fuchsia Red</label>
+        <input type="checkbox" id="whiteFuchsia">
+        <span class="slider"></span>
+    </div>
+    <div class="switch">
+        <label>Black & Grey with Orange</label>
+        <input type="checkbox" id="blackGreyOrange">
+        <span class="slider"></span>
+    </div>
+    <div class="switch">
+        <label>Grayscale</label>
+        <input type="checkbox" id="grayscale">
+        <span class="slider"></span>
     </div>
 </div>
 
@@ -203,7 +229,6 @@
 <button class="quote-btn" onclick="getNewQuote()">Get another quote</button>
 
 <script>
-// Array of quotes (add more quotes as needed)
 const quotes = [
     { quote: "It is not our abilities that show what we truly are… it is our choices.", author: "J.K. Rowling, Harry Potter and the Chamber of Secrets" },
     { quote: "In three words I can sum up everything I've learned about life: it goes on.", author: "Robert Frost" },
@@ -273,6 +298,7 @@ const quotes = [
     // Add more quotes here up to 300...
 ];
 
+
 // Display a random quote
 function getNewQuote() {
     const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -285,8 +311,8 @@ getNewQuote();
 
 // Color scheme toggle logic
 const colorSchemes = {
-    solarized: ['#002b36', '#fdf6e3'], // example colors for Solarized
-    helloKitty: ['#f8bbd0', '#ff69b4'], // example colors for Hello Kitty
+    solarized: ['#002b36', '#fdf6e3'],
+    helloKitty: ['#f8bbd0', '#ff69b4'],
     minimalWhite: ['#ffffff', '#f0f0f0'],
     blackGreen: ['#000000', '#9e9e2a'],
     whiteFuchsia: ['#ffffff', '#d500f9'],
@@ -303,7 +329,7 @@ function applyColorScheme() {
     }
 }
 
-// Apply color scheme changes when toggled
+// Apply color scheme changes when toggles are changed
 document.querySelectorAll('.switch input').forEach(input => {
     input.addEventListener('change', applyColorScheme);
 });
@@ -311,7 +337,6 @@ document.querySelectorAll('.switch input').forEach(input => {
 
 </body>
 </html>
-
 
 
 
