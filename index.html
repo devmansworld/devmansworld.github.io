@@ -3,243 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>hola!</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <title>My Fun Portfolio</title>
     <style>
         body {
-            display: flex;
-            min-height: 100vh;
-            font-family: 'Century Gothic', sans-serif;
-            background-color: white;
-            color: #333;
-            flex-direction: column;
-            transition: all 0.3s;
+            font-family: Arial, sans-serif;
+            color: black;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            height: 100vh;
         }
         .content {
-            flex-grow: 1;
+            position: relative;
+            z-index: 1;
             padding: 20px;
+        }
+        h1 {
+            color: darkgray;
+        }
+        .image-container {
+            margin-top: 20px;
+            max-width: 100%;
             text-align: center;
         }
-        .canvas-container {
-            text-align: center;
-        }
-        #map {
-            height: 300px;
-            width: 100%;
-            margin-top: 20px;
-            border-radius: 10px;
-        }
-        .gallery {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .gallery img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-        .mode-toggle, .font-toggle {
-            margin: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .dark-mode {
-            background-color: black !important;
-            color: red !important;
-        }
-        .gothic-mode {
-            font-family: 'Old English Text MT', cursive !important;
-            background-color: black !important;
-            color: red !important;
-        }
-        .bauhaus-mode {
-            font-family: 'Times New Roman', serif !important;
-            background-color: black !important;
-            color: white !important;
-        }
-        .shoegaze-mode {
-            font-family: 'Century Gothic', sans-serif !important;
-            background-color: lightgray !important;
-            color: #333 !important;
-        }
-        .cursive-mode {
-            font-family: 'Brush Script MT', cursive !important;
-        }
-        .quote {
-            margin-top: 20px;
-            font-style: italic;
-        }
-        .secret-button {
-            display: none;
-        }
-        .secret-button.active {
-            display: block;
-        }
-        .quote-button, .secret-button {
-            background-color: #ff9800;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-        }
-        .quote-button:hover, .secret-button:hover {
-            background-color: #ff5722;
-        }
-        /* SVG Styles */
-        .sea-svg, .desert-svg, .gothic-svg {
-            width: 100%;
-            height: 300px;
-            transition: all 0.3s;
-        }
-        /* Meme builder styles */
-        .meme-builder {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .meme-img {
+        img {
             max-width: 100%;
             height: auto;
             border-radius: 10px;
         }
+        
+        /* Mode-Specific Styles */
+        body.moon-mode {
+            background: url('moon-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.desert-mode {
+            background: url('desert-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.forest-mode {
+            background: url('forest-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.gothic-mode {
+            background: url('gothic-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.unicorn-mode {
+            background: url('unicorn-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body.sanrio-mode {
+            background-color: pink;
+            background-image: url('hello-kitty.svg'), url('keroppi.svg');
+            background-position: center top, center bottom;
+            background-repeat: no-repeat;
+        }
+        body.orange-black-mode {
+            background: url('orange-black-mode.svg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        /* SVG Character Styles */
+        .sanrio-characters {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        .sanrio-characters svg {
+            width: 100px;
+            height: 100px;
+        }
     </style>
 </head>
-<body>
+<body class="sanrio-mode">
     <div class="content">
-        <h1>hi to the llama</h1>
-        <img src="assets/your_main_image.png" alt="Main Image" style="width:300px; border-radius:15px;">
-        <p><a href="#study-info">whois?</a></p>
-        <div id="study-info">
-            <h3>interactive developer from scl</h3>
-        </div>
-        <div id="p5-canvas"></div>
-        <div id="map"></div>
+        <h1>Hello, I'm a Software Engineer!</h1>
+        <p>Hi to the llama, I'm a software engineer and media artist. I work on computer vision projects in Python, and I also create interactive projects. I enjoy working with modular software like Pure Data and Max MSP.</p>
+        <p>I have certifications in Python, C++, Objective-C, Swift, and C.</p>
+        <p>In my free time, I'm a car enthusiast and I enjoy reading police novels.</p>
 
-        <h2>Image Gallery</h2>
-        <div class="gallery" id="imageGallery"></div>
-
-        <div class="mode-toggle">
-            <button class="btn btn-dark" onclick="toggleDarkMode()">Toggle Gothic Style</button>
-            <button class="btn btn-dark" onclick="toggleBauhausMode()">Toggle Bauhaus Mode</button>
-            <button class="btn btn-dark" onclick="toggleShoegazeMode()">Toggle Shoegaze Mode</button>
+        <div class="image-container">
+            <h3>Here's a glimpse of my work:</h3>
+            <img src="00000.jpg" alt="Image related to my work or hobby">
         </div>
 
-        <div class="font-toggle">
-            <button class="btn btn-dark" onclick="toggleFont()">Toggle Century Gothic Font</button>
-            <button class="btn btn-dark" onclick="toggleCursive()">Toggle Cursive Style</button>
-        </div>
-
-        <button class="quote-button" onclick="getRandomQuote()">Get Random Quote</button>
-        <p class="quote" id="quote"></p>
-
-        <button class="secret-button" id="secretButton" onclick="revealSecret()">Click for Secret Link</button>
-
-        <!-- SVG Simulated Environments -->
-        <div id="sea" class="sea-svg"></div>
-        <div id="desert" class="desert-svg"></div>
-        <div id="gothic" class="gothic-svg"></div>
-
-        <!-- Meme Builder Section -->
-        <div class="meme-builder">
-            <h3>Create a Meme</h3>
-            <input type="file" id="uploadImage" accept="image/*">
-            <button class="btn btn-primary" onclick="generateMeme()">Saque 1 Meme</button>
-            <div id="memeContainer">
-                <img id="memeImg" class="meme-img" src="" alt="Generated Meme">
+        <!-- Sanrio Characters Section -->
+        <div class="sanrio-characters">
+            <div>
+                <h3>Hello Kitty</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100" height="100">
+                    <circle cx="100" cy="100" r="80" fill="#ffffff"/>
+                    <circle cx="60" cy="80" r="12" fill="#000000"/>
+                    <circle cx="140" cy="80" r="12" fill="#000000"/>
+                    <path d="M50,130 Q100,160 150,130" stroke="#000000" fill="transparent" stroke-width="5"/>
+                </svg>
+            </div>
+            <div>
+                <h3>Keroppi</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100" height="100">
+                    <circle cx="100" cy="100" r="90" fill="#6ce24d"/>
+                    <circle cx="70" cy="70" r="15" fill="#ffffff"/>
+                    <circle cx="130" cy="70" r="15" fill="#ffffff"/>
+                    <circle cx="70" cy="70" r="6" fill="#000000"/>
+                    <circle cx="130" cy="70" r="6" fill="#000000"/>
+                    <path d="M50,130 Q100,160 150,130" stroke="#000000" fill="transparent" stroke-width="5"/>
+                </svg>
+            </div>
+            <div>
+                <h3>Snoopy</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100" height="100">
+                    <circle cx="100" cy="100" r="90" fill="#ffffff"/>
+                    <circle cx="65" cy="75" r="15" fill="#000000"/>
+                    <circle cx="135" cy="75" r="15" fill="#000000"/>
+                    <path d="M45,130 Q100,160 155,130" stroke="#000000" fill="transparent" stroke-width="5"/>
+                </svg>
             </div>
         </div>
     </div>
 
+    <!-- JavaScript to Change Themes -->
     <script>
-        // Mode Toggles
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            document.body.classList.remove('gothic-mode', 'bauhaus-mode', 'shoegaze-mode');
-            hideSVGs();
-        }
-
-        function toggleGothicMode() {
-            document.body.classList.toggle('gothic-mode');
-            document.body.classList.remove('dark-mode', 'bauhaus-mode', 'shoegaze-mode');
-            showGothicSVG();
-        }
-
-        function toggleBauhausMode() {
-            document.body.classList.toggle('bauhaus-mode');
-            document.body.classList.remove('dark-mode', 'gothic-mode', 'shoegaze-mode');
-            hideSVGs();
-        }
-
-        function toggleShoegazeMode() {
-            document.body.classList.toggle('shoegaze-mode');
-            document.body.classList.remove('dark-mode', 'gothic-mode', 'bauhaus-mode');
-            showDesertSVG();
-        }
-
-        function toggleFont() {
-            document.body.style.fontFamily = document.body.style.fontFamily === 'Century Gothic' ? 'Arial, sans-serif' : 'Century Gothic';
-        }
-
-        function toggleCursive() {
-            document.body.classList.toggle('cursive-mode');
-        }
-
-        // Fetch Random Quote
-        function getRandomQuote() {
-            fetch('https://api.quotable.io/random?tags=poetry')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('quote').innerText = `"${data.content}" - ${data.author}`;
-                })
-                .catch(error => console.error('Error fetching quote:', error));
-        }
-
-        // Secret Button to YouTube link
-        function revealSecret() {
-            const secretButton = document.getElementById('secretButton');
-            secretButton.classList.add('active');
-            window.location.href = 'https://www.youtube.com/watch?v=pcUGDsf2P4o';
-        }
-
-        // SVG Simulations
-        function showSeaSVG() {
-            document.getElementById('sea').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="lightblue" /><circle cx="100" cy="100" r="80" fill="blue" /></svg>`;
-        }
-
-        function showDesertSVG() {
-            document.getElementById('desert').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="yellow" /><circle cx="100" cy="100" r="80" fill="tan" /></svg>`;
-        }
-
-        function showGothicSVG() {
-            document.getElementById('gothic').innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="black" /><circle cx="100" cy="100" r="80" fill="red" /></svg>`;
-        }
-
-        function hideSVGs() {
-            document.getElementById('sea').innerHTML = '';
-            document.getElementById('desert').innerHTML = '';
-            document.getElementById('gothic').innerHTML = '';
-        }
-
-        // Meme Builder
-        function generateMeme() {
-            const fileInput = document.getElementById('uploadImage');
-            const file = fileInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const memeImg = document.getElementById('memeImg');
-                    memeImg.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
+        // Example: Switch to 'Sanrio Mode' or any other mode using classes
+        function setMode(mode) {
+            document.body.className = mode + '-mode';
         }
     </script>
 </body>
 </html>
+
 
 
