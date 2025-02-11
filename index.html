@@ -1,193 +1,140 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Portafolio</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+    <title>Leo - Interaction Developer & Media Artist</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
-            color: black;
+            background-color: white;
             margin: 0;
             padding: 0;
-            text-align: center;
-            height: 100vh;
-            overflow-x: hidden;
+            transition: background-color 0.3s ease;
         }
-        .content {
-            position: relative;
-            z-index: 1;
-            padding: 20px;
-        }
-        h1 {
-            color: darkgray;
-        }
-        .image-container {
-            margin-top: 20px;
-            max-width: 100%;
-            text-align: center;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
-
-        /* Lightbox Gallery */
-        .gallery {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .gallery img {
-            width: 200px;
-            height: 200px;
-            object-fit: cover;
-            cursor: pointer;
-            border-radius: 10px;
-        }
-
-        /* Mode-Specific Styles */
-        body.moon-mode {
-            background: url('moon-mode.svg') no-repeat center center fixed;
-            background-size: cover;
-        }
-        body.desert-mode {
-            background: url('desert-mode.svg') no-repeat center center fixed;
-            background-size: cover;
-        }
-        body.forest-mode {
-            background: url('forest-mode.svg') no-repeat center center fixed;
-            background-size: cover;
-        }
-        body.gothic-mode {
-            background: url('gothic-mode.svg') no-repeat center center fixed;
-            background-size: cover;
-        }
-        body.unicorn-mode {
-            background: url('unicorn-mode.svg') no-repeat center center fixed;
-            background-size: cover;
-        }
-        body.sanrio-mode {
-            background-color: pink;
-            background-image: url('hello-kitty.svg'), url('keroppi.svg');
-            background-position: center top, center bottom;
-            background-repeat: no-repeat;
-        }
-        body.orange-black-mode {
-            background: url('orange-black-mode.svg') no-repeat center center fixed;
-            background-size: cover;
-        }
-
-        /* Sidebar with Mode Switchers */
-        .mode-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .mode-button {
-            padding: 10px 20px;
-            background-color: #333;
+        /* Side menu */
+        .menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background: #333;
             color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: transform 0.3s ease;
         }
-        .mode-button:hover {
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: block;
+            width: 100%;
+        }
+        .menu a:hover {
             background-color: #444;
         }
-
-        /* Banner */
-        .banner {
-            background-color: #333;
-            color: white;
-            padding: 10px 0;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 14px;
+        /* Content sections */
+        .content {
+            margin-left: 250px;
+            padding: 20px;
         }
-
-        /* Quote Section */
-        #quote-section {
-            margin-top: 20px;
-            font-style: italic;
+        .content section {
+            padding: 40px;
+            border-bottom: 1px solid #ddd;
+        }
+        .content section h2 {
+            font-size: 2rem;
+        }
+        /* Header styles */
+        header {
+            background: #282c34;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: bold;
         }
     </style>
 </head>
-<body class="sanrio-mode">
+<body>
+    <!-- Side Menu -->
+    <div class="menu">
+        <h3 style="color: #fff; padding: 10px;">Menu</h3>
+        <a href="#section1">About Me</a>
+        <a href="#section2">Skills</a>
+        <a href="#section3">Hobbies</a>
+        <a href="#section4">Projects</a>
+        <a href="#section5">Contact</a>
+        <a href="freeware.html">Freeware</a>
+    </div>
+
+    <!-- Main Content -->
     <div class="content">
-        <h1>¡Hola! Soy Leo</h1>
-        <p>¡Hola! Soy Leo, un desarrollador de interactividad. Tengo una maestría en Artes Mediáticas y estoy especializado en Visión por Computadora y aplicaciones para interactividad. He enseñado cursos sobre Pure Data y software de Arduino en el Diplomado de Artes Sonoras en la UChile.</p>
-        <p>En mi tiempo libre, también soy ingeniero fintech (¡LOL!).</p>
-        
-        <!-- Quote Generator -->
-        <div id="quote-section">
-            <h3>Cita Aleatoria:</h3>
-            <p id="quote">Haz clic para obtener una cita</p>
-            <button onclick="fetchRandomQuote()">Obtener Cita</button>
-        </div>
+        <header>
+            <h1 class="main-title">I Am an Interaction Developer & Media Artist</h1>
+        </header>
 
-        <!-- Gallery with Lightbox -->
-        <h3>Galería de Imágenes</h3>
-        <div class="gallery">
-            <a href="001.jpg" data-lightbox="image-gallery" data-title="Imagen 1">
-                <img src="001.jpg" alt="Imagen 1">
-            </a>
-            <a href="002.jpg" data-lightbox="image-gallery" data-title="Imagen 2">
-                <img src="002.jpg" alt="Imagen 2">
-            </a>
-            <a href="003.jpg" data-lightbox="image-gallery" data-title="Imagen 3">
-                <img src="003.jpg" alt="Imagen 3">
-            </a>
-        </div>
+        <!-- Section 1: About Me -->
+        <section id="section1">
+            <h2>About Me</h2>
+            <p>Hi! I'm Leo, an interaction developer and media artist from Santiago (SCL). I specialize in creating engaging and dynamic media experiences using various technologies such as computer vision, web development, and interactive design. My work combines creativity and engineering to deliver memorable digital experiences.</p>
+            <p>In my free time, I love to read books, work on DIY projects, and explore new tools for design and development. I have certifications in Python, C++, Objective-C, Swift, and other programming languages. My technical skills allow me to blend the worlds of media art and software engineering to create unique solutions.</p>
+        </section>
 
-        <div class="image-container">
-            <h3>Aquí una muestra de mi trabajo:</h3>
-            <img src="00000.jpg" alt="Imagen relacionada con mi trabajo o hobby">
-        </div>
+        <!-- Section 2: Skills -->
+        <section id="section2">
+            <h2>Skills</h2>
+            <p>As a media artist and software engineer, my skill set includes:</p>
+            <ul>
+                <li>Computer Vision (Python, OpenCV)</li>
+                <li>Web Development (JavaScript, React, Node.js)</li>
+                <li>Graphics & Interactive Design (SVG, CSS, HTML5)</li>
+                <li>Automation & Testing (Selenium, Cucumber, Java, Git)</li>
+                <li>System Design & Architecture</li>
+            </ul>
+        </section>
 
-        <!-- Mode Switch Buttons -->
-        <div class="mode-buttons">
-            <button class="mode-button" onclick="setMode('moon')">Modo Luna</button>
-            <button class="mode-button" onclick="setMode('desert')">Modo Desierto</button>
-            <button class="mode-button" onclick="setMode('forest')">Modo Bosque</button>
-            <button class="mode-button" onclick="setMode('gothic')">Modo Gótico</button>
-            <button class="mode-button" onclick="setMode('unicorn')">Modo Unicornio</button>
-            <button class="mode-button" onclick="setMode('sanrio')">Modo Sanrio</button>
-            <button class="mode-button" onclick="setMode('orange-black')">Modo Naranja y Negro</button>
-        </div>
+        <!-- Section 3: Hobbies -->
+        <section id="section3">
+            <h2>Hobbies</h2>
+            <p>Beyond tech and design, I have a variety of personal interests:</p>
+            <ul>
+                <li>DIY Projects & Bricolaje (building and tinkering)</li>
+                <li>Learning new languages (both spoken and programming)</li>
+                <li>Exploring new digital and physical art forms (painting, digital design)</li>
+                <li>Car Enthusiast - Always looking for the latest innovations in automotive technology!</li>
+            </ul>
+        </section>
+
+        <!-- Section 4: Projects -->
+        <section id="section4">
+            <h2>Projects</h2>
+            <p>Throughout my career, I've worked on a wide range of projects that bridge the gap between media art and interactive technologies. Some of my notable works include:</p>
+            <ul>
+                <li>Interactive installations using **Pure Data** and **Max/MSP**.</li>
+                <li>Computer vision-based applications for **art installations**.</li>
+                <li>Developing web-based platforms for **data visualization** and interactive designs.</li>
+            </ul>
+        </section>
+
+        <!-- Section 5: Contact -->
+        <section id="section5">
+            <h2>Contact</h2>
+            <p>Feel free to reach out to me for collaborations or inquiries. I'm always open to discussing new ideas and projects!</p>
+            <p><strong>Email:</strong> <a href="mailto:sakayama8880u09@icloud.com">sakayama8880u09@icloud.com</a></p>
+            <p><strong>Location:</strong> Puente del Arzobispo, Santiago, Chile (simulated for now)</p>
+        </section>
     </div>
 
-    <!-- Banner -->
-    <div class="banner">
-        <p>© 2025 Todos los derechos reservados</p>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
-
-    <script>
-        // Change modes dynamically
-        function setMode(mode) {
-            document.body.className = mode + '-mode';
-        }
-
-        // Fetch a random quote from an API (example using a placeholder quote API)
-        function fetchRandomQuote() {
-            const quotes = [
-                "La vida es lo que pasa mientras estás ocupado haciendo otros planes. – John Lennon",
-                "El futuro pertenece a quienes creen en la belleza de sus sueños. – Eleanor Roosevelt",
-                "No llores porque terminó, sonríe porque sucedió. – Dr. Seuss",
-                "La felicidad no es algo hecho. Proviene de tus propias acciones. – Dalai Lama"
-            ];
-            const randomIndex = Math.floor(Math.random() * quotes.length);
-            document.getElementById("quote").innerText = quotes[randomIndex];
-        }
-    </script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 
