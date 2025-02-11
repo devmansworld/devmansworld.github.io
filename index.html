@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,49 +13,69 @@
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column;
             height: 100vh;
-            flex-direction: row;
             background-color: #f0f0f0;
             transition: background-color 0.5s;
         }
 
-        /* Menu */
-        .menu {
+        /* Top Menu */
+        .top-menu {
+            display: flex;
+            justify-content: space-between;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        .top-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+        }
+
+        .top-menu a:hover {
+            background-color: #444;
+        }
+
+        /* Left Menu (Color Modes) */
+        .color-menu {
             position: fixed;
+            top: 60px;
             left: 0;
-            top: 0;
-            height: 100%;
-            width: 200px;
             background-color: #333;
             padding-top: 20px;
             color: white;
-            text-align: center;
+            text-align: left;
+            width: 200px;
+            height: calc(100vh - 60px);
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         }
 
-        .menu a {
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-            display: block;
+        .color-menu label {
+            margin-left: 20px;
         }
 
-        .menu a:hover {
-            background-color: #444;
+        .color-switch {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .color-menu input {
+            margin-right: 10px;
         }
 
         /* Main Content */
         .content {
             margin-left: 200px;
-            width: calc(100% - 200px);
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            transition: background-color 0.5s;
+            flex-grow: 1;
         }
 
-        /* Bio and Image */
         .bio-image-container {
             display: flex;
             align-items: center;
@@ -81,19 +100,19 @@
         /* Quote Section */
         .quote-section {
             position: fixed;
-            top: 10px;
-            right: 10px;
-            font-size: 12px;
+            bottom: 20px;
+            right: 20px;
+            font-size: 14px;
             color: white;
             text-align: center;
             padding: 10px;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.7);
             border-radius: 5px;
             width: 250px;
         }
 
         .quote-btn {
-            font-size: 10px;
+            font-size: 12px;
             color: white;
             background-color: #444;
             border: none;
@@ -105,68 +124,6 @@
 
         .quote-btn:hover {
             background-color: #666;
-        }
-
-        /* Color Scheme Switches */
-        .color-switches {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .switch {
-            margin-bottom: 10px;
-            font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 150px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .switch .slider {
-            position: relative;
-            cursor: pointer;
-            width: 34px;
-            height: 20px;
-            background-color: #ccc;
-            border-radius: 50px;
-            transition: background-color 0.3s;
-        }
-
-        .switch .slider:before {
-            content: "";
-            position: absolute;
-            height: 12px;
-            width: 12px;
-            border-radius: 50%;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: transform 0.4s;
-        }
-
-        input:checked + .slider {
-            background-color: #2196F3;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(14px);
-        }
-
-        /* Footer Section */
-        .footer {
-            margin-top: auto;
-            text-align: center;
-            background-color: #333;
-            color: white;
-            padding: 10px;
         }
 
         /* Color Mode Backgrounds */
@@ -181,13 +138,45 @@
 </head>
 <body>
 
-<!-- Menu -->
-<div class="menu">
+<!-- Top Menu -->
+<div class="top-menu">
     <a href="#">About</a>
     <a href="#">Repo</a>
     <a href="#">Behance</a>
     <a href="#">Music</a>
     <a href="#">Instagram</a>
+</div>
+
+<!-- Left Menu (Color Modes) -->
+<div class="color-menu">
+    <div class="color-switch">
+        <label>Solarized</label>
+        <input type="checkbox" id="solarized" onchange="changeColorMode()">
+    </div>
+    <div class="color-switch">
+        <label>Kitty</label>
+        <input type="checkbox" id="helloKitty" onchange="changeColorMode()">
+    </div>
+    <div class="color-switch">
+        <label>White</label>
+        <input type="checkbox" id="minimalWhite" onchange="changeColorMode()">
+    </div>
+    <div class="color-switch">
+        <label>Green</label>
+        <input type="checkbox" id="blackGreen" onchange="changeColorMode()">
+    </div>
+    <div class="color-switch">
+        <label>Fuchsia</label>
+        <input type="checkbox" id="whiteFuchsia" onchange="changeColorMode()">
+    </div>
+    <div class="color-switch">
+        <label>Orange</label>
+        <input type="checkbox" id="blackGreyOrange" onchange="changeColorMode()">
+    </div>
+    <div class="color-switch">
+        <label>Gray</label>
+        <input type="checkbox" id="grayscale" onchange="changeColorMode()">
+    </div>
 </div>
 
 <!-- Main Content -->
@@ -200,61 +189,14 @@
             <p>Contact me for projects at <a href="mailto:sakayama234234@icloud.com">sakayama234234@icloud.com</a></p>
         </div>
     </div>
-
-    <!-- Color Scheme Toggles -->
-    <div class="color-switches">
-        <div class="switch">
-            <label>Solarized</label>
-            <input type="checkbox" id="solarized" onchange="changeColorMode()">
-            <span class="slider"></span>
-        </div>
-        <div class="switch">
-            <label>Kitty</label>
-            <input type="checkbox" id="helloKitty" onchange="changeColorMode()">
-            <span class="slider"></span>
-        </div>
-        <div class="switch">
-            <label>White</label>
-            <input type="checkbox" id="minimalWhite" onchange="changeColorMode()">
-            <span class="slider"></span>
-        </div>
-        <div class="switch">
-            <label>Green</label>
-            <input type="checkbox" id="blackGreen" onchange="changeColorMode()">
-            <span class="slider"></span>
-        </div>
-        <div class="switch">
-            <label>Fuchsia</label>
-            <input type="checkbox" id="whiteFuchsia" onchange="changeColorMode()">
-            <span class="slider"></span>
-        </div>
-        <div class="switch">
-            <label>Orange</label>
-            <input type="checkbox" id="blackGreyOrange" onchange="changeColorMode()">
-            <span class="slider"></span>
-        </div>
-        <div class="switch">
-            <label>Gray</label>
-            <input type="checkbox" id="grayscale" onchange="changeColorMode()">
-            <span class="slider"></span>
-        </div>
-    </div>
 </div>
 
 <!-- Quote Section -->
 <div class="quote-section" id="quote-section"></div>
 <button class="quote-btn" onclick="getNewQuote()">Get another quote</button>
 
-<!-- Footer -->
-<div class="footer">
-    <p>All rights reserved ©</p>
-</div>
-
 <script>
 // Array of quotes (add more quotes as needed)
-
-
-
 const quotes = [
     { quote: "It is not our abilities that show what we truly are… it is our choices.", author: "J.K. Rowling, Harry Potter and the Chamber of Secrets" },
     { quote: "In three words I can sum up everything I've learned about life: it goes on.", author: "Robert Frost" },
@@ -324,8 +266,6 @@ const quotes = [
     // Add more quotes here up to 300...
 ];
 
-
-
 // Function to get a random quote
 function getNewQuote() {
     const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -355,7 +295,5 @@ function changeColorMode() {
 
 </body>
 </html>
-
-
 
 
