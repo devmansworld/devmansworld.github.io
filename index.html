@@ -15,31 +15,17 @@
             height: 100vh;
             overflow-x: hidden;
         }
-        .content {
-            position: relative;
-            z-index: 1;
-            padding: 20px;
-        }
         h1 {
             color: darkgray;
         }
-        .image-container {
-            margin-top: 20px;
-            max-width: 100%;
-            text-align: center;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
 
-        /* Lightbox Gallery */
+        /* Gallery */
         .gallery {
             display: flex;
             justify-content: center;
             gap: 20px;
             flex-wrap: wrap;
+            margin-top: 20px;
         }
         .gallery img {
             width: 200px;
@@ -54,30 +40,44 @@
             background: url('moon-mode.svg') no-repeat center center fixed;
             background-size: cover;
         }
-        body.desert-mode {
-            background: url('desert-mode.svg') no-repeat center center fixed;
+        body.space-mode {
+            background: url('space-mode.svg') no-repeat center center fixed;
             background-size: cover;
         }
-        body.forest-mode {
-            background: url('forest-mode.svg') no-repeat center center fixed;
-            background-size: cover;
-        }
-        body.gothic-mode {
-            background: url('gothic-mode.svg') no-repeat center center fixed;
-            background-size: cover;
-        }
-        body.unicorn-mode {
-            background: url('unicorn-mode.svg') no-repeat center center fixed;
-            background-size: cover;
-        }
-        body.sanrio-mode {
-            background-color: pink;
-            background-image: url('hello-kitty.svg'), url('keroppi.svg');
-            background-position: center top, center bottom;
+        body.cartoon-mode {
+            background-color: #ffeb3b; /* A lighter yellow */
+            background-image: url('cartoon-icon.svg'); /* Placeholder for cartoon animation */
+            background-position: center center;
             background-repeat: no-repeat;
+            animation: cartoonAnimation 3s infinite;
         }
 
-        /* Sidebar Styles */
+        /* Simple Animation for Cartoon Mode */
+        @keyframes cartoonAnimation {
+            0% {
+                background-color: #ffeb3b;
+            }
+            50% {
+                background-color: #ffcc00;
+            }
+            100% {
+                background-color: #ffeb3b;
+            }
+        }
+
+        /* Banner */
+        .banner {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Sidebar Switches */
         .sidebar {
             position: fixed;
             top: 0;
@@ -92,65 +92,23 @@
         .sidebar.active {
             display: block;
         }
-        .mode-icon {
-            cursor: pointer;
-            margin: 10px;
-            width: 40px;
-            height: 40px;
+        .switch {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
         }
-
-        /* Contact Form */
-        .contact-form {
-            margin-top: 30px;
-            background-color: #f0f0f0;
-            padding: 20px;
-            border-radius: 10px;
-            display: inline-block;
-            max-width: 400px;
-            width: 100%;
+        .switch input {
+            transform: scale(1.5);
         }
-        .contact-form input,
-        .contact-form textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        .contact-form button {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        /* Banner */
-        .banner {
-            background-color: #333;
-            color: white;
-            padding: 10px 0;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 14px;
+        .switch label {
+            font-size: 18px;
         }
     </style>
 </head>
-<body class="white-mode">
+<body class="space-mode">
     <div class="content">
         <h1>¡Hola! Soy Leo</h1>
-        <p>¡Hola! Soy Leo, un desarrollador de interactividad. Tengo una maestría en Artes Mediáticas y estoy especializado en Visión por Computadora y aplicaciones para interactividad. He enseñado cursos sobre Pure Data y software de Arduino en el Diplomado de Artes Sonoras en la UChile.</p>
-        <p>En mi tiempo libre, también soy ingeniero fintech (¡LOL!).</p>
-
-        <!-- Quote Section -->
-        <div id="quote-section">
-            <h3>Cita Aleatoria:</h3>
-            <p id="quote">Haz clic para obtener una cita</p>
-            <button onclick="fetchRandomQuote()">Obtener Cita</button>
-        </div>
+        <p>Desarrollador interactivo, especializado en Visión por Computadora y proyectos musicales.</p>
 
         <!-- Gallery with Lightbox -->
         <h3>Galería de Imágenes</h3>
@@ -165,33 +123,23 @@
                 <img src="003.jpg" alt="Imagen 3">
             </a>
         </div>
-
-        <div class="image-container">
-            <h3>Aquí una muestra de mi trabajo:</h3>
-            <img src="00000.jpg" alt="Imagen relacionada con mi trabajo o hobby">
-        </div>
-
-        <!-- Contact Form -->
-        <div class="contact-form">
-            <h3>Contáctame</h3>
-            <form action="mailto:leo@correo.com" method="post" enctype="text/plain">
-                <input type="text" name="name" placeholder="Tu nombre" required>
-                <input type="email" name="email" placeholder="Tu correo" required>
-                <textarea name="message" rows="5" placeholder="Tu mensaje" required></textarea>
-                <button type="submit">Enviar</button>
-            </form>
-        </div>
     </div>
 
-    <!-- Mode Icons for Switching -->
-    <div class="sidebar">
+    <!-- Sidebar with Mode Switchers -->
+    <div class="sidebar" id="sidebar">
         <h2>Cambiar Modo</h2>
-        <img class="mode-icon" src="moon-icon.svg" alt="Modo Luna" onclick="setMode('moon')">
-        <img class="mode-icon" src="desert-icon.svg" alt="Modo Desierto" onclick="setMode('desert')">
-        <img class="mode-icon" src="forest-icon.svg" alt="Modo Bosque" onclick="setMode('forest')">
-        <img class="mode-icon" src="gothic-icon.svg" alt="Modo Gótico" onclick="setMode('gothic')">
-        <img class="mode-icon" src="unicorn-icon.svg" alt="Modo Unicornio" onclick="setMode('unicorn')">
-        <img class="mode-icon" src="sanrio-icon.svg" alt="Modo Sanrio" onclick="setMode('sanrio')">
+        <div class="switch">
+            <label for="moon-mode">Modo Luna</label>
+            <input type="checkbox" id="moon-mode" onchange="setMode('moon')">
+        </div>
+        <div class="switch">
+            <label for="space-mode">Modo Espacio</label>
+            <input type="checkbox" id="space-mode" onchange="setMode('space')">
+        </div>
+        <div class="switch">
+            <label for="cartoon-mode">Modo Cartoon</label>
+            <input type="checkbox" id="cartoon-mode" onchange="setMode('cartoon')">
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
@@ -205,18 +153,6 @@
         // Change modes dynamically
         function setMode(mode) {
             document.body.className = mode + '-mode';
-        }
-
-        // Fetch a random quote from an API (example using a placeholder quote API)
-        function fetchRandomQuote() {
-            const quotes = [
-                "La vida es lo que pasa mientras estás ocupado haciendo otros planes. – John Lennon",
-                "El futuro pertenece a quienes creen en la belleza de sus sueños. – Eleanor Roosevelt",
-                "No llores porque terminó, sonríe porque sucedió. – Dr. Seuss",
-                "La felicidad no es algo hecho. Proviene de tus propias acciones. – Dalai Lama"
-            ];
-            const randomIndex = Math.floor(Math.random() * quotes.length);
-            document.getElementById("quote").innerText = quotes[randomIndex];
         }
     </script>
 
