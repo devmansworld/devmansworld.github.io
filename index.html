@@ -3,110 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Developer from SCL</title>
+    <title>Hi!</title>
     <style>
         body {
-            font-family: Century Gothic, sans-serif;
-            text-align: left;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
             transition: all 0.5s ease;
         }
         .container {
-            max-width: 800px;
-            margin: auto;
-        }
-        h3 {
+            width: 60%;
             text-align: left;
         }
-        .bio-text {
+        img {
             width: 100%;
             max-width: 600px;
-        }
-        .bio-text img {
-            width: 100%;
-            height: auto;
             display: block;
+            margin: 20px auto;
         }
-        .toggle-container {
-            display: flex;
-            flex-direction: column;
+        .toggles {
             position: fixed;
             bottom: 20px;
             left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
         .toggle {
-            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toggle input {
+            width: 20px;
+            height: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="bio-text">
-            <h3>Interactive Developer Santiago</h3>
-            <img src="00000000000000.PNG" alt="Reading with Tesseract OCR">
-            <p>I am an interactive developer working on computer vision and text-based projects,</p>
-            <p>with certifications in C++, Swift, and Objective-C.</p>
-            <p>Contact me for projects at <a href="mailto:sakayama432342346@icloud.com">sakayama6rwwer4@icloud.com</a></p>
-        </div>
+        <h1>Interactive Developer from SCL</h1>
+        <img src="project-image.jpg" alt="Project Image">
+        <p>Media artist and software engineer, working on computer vision and text-based projects,</p>
+        <p>with certifications in Python, C++, Swift, and Objective-C.</p>
+        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com">sakayama666icloud.com</a></p>
     </div>
-
-    <div class="toggle-container">
-        <label class="toggle">
-            <input type="checkbox" id="theme-hello-kitty" onchange="switchTheme('hello-kitty')"> Hello Kitty
-        </label>
-        <label class="toggle">
-            <input type="checkbox" id="theme-unicorn" onchange="switchTheme('unicorn')"> Unicorn
-        </label>
-        <label class="toggle">
-            <input type="checkbox" id="theme-football" onchange="switchTheme('football')"> Football
-        </label>
-        <label class="toggle">
-            <input type="checkbox" id="theme-sky" onchange="switchTheme('sky')"> Sky
-        </label>
-        <label class="toggle">
-            <input type="checkbox" id="theme-ice" onchange="switchTheme('ice')"> Ice
-        </label>
-        <label class="toggle">
-            <input type="checkbox" id="theme-water" onchange="switchTheme('water')"> Water
-        </label>
+    
+    <div class="toggles">
+        <label class="toggle"><input type="checkbox" onclick="setTheme('minimal')"> Minimal</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('hello-kitty')"> Hello Kitty</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('unicorn')"> Unicorn</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('matrix')"> Matrix</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('solarized')"> Solarized</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('space')"> Space</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('football')"> Football</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('sky')"> Sky</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('ice')"> Ice</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('water')"> Water</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('fire')"> Fire</label>
+        <label class="toggle"><input type="checkbox" onclick="setTheme('forest')"> Forest</label>
     </div>
-
+    
     <script>
-        function switchTheme(theme) {
-            const themes = ['hello-kitty', 'unicorn', 'football', 'sky', 'ice', 'water'];
-            themes.forEach(t => document.getElementById(`theme-${t}`).checked = false);
-            document.getElementById(`theme-${theme}`).checked = true;
-            
-            switch(theme) {
-                case 'hello-kitty':
-                    document.body.style.background = '#FFD1DC';
-                    document.body.style.color = '#333';
-                    break;
-                case 'unicorn':
-                    document.body.style.background = 'linear-gradient(to right, #ff9a9e, #fad0c4)';
-                    document.body.style.color = '#fff';
-                    break;
-                case 'football':
-                    document.body.style.background = '#008000';
-                    document.body.style.color = '#FFD700';
-                    break;
-                case 'sky':
-                    document.body.style.background = '#87CEEB';
-                    document.body.style.color = '#1E3A5F';
-                    break;
-                case 'ice':
-                    document.body.style.background = '#E0FFFF';
-                    document.body.style.color = '#4682B4';
-                    break;
-                case 'water':
-                    document.body.style.background = '#1E90FF';
-                    document.body.style.color = '#FFF';
-                    break;
-                default:
-                    document.body.style.background = '#fff';
-                    document.body.style.color = '#000';
+        const themes = {
+            minimal: { background: "#f4f4f4", color: "#222", font: "Century Gothic" },
+            "hello-kitty": { background: "#ffd1dc", color: "#ff69b4", font: "Comic Sans MS" },
+            unicorn: { background: "#ffccff", color: "#9900cc", font: "Cursive" },
+            matrix: { background: "#000", color: "#0f0", font: "Courier New" },
+            solarized: { background: "#002b36", color: "#839496", font: "Lucida Console" },
+            space: { background: "#121212", color: "#4fc3f7", font: "Orbitron" },
+            football: { background: "#008000", color: "#ffffff", font: "Impact" },
+            sky: { background: "#87ceeb", color: "#ffffff", font: "Arial" },
+            ice: { background: "#b3e0ff", color: "#003366", font: "Verdana" },
+            water: { background: "#0099cc", color: "#ffffff", font: "Tahoma" },
+            fire: { background: "#ff4500", color: "#ffdd00", font: "Georgia" },
+            forest: { background: "#2e8b57", color: "#fffaf0", font: "Palatino" }
+        };
+        
+        function setTheme(theme) {
+            for (let key in themes) {
+                document.querySelector(`input[onclick="setTheme('${key}')"]`).checked = false;
             }
+            document.querySelector(`input[onclick="setTheme('${theme}')"]`).checked = true;
+            
+            document.body.style.background = themes[theme].background;
+            document.body.style.color = themes[theme].color;
+            document.body.style.fontFamily = themes[theme].font;
         }
     </script>
 </body>
