@@ -71,19 +71,20 @@
         .color-menu {
             position: fixed;
             bottom: 10px;
-            left: 0;
-            background-color: #333;
+            left: 10px;
+            background-color: transparent;
             color: white;
             padding: 10px;
             text-align: left;
-            width: 100%;
             display: flex;
-            justify-content: space-around;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         .color-menu label {
             margin-left: 20px;
-            font-size: 12px;
+            font-size: 10px;
+            color: #fff;
         }
 
         .color-menu input {
@@ -121,6 +122,16 @@
             height: auto;
             margin-top: 20px;
         }
+
+        /* Toggles Styling */
+        .toggle-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .toggle-group .form-check {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -148,29 +159,31 @@
 
 <!-- Color Change Menu (bottom) -->
 <div class="color-menu">
-    <div>
-        <label>Unicorn</label>
-        <input type="radio" name="colorMode" value="unicorn" onclick="changeColorMode('unicorn')">
-    </div>
-    <div>
-        <label>Minimal</label>
-        <input type="radio" name="colorMode" value="minimalWhite" onclick="changeColorMode('minimalWhite')">
-    </div>
-    <div>
-        <label>Solarized</label>
-        <input type="radio" name="colorMode" value="solarized" onclick="changeColorMode('solarized')">
-    </div>
-    <div>
-        <label>Black</label>
-        <input type="radio" name="colorMode" value="black" onclick="changeColorMode('black')">
-    </div>
-    <div>
-        <label>Matrix</label>
-        <input type="radio" name="colorMode" value="matrix" onclick="changeColorMode('matrix')">
-    </div>
-    <div>
-        <label>Fruit</label>
-        <input type="radio" name="colorMode" value="fruit" onclick="changeColorMode('fruit')">
+    <div class="toggle-group">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="unicornToggle" onclick="changeColorMode('unicorn')">
+            <label class="form-check-label" for="unicornToggle">Unicorn</label>
+        </div>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="minimalToggle" onclick="changeColorMode('minimalWhite')">
+            <label class="form-check-label" for="minimalToggle">Minimal</label>
+        </div>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="solarizedToggle" onclick="changeColorMode('solarized')">
+            <label class="form-check-label" for="solarizedToggle">Solarized</label>
+        </div>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="blackToggle" onclick="changeColorMode('black')">
+            <label class="form-check-label" for="blackToggle">Black</label>
+        </div>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="matrixToggle" onclick="changeColorMode('matrix')">
+            <label class="form-check-label" for="matrixToggle">Matrix</label>
+        </div>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="fruitToggle" onclick="changeColorMode('fruit')">
+            <label class="form-check-label" for="fruitToggle">Fruit</label>
+        </div>
     </div>
 </div>
 
@@ -182,12 +195,19 @@
 <script>
 // Function to change the color mode
 function changeColorMode(mode) {
-    const modes = ["unicorn", "minimalWhite", "solarized", "black", "matrix", "fruit"];
+    // Get all color toggles and uncheck them
+    const toggles = document.querySelectorAll('.form-check-input');
+    toggles.forEach(toggle => toggle.checked = false);
+
+    // Check the selected toggle
+    document.getElementById(`${mode}Toggle`).checked = true;
+
     // Remove all color modes
+    const modes = ["unicorn", "minimalWhite", "solarized", "black", "matrix", "fruit"];
     modes.forEach((m) => {
         document.body.classList.remove(m);
     });
-    
+
     // Add the selected color mode
     document.body.classList.add(mode);
 }
@@ -195,4 +215,3 @@ function changeColorMode(mode) {
 
 </body>
 </html>
-
