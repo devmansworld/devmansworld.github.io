@@ -4,23 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leo - Interaction Developer & Media Artist</title>
+    <!-- Google Fonts (Rounded Sans-serif font) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Global Styles */
         body {
-            font-family: Arial, sans-serif;
-            background-color: white;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
             margin: 0;
             padding: 0;
             transition: background-color 0.3s ease;
         }
-        /* Side menu */
+
+        /* Menu */
         .menu {
             position: fixed;
             top: 0;
             left: 0;
             width: 250px;
             height: 100%;
-            background: #333;
+            background-color: #444;
             color: white;
             padding-top: 20px;
             display: flex;
@@ -28,38 +32,93 @@
             align-items: flex-start;
             transition: transform 0.3s ease;
         }
+
         .menu a {
             color: white;
             text-decoration: none;
-            padding: 10px 20px;
+            padding: 15px;
             display: block;
             width: 100%;
         }
+
         .menu a:hover {
-            background-color: #444;
+            background-color: #555;
         }
-        /* Content sections */
+
+        /* Content */
         .content {
             margin-left: 250px;
             padding: 20px;
         }
+
+        /* Section Styling */
         .content section {
             padding: 40px;
+            margin: 20px 0;
             border-bottom: 1px solid #ddd;
+            background-color: white;
+            border-radius: 8px;
         }
+
         .content section h2 {
             font-size: 2rem;
+            color: #333;
         }
-        /* Header styles */
+
+        /* Header */
         header {
-            background: #282c34;
+            background: #333;
             color: white;
             padding: 10px;
             text-align: center;
         }
+
         .main-title {
             font-size: 2.5rem;
-            font-weight: bold;
+            font-weight: 600;
+        }
+
+        /* Color Scheme */
+        .forest-mode {
+            background-color: #d1e8d4;
+            color: #456e4b;
+        }
+
+        .desert-mode {
+            background-color: #f1e1a6;
+            color: #c9a27d;
+        }
+
+        .sea-mode {
+            background-color: #cce7f0;
+            color: #4a80a1;
+        }
+
+        .bauhaus-mode {
+            background-color: #fffae5;
+            color: #db5e52;
+        }
+
+        /* SVG Animations */
+        .cloud-animation {
+            animation: moveClouds 10s linear infinite;
+        }
+
+        @keyframes moveClouds {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Soil Background SVG */
+        .soil-background {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(45deg, #87c480 30%, #82a52b 90%);
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -84,59 +143,57 @@
         <!-- Section 1: About Me -->
         <section id="section1">
             <h2>About Me</h2>
-            <p>Hi! I'm Leo, an interaction developer and media artist from Santiago (SCL). I specialize in creating engaging and dynamic media experiences using various technologies such as computer vision, web development, and interactive design. My work combines creativity and engineering to deliver memorable digital experiences.</p>
-            <p>In my free time, I love to read books, work on DIY projects, and explore new tools for design and development. I have certifications in Python, C++, Objective-C, Swift, and other programming languages. My technical skills allow me to blend the worlds of media art and software engineering to create unique solutions.</p>
+            <p>Hi! I'm Leo, an interaction developer and media artist from Santiago, Chile. My passion lies in blending technology with creative media to build things that engage and inspire. I love working on projects that allow me to experiment and learn new things, whether it’s using computer vision for installations or designing digital interfaces. In my free time, I enjoy reading books, building things, and learning new languages.</p>
         </section>
 
         <!-- Section 2: Skills -->
         <section id="section2">
             <h2>Skills</h2>
-            <p>As a media artist and software engineer, my skill set includes:</p>
             <ul>
                 <li>Computer Vision (Python, OpenCV)</li>
-                <li>Web Development (JavaScript, React, Node.js)</li>
-                <li>Graphics & Interactive Design (SVG, CSS, HTML5)</li>
-                <li>Automation & Testing (Selenium, Cucumber, Java, Git)</li>
-                <li>System Design & Architecture</li>
+                <li>Web Development (React, Node.js)</li>
+                <li>Interactive Design (SVG, CSS, HTML5)</li>
+                <li>Automation & Testing (Java, Selenium)</li>
             </ul>
         </section>
 
         <!-- Section 3: Hobbies -->
         <section id="section3">
             <h2>Hobbies</h2>
-            <p>Beyond tech and design, I have a variety of personal interests:</p>
             <ul>
-                <li>DIY Projects & Bricolaje (building and tinkering)</li>
-                <li>Learning new languages (both spoken and programming)</li>
-                <li>Exploring new digital and physical art forms (painting, digital design)</li>
-                <li>Car Enthusiast - Always looking for the latest innovations in automotive technology!</li>
+                <li>DIY Projects and Building Things</li>
+                <li>Learning new languages</li>
+                <li>Digital and Physical Art</li>
+                <li>Car Enthusiast</li>
             </ul>
         </section>
 
         <!-- Section 4: Projects -->
         <section id="section4">
             <h2>Projects</h2>
-            <p>Throughout my career, I've worked on a wide range of projects that bridge the gap between media art and interactive technologies. Some of my notable works include:</p>
             <ul>
-                <li>Interactive installations using **Pure Data** and **Max/MSP**.</li>
-                <li>Computer vision-based applications for **art installations**.</li>
-                <li>Developing web-based platforms for **data visualization** and interactive designs.</li>
+                <li>Interactive Art Installations</li>
+                <li>Computer Vision Applications</li>
+                <li>Data Visualization Platforms</li>
             </ul>
         </section>
 
         <!-- Section 5: Contact -->
         <section id="section5">
             <h2>Contact</h2>
-            <p>Feel free to reach out to me for collaborations or inquiries. I'm always open to discussing new ideas and projects!</p>
-            <p><strong>Email:</strong> <a href="mailto:sakayama8880u09@icloud.com">sakayama8880u09@icloud.com</a></p>
-            <p><strong>Location:</strong> Puente del Arzobispo, Santiago, Chile (simulated for now)</p>
+            <p>If you'd like to collaborate or have a project in mind, feel free to contact me.</p>
+            <p><strong>Email:</strong> <a href="mailto:sakayama666@icloud.com">sakayama666@icloud.com</a></p>
         </section>
+
+        <!-- Background with Soil -->
+        <div class="soil-background"></div>
     </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 
 
 
