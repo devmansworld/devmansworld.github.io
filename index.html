@@ -1,29 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hi!</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="Hi!_files/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            align-items: flex-start; /* Aligning text and images to the left */
+            justify-content: flex-start; /* Ensuring that everything aligns to the top */
             height: 100vh;
             transition: all 0.5s ease;
-            overflow: hidden;
-            font-size: 16px;
+            font-size: 14px; /* Reduced base font size */
             background-color: #fff;
             color: #000;
-            text-align: center;
+            text-align: left; /* Align text to the left */
+            padding: 10px;
         }
+
         .container {
-            width: 60%;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
         }
+
+        .container img {
+            width: 100%; /* Make the image responsive */
+            height: auto;
+        }
+
         .toggles {
             position: fixed;
             top: 50%;
@@ -32,12 +42,15 @@
             display: flex;
             flex-direction: column;
             gap: 3px;
+            z-index: 10;
         }
+
         .toggle-container {
             display: flex;
             align-items: center;
             gap: 3px;
         }
+
         .toggle {
             width: 25px;
             height: 12px;
@@ -46,6 +59,7 @@
             position: relative;
             cursor: pointer;
         }
+
         .toggle:before {
             content: '';
             width: 10px;
@@ -57,38 +71,102 @@
             border-radius: 50%;
             transition: 0.3s;
         }
+
         .toggle.active {
             background: #4CAF50;
         }
+
         .toggle.active:before {
             left: 13px;
         }
+
         .toggle-label {
-            font-size: 8px;
+            font-size: 10px;
         }
+
         .movie-quotes {
             position: fixed;
             bottom: 5px;
             right: 5px;
-            font-size: 6px;
+            font-size: 8px;
             text-align: right;
             width: 20%;
             max-height: 50vh;
             overflow-y: auto;
             word-wrap: break-word;
         }
+
         .footer {
             position: fixed;
             bottom: 5px;
             left: 5px;
             font-size: 8px;
         }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            body {
+                font-size: 12px; /* Smaller font size for smaller screens */
+                padding: 5px;
+            }
+
+            .container {
+                width: 100%;
+                padding: 5px;
+            }
+
+            .toggles {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                transform: none;
+                flex-direction: row;
+                gap: 10px;
+            }
+
+            .toggle-container {
+                font-size: 10px;
+            }
+
+            .movie-quotes {
+                font-size: 6px;
+                width: 40%;
+            }
+
+            .footer {
+                font-size: 7px;
+            }
+        }
+
         @media (max-width: 600px) {
             body {
-                font-size: 14px;
+                font-size: 10px; /* Even smaller font size for very small screens */
             }
+
             .container {
-                width: 90%;
+                width: 100%;
+                padding: 3px;
+            }
+
+            .toggles {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                flex-direction: row;
+                gap: 5px;
+            }
+
+            .toggle-container {
+                font-size: 8px;
+            }
+
+            .movie-quotes {
+                font-size: 5px;
+                width: 100%;
+            }
+
+            .footer {
+                font-size: 6px;
             }
         }
     </style>
@@ -96,8 +174,12 @@
 <body>
     <div class="container">
         <h3>Media Artist from SCL</h3>
-        <img src="00000000000000.PNG" alt="Text Based CV Project">
-        <p>Currently working on Computer Vision and text-based projects. I was a teaching assistant in Pure Data software in Sound Art Diploma at U. de Chile, where I explored concrete music and the futurist manifesto. I'm also a writer for magazines such as Nación Eléctrica, and you can find me in the alternative music world at <a href="https://labalahumana.bandcamp.com" target="_blank">Labalahumana Bandcamp</a>.</p>
+        <img src="Hi!_files/00000000000000.PNG" alt="Text Based CV Project">
+        <p>Currently working on Computer Vision and text-based projects.
+        I was a teaching assistant in Pure Data software in Sound Art Diploma 
+        at U. de Chile, where I explored concrete music and the futurist 
+        manifesto. I'm also a writer for magazines such as Nación Eléctrica, and
+        you can find me in the alternative music world at <a href="https://labalahumana.bandcamp.com/" target="_blank">Labalahumana Bandcamp</a>.</p>
         <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
     </div>
 
@@ -153,11 +235,11 @@
                 sky: { background: "#87ceeb", color: "#fff", font: "Arial", emailColor: "#fff" },
                 forest: { background: "#228b22", color: "#fff", font: "Georgia", emailColor: "#fff" },
                 fruits: { background: "#f0e68c", color: "#ff6347", font: "Verdana", emailColor: "#ff6347" },
-                flowers: { background: "#ffb6c1", color: "#ff69b4", font: "Courier New", emailColor: "#ff69b4" },
-                food: { background: "#ffdead", color: "#8b4513", font: "Impact", emailColor: "#8b4513" }
+                flowers: { background: "#ffb6c1", color: "#ff69b4", font: "Calibri", emailColor: "#ff69b4" },
+                food: { background: "#f5deb3", color: "#ff4500", font: "Helvetica", emailColor: "#ff4500" }
             };
 
-            document.body.style.background = themeStyles[theme].background;
+            document.body.style.backgroundColor = themeStyles[theme].background;
             document.body.style.color = themeStyles[theme].color;
             document.body.style.fontFamily = themeStyles[theme].font;
             document.getElementById('email').style.color = themeStyles[theme].emailColor;
