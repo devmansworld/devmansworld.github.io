@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hi!</title>
-    <!-- Include Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Include Google Fonts for Various Themes -->
-    <link href="https://fonts.googleapis.com/css2?family=Century+Gothic&family=Comic+Sans+MS&family=Cursive&family=Courier+New&family=Lucida+Console&family=Orbitron&family=Impact&family=Arial&family=Verdana&family=Tahoma&family=Georgia&family=Palatino&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -18,16 +15,11 @@
             justify-content: center;
             height: 100vh;
             transition: all 0.5s ease;
+            overflow-x: hidden;
         }
         .container {
             width: 60%;
             text-align: left;
-        }
-        img {
-            width: 100%;
-            max-width: 600px;
-            display: block;
-            margin: 20px auto;
         }
         .toggles {
             position: fixed;
@@ -39,17 +31,15 @@
             gap: 10px;
             padding-left: 10px;
         }
-        .toggle input {
-            width: 40px;
-            height: 20px;
-        }
         .movie-quotes {
             position: fixed;
             bottom: 5px;
             right: 5px;
-            font-size: 8px;
+            font-size: 6px;
             text-align: right;
             width: 20%;
+            max-height: 50vh;
+            overflow-y: auto;
         }
         .footer {
             position: fixed;
@@ -68,85 +58,49 @@
     </div>
     
     <div class="toggles">
-        <label class="toggle">
-            <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="minimal" onchange="setTheme('minimal')">
-                <label class="custom-control-label" for="minimal">Minimal</label>
-            </div>
-        </label>
-        <label class="toggle">
-            <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="hello-kitty" onchange="setTheme('hello-kitty')">
-                <label class="custom-control-label" for="hello-kitty">Kitty</label>
-            </div>
-        </label>
-        <label class="toggle">
-            <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="unicorn" onchange="setTheme('unicorn')">
-                <label class="custom-control-label" for="unicorn">Unicorn</label>
-            </div>
-        </label>
-        <label class="toggle">
-            <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="matrix" onchange="setTheme('matrix')">
-                <label class="custom-control-label" for="matrix">Matrix</label>
-            </div>
-        </label>
-        <label class="toggle">
-            <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="solarized" onchange="setTheme('solarized')">
-                <label class="custom-control-label" for="solarized">Solar</label>
-            </div>
-        </label>
-        <label class="toggle">
-            <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="space" onchange="setTheme('space')">
-                <label class="custom-control-label" for="space">Space</label>
-            </div>
-        </label>
-        <label class="toggle">
-            <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="fire" onchange="setTheme('fire')">
-                <label class="custom-control-label" for="fire">Fire</label>
-            </div>
-        </label>
-        <label class="toggle">
-            <div class="custom-control custom-switch">
-                <input type="checkbox" class="custom-control-input" id="forest" onchange="setTheme('forest')">
-                <label class="custom-control-label" for="forest">Forest</label>
-            </div>
-        </label>
+        <script>
+            const themes = ["retro", "cyberpunk", "gothic", "neon", "ocean", "classic", "modern", "minimalist"];
+            themes.forEach(theme => {
+                document.write(`<label class="toggle"><div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" id="${theme}" onchange="setTheme('${theme}')"><label class="custom-control-label" for="${theme}">${theme.charAt(0).toUpperCase() + theme.slice(1)}</label></div></label>`);
+            });
+        </script>
     </div>
     
     <div class="movie-quotes">
-        "C'est la vie." - French Classic<br>
-        "Je suis ton père." - French Cinema<br>
-        "La dolce vita." - Italian Classic<br>
-        "La strada." - Italian Classic<br>
-        "The call is coming from inside the house." - Horror
-        <!-- Add more quotes -->
+        <script>
+            const movieQuotes = [
+                "Je vais lui faire une offre qu'il ne pourra pas refuser.", "La vita è bella.", "C'est arrivé près de chez vous.",
+                "Il faut tenter l'impossible pour atteindre le possible.", "La vie est un long fleuve tranquille.", "Un homme qui ne passe pas de temps avec sa famille n'est pas vraiment un homme.",
+                "J'adore l'odeur du napalm au petit matin.", "Il Buono, il Brutto, il Cattivo.", "L'enfer, c'est les autres.", "Hasta la vista, baby.", "Here's Johnny!", "You can't handle the truth!", "I see dead people."
+            ];
+            for (let i = 0; i < 100; i++) {
+                movieQuotes.push(`Quote ${i + 14}`);
+            }
+            document.write(movieQuotes.sort(() => Math.random() - 0.5).slice(0, 100).join('<br>'));
+        </script>
     </div>
     <div class="footer">All rights reserved LP 2025.</div>
     
     <script>
         function setTheme(theme) {
-            const themes = {
-                minimal: { background: "#f4f4f4", color: "#222", font: "Century Gothic", emailColor: "#1a73e8" },
-                "hello-kitty": { background: "#ffd1dc", color: "#ff69b4", font: "Comic Sans MS", emailColor: "#ff69b4" },
-                unicorn: { background: "#ffccff", color: "#9900cc", font: "Cursive", emailColor: "#9900cc" },
-                matrix: { background: "#000", color: "#0f0", font: "Courier New", emailColor: "#0f0" },
-                solarized: { background: "#002b36", color: "#839496", font: "Lucida Console", emailColor: "#839496" },
-                space: { background: "#121212", color: "#4fc3f7", font: "Orbitron", emailColor: "#4fc3f7" },
-                fire: { background: "#ff4500", color: "#ffdd00", font: "Georgia", emailColor: "#ffdd00" },
-                forest: { background: "#2e8b57", color: "#fffaf0", font: "Palatino", emailColor: "#fffaf0" }
+            const themeStyles = {
+                retro: { background: "#f4e1c4", color: "#61380B", font: "Garamond", emailColor: "#61380B" },
+                cyberpunk: { background: "#000", color: "#ff00ff", font: "Monospace", emailColor: "#ff00ff" },
+                gothic: { background: "#1a1a1a", color: "#e6e6e6", font: "Times New Roman", emailColor: "#e6e6e6" },
+                neon: { background: "#000", color: "#00ffff", font: "Impact", emailColor: "#00ffff" },
+                ocean: { background: "#004e64", color: "#d1e8e2", font: "Brush Script MT", emailColor: "#d1e8e2" },
+                classic: { background: "#fff", color: "#000", font: "Georgia", emailColor: "#000" },
+                modern: { background: "#f5f5f5", color: "#333", font: "Arial", emailColor: "#333" },
+                minimalist: { background: "#eee", color: "#222", font: "Verdana", emailColor: "#222" }
             };
-            document.body.style.background = themes[theme].background;
-            document.body.style.color = themes[theme].color;
-            document.body.style.fontFamily = themes[theme].font;
-            document.getElementById('email').style.color = themes[theme].emailColor;
+            document.body.style.background = themeStyles[theme].background;
+            document.body.style.color = themeStyles[theme].color;
+            document.body.style.fontFamily = themeStyles[theme].font;
+            document.getElementById('email').style.color = themeStyles[theme].emailColor;
         }
     </script>
 </body>
 </html>
+
 
 
