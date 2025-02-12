@@ -9,32 +9,30 @@
         body {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            font-family: Arial, sans-serif;
             transition: all 0.5s ease;
             overflow-x: hidden;
             overflow-y: auto;
-            font-size: 18px;
         }
         .container {
-            width: 60%;
+            width: 80%;
+            margin: 0 auto;
             text-align: left;
+            padding: 20px;
         }
         .toggles {
-            position: fixed;
-            top: 50%;
+            position: absolute;
+            top: 10%;
             left: 10px;
-            transform: translateY(-50%);
             display: flex;
             flex-direction: column;
             gap: 10px;
-            padding-left: 5px;
         }
-        .toggle {
-            margin-bottom: 10px;
+        .footer {
+            position: fixed;
+            bottom: 5px;
+            left: 5px;
+            font-size: 8px;
         }
         .movie-quotes {
             position: fixed;
@@ -47,12 +45,6 @@
             overflow-y: auto;
             word-wrap: break-word;
         }
-        .footer {
-            position: fixed;
-            bottom: 5px;
-            left: 5px;
-            font-size: 8px;
-        }
     </style>
 </head>
 <body>
@@ -60,88 +52,64 @@
         <h3>Media Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
         <p>Currently working on Computer Vision and text-based projects.</p>
-        <p>Contact me for projects at <a href="mailto:sakoppipoipoipoj@icloud.com" id="email">sakayamiuyiuy@icloud.com</a></p> 
+        <p>Contact me for projects at <a href="mailto:sakoppipoipoipoj@icloud.com" id="email">sakayamiuyiuy@icloud.com</a></p>
+        <!-- New paragraph added -->
+        <p>I teach technologies in web, mobile, and media design tools for art and architecture and design professionals, including 3D technologies, code applied to design modeling, service design, and job interview preparations for tech roles.</p>
     </div>
 
     <div class="toggles">
-        <div class="toggle">
-            <label for="retroToggle" class="btn btn-outline-primary">
-                Retro
-                <input type="radio" id="retroToggle" name="themeToggle" onclick="setTheme('retro')" />
-            </label>
-        </div>
-        <div class="toggle">
-            <label for="cyberpunkToggle" class="btn btn-outline-primary">
-                Cyberpunk
-                <input type="radio" id="cyberpunkToggle" name="themeToggle" onclick="setTheme('cyberpunk')" />
-            </label>
-        </div>
-        <div class="toggle">
-            <label for="gothicToggle" class="btn btn-outline-primary">
-                Gothic
-                <input type="radio" id="gothicToggle" name="themeToggle" onclick="setTheme('gothic')" />
-            </label>
-        </div>
-        <div class="toggle">
-            <label for="hackerToggle" class="btn btn-outline-primary">
-                Hacker
-                <input type="radio" id="hackerToggle" name="themeToggle" onclick="setTheme('hacker')" />
-            </label>
-        </div>
-        <div class="toggle">
-            <label for="neonToggle" class="btn btn-outline-primary">
-                Neon
-                <input type="radio" id="neonToggle" name="themeToggle" onclick="setTheme('neon')" />
-            </label>
-        </div>
-        <div class="toggle">
-            <label for="oceanToggle" class="btn btn-outline-primary">
-                Ocean
-                <input type="radio" id="oceanToggle" name="themeToggle" onclick="setTheme('ocean')" />
-            </label>
-        </div>
-        <div class="toggle">
-            <label for="classicToggle" class="btn btn-outline-primary">
-                Classic
-                <input type="radio" id="classicToggle" name="themeToggle" onclick="setTheme('classic')" />
-            </label>
-        </div>
-        <div class="toggle">
-            <label for="modernToggle" class="btn btn-outline-primary">
-                Modern
-                <input type="radio" id="modernToggle" name="themeToggle" onclick="setTheme('modern')" />
-            </label>
-        </div>
-        <div class="toggle">
-            <label for="minimalistToggle" class="btn btn-outline-primary">
-                Minimalist
-                <input type="radio" id="minimalistToggle" name="themeToggle" onclick="setTheme('minimalist')" />
-            </label>
-        </div>
-        <div class="toggle">
-            <label for="unicornToggle" class="btn btn-outline-primary">
-                Unicorn
-                <input type="radio" id="unicornToggle" name="themeToggle" onclick="setTheme('unicorn')" />
-            </label>
-        </div>
-        <div class="toggle">
-            <label for="helloKittyToggle" class="btn btn-outline-primary">
-                Hello Kitty
-                <input type="radio" id="helloKittyToggle" name="themeToggle" onclick="setTheme('hello_kitty')" />
-            </label>
-        </div>
-        <div class="toggle">
-            <label for="kuromiToggle" class="btn btn-outline-primary">
-                Kuromi
-                <input type="radio" id="kuromiToggle" name="themeToggle" onclick="setTheme('kuromi')" />
-            </label>
-        </div>
-        <div class="toggle">
-            <label for="keroppiToggle" class="btn btn-outline-primary">
-                Keroppi
-                <input type="radio" id="keroppiToggle" name="themeToggle" onclick="setTheme('keroppi')" />
-            </label>
-        </div>
+        <label class="btn btn-outline-primary">
+            Retro
+            <input type="radio" name="themeToggle" onclick="setTheme('retro')" />
+        </label>
+        <label class="btn btn-outline-primary">
+            Cyberpunk
+            <input type="radio" name="themeToggle" onclick="setTheme('cyberpunk')" />
+        </label>
+        <label class="btn btn-outline-primary">
+            Gothic
+            <input type="radio" name="themeToggle" onclick="setTheme('gothic')" />
+        </label>
+        <label class="btn btn-outline-primary">
+            Hacker
+            <input type="radio" name="themeToggle" onclick="setTheme('hacker')" />
+        </label>
+        <label class="btn btn-outline-primary">
+            Neon
+            <input type="radio" name="themeToggle" onclick="setTheme('neon')" />
+        </label>
+        <label class="btn btn-outline-primary">
+            Ocean
+            <input type="radio" name="themeToggle" onclick="setTheme('ocean')" />
+        </label>
+        <label class="btn btn-outline-primary">
+            Classic
+            <input type="radio" name="themeToggle" onclick="setTheme('classic')" />
+        </label>
+        <label class="btn btn-outline-primary">
+            Modern
+            <input type="radio" name="themeToggle" onclick="setTheme('modern')" />
+        </label>
+        <label class="btn btn-outline-primary">
+            Minimalist
+            <input type="radio" name="themeToggle" onclick="setTheme('minimalist')" />
+        </label>
+        <label class="btn btn-outline-primary">
+            Unicorn
+            <input type="radio" name="themeToggle" onclick="setTheme('unicorn')" />
+        </label>
+        <label class="btn btn-outline-primary">
+            Hello Kitty
+            <input type="radio" name="themeToggle" onclick="setTheme('hello_kitty')" />
+        </label>
+        <label class="btn btn-outline-primary">
+            Kuromi
+            <input type="radio" name="themeToggle" onclick="setTheme('kuromi')" />
+        </label>
+        <label class="btn btn-outline-primary">
+            Keroppi
+            <input type="radio" name="themeToggle" onclick="setTheme('keroppi')" />
+        </label>
     </div>
 
     <div class="movie-quotes">
@@ -174,16 +142,16 @@
             const themes = ['retro', 'cyberpunk', 'gothic', 'hacker', 'neon', 'ocean', 'classic', 'modern', 'minimalist', 'unicorn', 'hello_kitty', 'kuromi', 'keroppi'];
             themes.forEach(t => {
                 document.body.classList.remove(t);
-                document.getElementById(t + 'Toggle').checked = false; // Uncheck other toggles
+                document.querySelectorAll('input[name="themeToggle"]').forEach(input => input.checked = false); // Uncheck other toggles
             });
 
             // Add the selected theme class
             document.body.classList.add(theme);
-            document.getElementById(theme + 'Toggle').checked = true; // Ensure the clicked toggle stays checked
         }
     </script>
 </body>
 </html>
+
 
 
 
