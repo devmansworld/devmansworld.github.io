@@ -17,6 +17,7 @@
             transition: all 0.5s ease;
             overflow-x: hidden;
             overflow-y: auto;
+            font-size: 18px;
         }
         .container {
             width: 60%;
@@ -29,8 +30,12 @@
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding-left: 10px;
+            gap: 5px;
+            padding-left: 5px;
+        }
+        .toggle label {
+            font-size: 10px;
+            padding: 2px;
         }
         .movie-quotes {
             position: fixed;
@@ -54,16 +59,17 @@
 <body>
     <div class="container">
         <h3>Media Artist from SCL</h3>
-        <img src="00000000000000.PNG" alt="Text Based CV Project">
+      
         <p>Currently working on Computer Vision and text-based projects.</p>
-        <p>Contact me for projects at <a href="mailto:sakoayama666@icloud.com" id="email">sakayama666@icloud.com</a></p> 
+          <img src="00000000000000.PNG" alt="Text Based CV Project">
+        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p> 
     </div>
     
     <div class="toggles">
         <script>
-            const themes = ["retro", "cyberpunk", "gothic", "neon", "ocean", "classic", "modern", "minimalist", "unicorn", "hello_kitty", "snoopy", "kuromi", "keroppi", "mcdonalds", "vaporwave", "nineties"];
+            const themes = ["retro", "cyberpunk", "gothic", "neon", "ocean", "classic", "modern", "minimalist", "unicorn", "hello_kitty", "snoopy", "kuromi", "keroppi", "mcdonalds", "vaporwave", "nineties", "hacker"];
             themes.forEach(theme => {
-                document.write(`<label class="toggle"><div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" id="${theme}" onchange="setTheme('${theme}')"><label class="custom-control-label" for="${theme}">${theme.replace('_', ' ').charAt(0).toUpperCase() + theme.replace('_', ' ').slice(1)}</label></div></label>`);
+                document.write(`<label class="toggle"><input type="checkbox" id="${theme}" onchange="setTheme('${theme}')"> ${theme.replace('_', ' ')}</label>`);
             });
         </script>
     </div>
@@ -80,7 +86,7 @@
                 "The truth is rarely pure and never simple.", "Not all those who wander are lost.", "Tant que l’on n’a pas aimé un animal, une partie de notre âme reste endormie.",
                 "The journey of a thousand miles begins with a single step.", "A mind needs books as a sword needs a whetstone.", "Fear is the mind-killer.", "Elementary, my dear Watson."
             ];
-            let formattedQuotes = texts.sort(() => Math.random() - 0.5).slice(0, 100).map(q => `${q} <br><br>`);
+            let formattedQuotes = texts.sort(() => Math.random() - 0.5).map(q => `${q} <br><br>`);
             document.write(formattedQuotes.join(''));
         </script>
     </div>
@@ -92,6 +98,7 @@
                 retro: { background: "#f4e1c4", color: "#61380B", font: "Garamond", emailColor: "#61380B" },
                 cyberpunk: { background: "#000", color: "#ff00ff", font: "Monospace", emailColor: "#ff00ff" },
                 gothic: { background: "#1a1a1a", color: "#e6e6e6", font: "Times New Roman", emailColor: "#e6e6e6" },
+                hacker: { background: "#000", color: "#00ff00", font: "Courier New", emailColor: "#00ff00" },
                 neon: { background: "#000", color: "#00ffff", font: "Impact", emailColor: "#00ffff" },
                 ocean: { background: "#004e64", color: "#d1e8e2", font: "Brush Script MT", emailColor: "#d1e8e2" },
                 classic: { background: "#fff", color: "#000", font: "Georgia", emailColor: "#000" },
@@ -110,8 +117,6 @@
         }
     </script>
 </body>
-</html>
-
 </html>
 
 
