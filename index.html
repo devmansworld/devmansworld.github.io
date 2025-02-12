@@ -15,29 +15,56 @@
             justify-content: center;
             height: 100vh;
             transition: all 0.5s ease;
-            overflow-x: hidden;
-            overflow-y: auto;
-            font-size: 18px;
+            overflow: hidden;
+            font-size: 16px;
             background-color: #fff;
             color: #000;
+            text-align: center;
         }
         .container {
             width: 60%;
-            text-align: left;
         }
         .toggles {
-            position: center-left;
+            position: fixed;
             top: 50%;
-            left: 10px;
+            left: 5px;
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            padding-left: 5px;
+            gap: 3px;
         }
-        .toggle label {
-            font-size: 10px;
-            padding: 2px;
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .toggle {
+            width: 25px;
+            height: 12px;
+            background: #ccc;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+        }
+        .toggle:before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: white;
+            position: absolute;
+            top: 1px;
+            left: 2px;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .toggle.active {
+            background: #4CAF50;
+        }
+        .toggle.active:before {
+            left: 13px;
+        }
+        .toggle-label {
+            font-size: 8px;
         }
         .movie-quotes {
             position: fixed;
@@ -68,9 +95,9 @@
 </head>
 <body>
     <div class="container">
-        <h3></h3>
+        <h3>Media Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
-        <p>Media Artist from Santiago. Currently working on Computer Vision and text-based projects. I was a teaching assistant in Pure Data software in Sound Art Diploma at U. de Chile, where I explored concrete music and the futurist manifesto. I'm also a writer for magazines such as Nación Eléctrica, and you can find me in the alternative music world at <a href="https://labalahumana.bandcamp.com" target="_blank">Labalahumana Bandcamp</a>.</p>
+        <p>Currently working on Computer Vision and text-based projects. I was a teaching assistant in Pure Data software in Sound Art Diploma at U. de Chile, where I explored concrete music and the futurist manifesto. I'm also a writer for magazines such as Nación Eléctrica, and you can find me in the alternative music world at <a href="https://labalahumana.bandcamp.com" target="_blank">Labalahumana Bandcamp</a>.</p>
         <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
     </div>
 
@@ -81,7 +108,12 @@
                 "fruits", "flowers", "food"
             ];
             themes.forEach(theme => {
-                document.write(`<label class="toggle"><input type="checkbox" id="${theme}" onchange="setTheme('${theme}')"> ${theme.replace('_', ' ')}</label>`);
+                document.write(`
+                    <div class="toggle-container">
+                        <div class="toggle" id="${theme}" onclick="setTheme('${theme}')"></div>
+                        <span class="toggle-label">${theme.replace('_', ' ')}</span>
+                    </div>
+                `);
             });
         </script>
     </div>
@@ -107,6 +139,10 @@
 
     <script>
         function setTheme(theme) {
+            const toggles = document.querySelectorAll(".toggle");
+            toggles.forEach(toggle => toggle.classList.remove("active"));
+            document.getElementById(theme).classList.add("active");
+
             const themeStyles = {
                 hello_kitty: { background: "#ffe4e1", color: "#ff1493", font: "Arial Rounded MT", emailColor: "#ff1493" },
                 snoopy: { background: "#fefefe", color: "#000", font: "Courier New", emailColor: "#000" },
@@ -120,6 +156,7 @@
                 flowers: { background: "#ffb6c1", color: "#ff69b4", font: "Courier New", emailColor: "#ff69b4" },
                 food: { background: "#ffdead", color: "#8b4513", font: "Impact", emailColor: "#8b4513" }
             };
+
             document.body.style.background = themeStyles[theme].background;
             document.body.style.color = themeStyles[theme].color;
             document.body.style.fontFamily = themeStyles[theme].font;
@@ -128,6 +165,7 @@
     </script>
 </body>
 </html>
+
 
 
 
