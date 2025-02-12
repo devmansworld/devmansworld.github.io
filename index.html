@@ -10,23 +10,22 @@
         body {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start; /* Aligning text and images to the left */
-            justify-content: flex-start; /* Ensuring that everything aligns to the top */
-            height: 100vh;
-            transition: all 0.5s ease;
-            font-size: 14px; /* Reduced base font size */
+            font-size: 14px; /* Default font size */
             background-color: #fff;
             color: #000;
-            text-align: left; /* Align text to the left */
-            padding: 10px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            height: 100vh;
+            transition: all 0.5s ease;
         }
 
         .container {
             width: 100%;
             max-width: 800px;
-            margin-bottom: 20px;
+            padding: 10px;
         }
 
         .container img {
@@ -107,19 +106,15 @@
         @media (max-width: 1024px) {
             body {
                 font-size: 12px; /* Smaller font size for smaller screens */
-                padding: 5px;
             }
 
             .container {
-                width: 100%;
                 padding: 5px;
             }
 
             .toggles {
-                position: absolute;
                 top: 10px;
                 left: 10px;
-                transform: none;
                 flex-direction: row;
                 gap: 10px;
             }
@@ -144,12 +139,10 @@
             }
 
             .container {
-                width: 100%;
                 padding: 3px;
             }
 
             .toggles {
-                position: absolute;
                 top: 10px;
                 left: 10px;
                 flex-direction: row;
@@ -174,7 +167,7 @@
 <body>
     <div class="container">
         <h3>Media Artist from SCL</h3>
-        <img src="Hi!_files/00000000000000.PNG" alt="Text Based CV Project">
+        <img src="00000000000000.PNG" alt="Text Based CV Project"> <!-- Use a direct relative path here -->
         <p>Currently working on Computer Vision and text-based projects.
         I was a teaching assistant in Pure Data software in Sound Art Diploma 
         at U. de Chile, where I explored concrete music and the futurist 
