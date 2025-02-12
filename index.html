@@ -6,8 +6,8 @@
     <title>Hi!</title>
     <!-- Include Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Include Google Fonts for Century Gothic -->
-    <link href="https://fonts.googleapis.com/css2?family=Century+Gothic&display=swap" rel="stylesheet">
+    <!-- Include Google Fonts for Various Themes -->
+    <link href="https://fonts.googleapis.com/css2?family=Century+Gothic&family=Comic+Sans+MS&family=Cursive&family=Courier+New&family=Lucida+Console&family=Orbitron&family=Impact&family=Arial&family=Verdana&family=Tahoma&family=Georgia&family=Palatino&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -18,7 +18,6 @@
             justify-content: center;
             height: 100vh;
             transition: all 0.5s ease;
-            font-family: 'Century Gothic', sans-serif; /* Ensure the font is loaded initially */
         }
         .container {
             width: 60%;
@@ -44,8 +43,19 @@
             width: 40px;
             height: 20px;
         }
-        a {
-            transition: color 0.5s;
+        .movie-quotes {
+            position: fixed;
+            bottom: 5px;
+            right: 5px;
+            font-size: 8px;
+            text-align: right;
+            width: 20%;
+        }
+        .footer {
+            position: fixed;
+            bottom: 5px;
+            left: 5px;
+            font-size: 8px;
         }
     </style>
 </head>
@@ -54,7 +64,7 @@
         <h3>Media Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
         <p>Currently working on Computer Vision and text-based projects.</p>
-        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
+        <p>Contact me for projects at <a href="mailto:sakoppipoipoipoj@icloud.com" id="email">sakayamiuyiuy@icloud.com</a></p> 
     </div>
     
     <div class="toggles">
@@ -67,7 +77,7 @@
         <label class="toggle">
             <div class="custom-control custom-switch">
                 <input type="checkbox" class="custom-control-input" id="hello-kitty" onchange="setTheme('hello-kitty')">
-                <label class="custom-control-label" for="hello-kitty">Hello Kitty</label>
+                <label class="custom-control-label" for="hello-kitty">Kitty</label>
             </div>
         </label>
         <label class="toggle">
@@ -76,44 +86,67 @@
                 <label class="custom-control-label" for="unicorn">Unicorn</label>
             </div>
         </label>
-        <!-- Add other themes similarly... -->
+        <label class="toggle">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="matrix" onchange="setTheme('matrix')">
+                <label class="custom-control-label" for="matrix">Matrix</label>
+            </div>
+        </label>
+        <label class="toggle">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="solarized" onchange="setTheme('solarized')">
+                <label class="custom-control-label" for="solarized">Solar</label>
+            </div>
+        </label>
+        <label class="toggle">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="space" onchange="setTheme('space')">
+                <label class="custom-control-label" for="space">Space</label>
+            </div>
+        </label>
+        <label class="toggle">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="fire" onchange="setTheme('fire')">
+                <label class="custom-control-label" for="fire">Fire</label>
+            </div>
+        </label>
+        <label class="toggle">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="forest" onchange="setTheme('forest')">
+                <label class="custom-control-label" for="forest">Forest</label>
+            </div>
+        </label>
     </div>
     
+    <div class="movie-quotes">
+        "C'est la vie." - French Classic<br>
+        "Je suis ton père." - French Cinema<br>
+        "La dolce vita." - Italian Classic<br>
+        "La strada." - Italian Classic<br>
+        "The call is coming from inside the house." - Horror
+        <!-- Add more quotes -->
+    </div>
+    <div class="footer">All rights reserved LP 2025.</div>
+    
     <script>
-        const themes = {
-            minimal: { background: "#f4f4f4", color: "#222", font: "Century Gothic", emailColor: "#1a73e8", fontSize: "16px" },
-            "hello-kitty": { background: "#ffd1dc", color: "#ff69b4", font: "Comic Sans MS", emailColor: "#ff69b4", fontSize: "17px" },
-            unicorn: { background: "#ffccff", color: "#9900cc", font: "Cursive", emailColor: "#9900cc", fontSize: "18px" },
-            matrix: { background: "#000", color: "#0f0", font: "Courier New", emailColor: "#0f0", fontSize: "16px" },
-            solarized: { background: "#002b36", color: "#839496", font: "Lucida Console", emailColor: "#839496", fontSize: "16px" },
-            space: { background: "#121212", color: "#4fc3f7", font: "Orbitron", emailColor: "#4fc3f7", fontSize: "17px" },
-            football: { background: "#008000", color: "#ffffff", font: "Impact", emailColor: "#ffffff", fontSize: "16px" },
-            sky: { background: "#87ceeb", color: "#ffffff", font: "Arial", emailColor: "#ffffff", fontSize: "16px" },
-            ice: { background: "#b3e0ff", color: "#003366", font: "Verdana", emailColor: "#003366", fontSize: "16px" },
-            water: { background: "#0099cc", color: "#ffffff", font: "Tahoma", emailColor: "#ffffff", fontSize: "16px" },
-            fire: { background: "#ff4500", color: "#ffdd00", font: "Georgia", emailColor: "#ffdd00", fontSize: "16px" },
-            forest: { background: "#2e8b57", color: "#fffaf0", font: "Palatino", emailColor: "#fffaf0", fontSize: "16px" }
-        };
-
         function setTheme(theme) {
-            // Reset all toggles
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => checkbox.checked = false);
-            document.querySelector(`#${theme}`).checked = true;
-
-            // Apply theme styles
+            const themes = {
+                minimal: { background: "#f4f4f4", color: "#222", font: "Century Gothic", emailColor: "#1a73e8" },
+                "hello-kitty": { background: "#ffd1dc", color: "#ff69b4", font: "Comic Sans MS", emailColor: "#ff69b4" },
+                unicorn: { background: "#ffccff", color: "#9900cc", font: "Cursive", emailColor: "#9900cc" },
+                matrix: { background: "#000", color: "#0f0", font: "Courier New", emailColor: "#0f0" },
+                solarized: { background: "#002b36", color: "#839496", font: "Lucida Console", emailColor: "#839496" },
+                space: { background: "#121212", color: "#4fc3f7", font: "Orbitron", emailColor: "#4fc3f7" },
+                fire: { background: "#ff4500", color: "#ffdd00", font: "Georgia", emailColor: "#ffdd00" },
+                forest: { background: "#2e8b57", color: "#fffaf0", font: "Palatino", emailColor: "#fffaf0" }
+            };
             document.body.style.background = themes[theme].background;
             document.body.style.color = themes[theme].color;
             document.body.style.fontFamily = themes[theme].font;
-            document.body.style.fontSize = themes[theme].fontSize;
             document.getElementById('email').style.color = themes[theme].emailColor;
         }
     </script>
-    
-    <!-- Include Bootstrap JS and Popper.js -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
 
