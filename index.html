@@ -40,6 +40,7 @@
             width: 20%;
             max-height: 50vh;
             overflow-y: auto;
+            word-wrap: break-word;
         }
         .footer {
             position: fixed;
@@ -53,8 +54,8 @@
     <div class="container">
         <h3>Media Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
-        <p>Currently working on Computer Vision applications and stuff</p> 
-        <p>Contact me for your open source projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p> 
+        <p>Currently working on Computer Vision and text-based projects.</p>
+        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p> 
     </div>
     
     <div class="toggles">
@@ -68,15 +69,18 @@
     
     <div class="movie-quotes">
         <script>
-            const movieQuotes = [
+            const texts = [
                 "Je vais lui faire une offre qu'il ne pourra pas refuser.", "La vita è bella.", "C'est arrivé près de chez vous.",
                 "Il faut tenter l'impossible pour atteindre le possible.", "La vie est un long fleuve tranquille.", "Un homme qui ne passe pas de temps avec sa famille n'est pas vraiment un homme.",
-                "J'adore l'odeur du napalm au petit matin.", "Il Buono, il Brutto, il Cattivo.", "L'enfer, c'est les autres.", "Hasta la vista, baby.", "Here's Johnny!", "You can't handle the truth!", "I see dead people."
+                "J'adore l'odeur du napalm au petit matin.", "Il Buono, il Brutto, il Cattivo.", "L'enfer, c'est les autres.", "Hasta la vista, baby.", "Here's Johnny!", "You can't handle the truth!", "I see dead people.",
+                "To be, or not to be, that is the question.", "All that we see or seem is but a dream within a dream.", "The only thing we have to fear is fear itself.",
+                "Et in Arcadia ego.", "L'enfer, c'est les autres.", "Cogito, ergo sum.", "Les sanglots longs des violons de l'automne blessent mon cœur d'une langueur monotone.",
+                "Il n'y a pas de lumière sans ombre.", "L'homme est condamné à être libre.", "Laissez-les manger du gâteau!", "Ceci n'est pas une pipe.", "Tout comprendre, c'est tout pardonner."
             ];
-            for (let i = 0; i < 100; i++) {
-                movieQuotes.push(`Quote ${i + 14}`);
+            for (let i = 0; i < 80; i++) {
+                texts.push(`Text ${i + 26}`);
             }
-            document.write(movieQuotes.sort(() => Math.random() - 0.5).slice(0, 100).join('<br>'));
+            document.write(texts.sort(() => Math.random() - 0.5).slice(0, 100).join('<br>'));
         </script>
     </div>
     <div class="footer">All rights reserved LP 2025.</div>
