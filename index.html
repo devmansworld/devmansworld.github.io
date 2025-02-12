@@ -16,6 +16,7 @@
             height: 100vh;
             transition: all 0.5s ease;
             overflow-x: hidden;
+            overflow-y: auto;
         }
         .container {
             width: 60%;
@@ -55,14 +56,14 @@
         <h3>Media Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
         <p>Currently working on Computer Vision and text-based projects.</p>
-        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p> 
+        <p>Contact me for projects at <a href="mailto:sakoayama666@icloud.com" id="email">sakayama666@icloud.com</a></p> 
     </div>
     
     <div class="toggles">
         <script>
-            const themes = ["retro", "cyberpunk", "gothic", "neon", "ocean", "classic", "modern", "minimalist"];
+            const themes = ["retro", "cyberpunk", "gothic", "neon", "ocean", "classic", "modern", "minimalist", "unicorn", "hello_kitty", "snoopy", "kuromi", "keroppi", "mcdonalds", "vaporwave", "nineties"];
             themes.forEach(theme => {
-                document.write(`<label class="toggle"><div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" id="${theme}" onchange="setTheme('${theme}')"><label class="custom-control-label" for="${theme}">${theme.charAt(0).toUpperCase() + theme.slice(1)}</label></div></label>`);
+                document.write(`<label class="toggle"><div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" id="${theme}" onchange="setTheme('${theme}')"><label class="custom-control-label" for="${theme}">${theme.replace('_', ' ').charAt(0).toUpperCase() + theme.replace('_', ' ').slice(1)}</label></div></label>`);
             });
         </script>
     </div>
@@ -74,16 +75,16 @@
                 "Il faut tenter l'impossible pour atteindre le possible.", "La vie est un long fleuve tranquille.", "Un homme qui ne passe pas de temps avec sa famille n'est pas vraiment un homme.",
                 "J'adore l'odeur du napalm au petit matin.", "Il Buono, il Brutto, il Cattivo.", "L'enfer, c'est les autres.", "Hasta la vista, baby.", "Here's Johnny!", "You can't handle the truth!", "I see dead people.",
                 "To be, or not to be, that is the question.", "All that we see or seem is but a dream within a dream.", "The only thing we have to fear is fear itself.",
-                "Et in Arcadia ego.", "L'enfer, c'est les autres.", "Cogito, ergo sum.", "Les sanglots longs des violons de l'automne blessent mon cœur d'une langueur monotone.",
-                "Il n'y a pas de lumière sans ombre.", "L'homme est condamné à être libre.", "Laissez-les manger du gâteau!", "Ceci n'est pas une pipe.", "Tout comprendre, c'est tout pardonner."
+                "Et in Arcadia ego.", "Cogito, ergo sum.", "Les sanglots longs des violons de l'automne blessent mon cœur d'une langueur monotone.",
+                "L'homme est condamné à être libre.", "Ceci n'est pas une pipe.", "Tout comprendre, c'est tout pardonner.",
+                "The truth is rarely pure and never simple.", "Not all those who wander are lost.", "Tant que l’on n’a pas aimé un animal, une partie de notre âme reste endormie.",
+                "The journey of a thousand miles begins with a single step.", "A mind needs books as a sword needs a whetstone.", "Fear is the mind-killer.", "Elementary, my dear Watson."
             ];
-            for (let i = 0; i < 80; i++) {
-                texts.push(`Text ${i + 26}`);
-            }
-            document.write(texts.sort(() => Math.random() - 0.5).slice(0, 100).join('<br>'));
+            let formattedQuotes = texts.sort(() => Math.random() - 0.5).slice(0, 100).map(q => `${q} <br><br>`);
+            document.write(formattedQuotes.join(''));
         </script>
     </div>
-    <div class="footer">All rights reserved LP 2025.</div>
+    <div class="footer">All rights reserved. (c) SCL MEDIA 2025.</div>
     
     <script>
         function setTheme(theme) {
@@ -95,7 +96,12 @@
                 ocean: { background: "#004e64", color: "#d1e8e2", font: "Brush Script MT", emailColor: "#d1e8e2" },
                 classic: { background: "#fff", color: "#000", font: "Georgia", emailColor: "#000" },
                 modern: { background: "#f5f5f5", color: "#333", font: "Arial", emailColor: "#333" },
-                minimalist: { background: "#eee", color: "#222", font: "Verdana", emailColor: "#222" }
+                minimalist: { background: "#eee", color: "#222", font: "Verdana", emailColor: "#222" },
+                unicorn: { background: "#ffccff", color: "#9900cc", font: "Comic Sans MS", emailColor: "#9900cc" },
+                hello_kitty: { background: "#ffe4e1", color: "#ff1493", font: "Arial Rounded MT", emailColor: "#ff1493" },
+                snoopy: { background: "#fefefe", color: "#000", font: "Courier New", emailColor: "#000" },
+                kuromi: { background: "#333", color: "#ff66b2", font: "Tahoma", emailColor: "#ff66b2" },
+                keroppi: { background: "#b6d53c", color: "#008000", font: "Trebuchet MS", emailColor: "#008000" }
             };
             document.body.style.background = themeStyles[theme].background;
             document.body.style.color = themeStyles[theme].color;
@@ -104,6 +110,8 @@
         }
     </script>
 </body>
+</html>
+
 </html>
 
 
