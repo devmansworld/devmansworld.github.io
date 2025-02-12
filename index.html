@@ -10,13 +10,13 @@
         body {
             margin: 0;
             padding: 0;
-            font-size: 14px; /* Default font size */
+            font-size: 14px;
             background-color: #fff;
             color: #000;
             text-align: left;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center; /* Center-align content */
             justify-content: flex-start;
             height: 100vh;
             transition: all 0.5s ease;
@@ -26,10 +26,19 @@
             width: 100%;
             max-width: 800px;
             padding: 10px;
+            text-align: justify; /* Justify text */
+            margin-top: 20px;
+        }
+
+        .container p {
+            margin-bottom: 1em; /* Add space between paragraphs */
         }
 
         .container img {
-            width: 100%; /* Make the image responsive */
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%; /* Make image responsive */
             height: auto;
         }
 
@@ -105,7 +114,7 @@
         /* Responsive Styles */
         @media (max-width: 1024px) {
             body {
-                font-size: 12px; /* Smaller font size for smaller screens */
+                font-size: 12px;
             }
 
             .container {
@@ -135,7 +144,7 @@
 
         @media (max-width: 600px) {
             body {
-                font-size: 10px; /* Even smaller font size for very small screens */
+                font-size: 10px;
             }
 
             .container {
@@ -167,12 +176,10 @@
 <body>
     <div class="container">
         <h3>Media Artist from SCL</h3>
-        <img src="00000000000000.PNG" alt="Text Based CV Project"> <!-- Use a direct relative path here -->
-        <p>Currently working on Computer Vision and text-based projects.
-        I was a teaching assistant in Pure Data software in Sound Art Diploma 
-        at U. de Chile, where I explored concrete music and the futurist 
-        manifesto. I'm also a writer for magazines such as Nación Eléctrica, and
-        you can find me in the alternative music world at <a href="https://labalahumana.bandcamp.com/" target="_blank"> my bandcamp site</a>.</p>
+        <img src="00000000000000.PNG" alt="Text Based CV Project">
+        <p>Currently working on Computer Vision and text-based projects.<br>&nbsp;</p>
+        <p>I was a teaching assistant in Pure Data software in Sound Art Diploma at U. de Chile, where I explored concrete music and the futurist manifesto.<br>&nbsp;</p>
+        <p>I'm also a writer for magazines such as Nación Eléctrica, and you can find me in the alternative music world at <a href="https://labalahumana.bandcamp.com/" target="_blank">Labalahumana Bandcamp</a>.<br>&nbsp;</p>
         <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
     </div>
 
@@ -180,7 +187,7 @@
         <script>
             const themes = [
                 "hello_kitty", "snoopy", "keroppi", "unicorn", "kuromi", "gothic", "sky", "forest",
-                "fruits", "flowers", "food"
+                "fruits", "flowers", "food", "space", "soccer"
             ];
             themes.forEach(theme => {
                 document.write(`
@@ -229,7 +236,9 @@
                 forest: { background: "#228b22", color: "#fff", font: "Georgia", emailColor: "#fff" },
                 fruits: { background: "#f0e68c", color: "#ff6347", font: "Verdana", emailColor: "#ff6347" },
                 flowers: { background: "#ffb6c1", color: "#ff69b4", font: "Calibri", emailColor: "#ff69b4" },
-                food: { background: "#f5deb3", color: "#ff4500", font: "Helvetica", emailColor: "#ff4500" }
+                food: { background: "#f5deb3", color: "#ff4500", font: "Helvetica", emailColor: "#ff4500" },
+                space: { background: "#000", color: "#fff", font: "Verdana", emailColor: "#fff" },
+                soccer: { background: "#33cc33", color: "#fff", font: "Arial", emailColor: "#fff" }
             };
 
             document.body.style.backgroundColor = themeStyles[theme].background;
