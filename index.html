@@ -3,39 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Theme Selector</title>
+    <title>Hi!</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
             transition: all 0.5s ease;
             overflow-x: hidden;
             overflow-y: auto;
+            font-size: 18px;
+            background-color: #fff;
+            color: #000;
         }
         .container {
-            width: 80%;
-            margin: 0 auto;
+            width: 60%;
             text-align: left;
-            padding: 20px;
         }
         .toggles {
-            position: absolute;
-            top: 10%;
+            position: fixed;
+            top: 50%;
             left: 10px;
+            transform: translateY(-50%);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 5px;
+            padding-left: 5px;
         }
-        .custom-control-label {
-            font-size: 0.75rem; /* Smaller text size for toggles */
-        }
-        .footer {
-            position: fixed;
-            bottom: 5px;
-            left: 5px;
-            font-size: 8px;
+        .toggle label {
+            font-size: 10px;
+            padding: 2px;
         }
         .movie-quotes {
             position: fixed;
@@ -48,73 +50,40 @@
             overflow-y: auto;
             word-wrap: break-word;
         }
+        .footer {
+            position: fixed;
+            bottom: 5px;
+            left: 5px;
+            font-size: 8px;
+        }
+        @media (max-width: 600px) {
+            body {
+                font-size: 14px;
+            }
+            .container {
+                width: 90%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h3>Media Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
-        <p>Currently working on Computer Vision and text-based projects.</p>
+        <p>Currently working on Computer Vision and text-based projects. I was a teaching assistant in Pure Data software in Sound Art Diploma at U. de Chile, where I explored concrete music and the futurist manifesto. I'm also a writer for magazines such as Nación Eléctrica, and you can find me in the alternative music world at <a href="https://labalahumana.bandcamp.com" target="_blank">Labalahumana Bandcamp</a>.</p>
         <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
-        
-        <p>I was a teaching assistant in Pure Data software in the Sound Art Diploma at the University of Chile. My work has focused on exploring concrete music, inspired by the ideas in the Futurist Manifesto. These philosophies and techniques allow me to push the boundaries of sound art and technology, blending performance, composition, and digital media into new expressions.</p>
-
-        <p>I also teach technologies in web, mobile, and media design tools for art, architecture, and design professionals, including 3D technologies, code applied to design modeling, service design, and job interview preparations for tech roles.</p>
     </div>
 
     <div class="toggles">
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleRetro" onchange="setTheme('retro')" />
-            <label class="custom-control-label" for="toggleRetro">Retro</label>
-        </div>
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleCyberpunk" onchange="setTheme('cyberpunk')" />
-            <label class="custom-control-label" for="toggleCyberpunk">Cyberpunk</label>
-        </div>
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleGothic" onchange="setTheme('gothic')" />
-            <label class="custom-control-label" for="toggleGothic">Gothic</label>
-        </div>
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleHacker" onchange="setTheme('hacker')" />
-            <label class="custom-control-label" for="toggleHacker">Hacker</label>
-        </div>
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleNeon" onchange="setTheme('neon')" />
-            <label class="custom-control-label" for="toggleNeon">Neon</label>
-        </div>
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleOcean" onchange="setTheme('ocean')" />
-            <label class="custom-control-label" for="toggleOcean">Ocean</label>
-        </div>
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleClassic" onchange="setTheme('classic')" />
-            <label class="custom-control-label" for="toggleClassic">Classic</label>
-        </div>
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleModern" onchange="setTheme('modern')" />
-            <label class="custom-control-label" for="toggleModern">Modern</label>
-        </div>
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleMinimalist" onchange="setTheme('minimalist')" checked />
-            <label class="custom-control-label" for="toggleMinimalist">Minimalist</label>
-        </div>
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleUnicorn" onchange="setTheme('unicorn')" />
-            <label class="custom-control-label" for="toggleUnicorn">Unicorn</label>
-        </div>
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleHelloKitty" onchange="setTheme('hello_kitty')" />
-            <label class="custom-control-label" for="toggleHelloKitty">Hello Kitty</label>
-        </div>
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleKuromi" onchange="setTheme('kuromi')" />
-            <label class="custom-control-label" for="toggleKuromi">Kuromi</label>
-        </div>
-        <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleKeroppi" onchange="setTheme('keroppi')" />
-            <label class="custom-control-label" for="toggleKeroppi">Keroppi</label>
-        </div>
+        <script>
+            const themes = [
+                "hello_kitty", "snoopy", "keroppi", "unicorn", "kuromi", "gothic", "sky", "forest",
+                "fruits", "flowers", "food"
+            ];
+            themes.forEach(theme => {
+                document.write(`<label class="toggle"><input type="checkbox" id="${theme}" onchange="setTheme('${theme}')"> ${theme.replace('_', ' ')}</label>`);
+            });
+        </script>
     </div>
 
     <div class="movie-quotes">
@@ -124,35 +93,37 @@
                 "Il faut tenter l'impossible pour atteindre le possible.", "La vie est un long fleuve tranquille.", "Un homme qui ne passe pas de temps avec sa famille n'est pas vraiment un homme.",
                 "J'adore l'odeur du napalm au petit matin.", "Il Buono, il Brutto, il Cattivo.", "L'enfer, c'est les autres.", "Hasta la vista, baby.", "Here's Johnny!", "You can't handle the truth!", "I see dead people.",
                 "To be, or not to be, that is the question.", "All that we see or seem is but a dream within a dream.", "The only thing we have to fear is fear itself.",
-                "Et in Arcadia ego.", "Cogito, ergo sum.", "Les sanglots longs des violons de l’automne blessent mon cœur d’une langueur monotone.",
-                "L’homme est condamné à être libre.", "Ceci n’est pas une pipe.", "Tout comprendre, c’est tout pardonner.",
+                "Et in Arcadia ego.", "Cogito, ergo sum.", "Les sanglots longs des violons de l'automne blessent mon cœur d'une langueur monotone.",
+                "L'homme est condamné à être libre.", "Ceci n'est pas une pipe.", "Tout comprendre, c'est tout pardonner.",
                 "The truth is rarely pure and never simple.", "Not all those who wander are lost.", "Tant que l’on n’a pas aimé un animal, une partie de notre âme reste endormie.",
                 "The journey of a thousand miles begins with a single step.", "A mind needs books as a sword needs a whetstone.", "Fear is the mind-killer.", "Elementary, my dear Watson."
             ];
-            let formattedQuotes = texts.sort(() => Math.random() - 0.5).map(q => `${q} <br />`).join('');
-            document.querySelector('.movie-quotes').innerHTML = formattedQuotes;
+            let formattedQuotes = texts.sort(() => Math.random() - 0.5).map(q => `${q}<br><br>`);
+            document.write(formattedQuotes.join(''));
         </script>
     </div>
 
-    <div class="footer">
-        <p>Updated: <span id="timestamp"></span></p>
-        <script>
-            document.getElementById('timestamp').textContent = new Date().toLocaleString();
-        </script>
-    </div>
+    <div class="footer">All rights reserved. (c) SCL MEDIA 2025.</div>
 
     <script>
         function setTheme(theme) {
-            // Reset all themes by removing the theme class
-            const themes = ['retro', 'cyberpunk', 'gothic', 'hacker', 'neon', 'ocean', 'classic', 'modern', 'minimalist', 'unicorn', 'hello_kitty', 'kuromi', 'keroppi'];
-            themes.forEach(t => {
-                document.body.classList.remove(t);
-                document.getElementById(`toggle${t.charAt(0).toUpperCase() + t.slice(1)}`).checked = false; // Uncheck other toggles
-            });
-
-            // Add the selected theme class
-            document.body.classList.add(theme);
-            document.getElementById(`toggle${theme.charAt(0).toUpperCase() + theme.slice(1)}`).checked = true; // Check the selected toggle
+            const themeStyles = {
+                hello_kitty: { background: "#ffe4e1", color: "#ff1493", font: "Arial Rounded MT", emailColor: "#ff1493" },
+                snoopy: { background: "#fefefe", color: "#000", font: "Courier New", emailColor: "#000" },
+                keroppi: { background: "#b6d53c", color: "#008000", font: "Trebuchet MS", emailColor: "#008000" },
+                unicorn: { background: "#ffccff", color: "#9900cc", font: "Comic Sans MS", emailColor: "#9900cc" },
+                kuromi: { background: "#333", color: "#ff66b2", font: "Tahoma", emailColor: "#ff66b2" },
+                gothic: { background: "#1a1a1a", color: "#e6e6e6", font: "Times New Roman", emailColor: "#e6e6e6" },
+                sky: { background: "#87ceeb", color: "#fff", font: "Arial", emailColor: "#fff" },
+                forest: { background: "#228b22", color: "#fff", font: "Georgia", emailColor: "#fff" },
+                fruits: { background: "#f0e68c", color: "#ff6347", font: "Verdana", emailColor: "#ff6347" },
+                flowers: { background: "#ffb6c1", color: "#ff69b4", font: "Courier New", emailColor: "#ff69b4" },
+                food: { background: "#ffdead", color: "#8b4513", font: "Impact", emailColor: "#8b4513" }
+            };
+            document.body.style.background = themeStyles[theme].background;
+            document.body.style.color = themeStyles[theme].color;
+            document.body.style.fontFamily = themeStyles[theme].font;
+            document.getElementById('email').style.color = themeStyles[theme].emailColor;
         }
     </script>
 </body>
