@@ -28,6 +28,9 @@
             flex-direction: column;
             gap: 10px;
         }
+        .custom-control-label {
+            font-size: 0.75rem; /* Smaller text size for toggles */
+        }
         .footer {
             position: fixed;
             bottom: 5px;
@@ -51,9 +54,11 @@
     <div class="container">
         <h3>Media Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
-        <p>Currently working on Computer Vision and text-based projects.</p>
-        <p>Contact me for projects at <a href="mailto:sakoppipoipoipoj@icloud.com" id="email">sakayamiuyiuy@icloud.com</a></p>
-        <p>I teach technologies in web, mobile, and media design tools for art and architecture and design professionals, including 3D technologies, code applied to design modeling, service design, and job interview preparations for tech roles.</p>
+         <p>I am an enthusiast about audio technologies and hardware projects for musicians. Former "Sound Design with Pure Data" assistant teacher at Sound Arts Diploma at Uchile</p>
+        <p>Currently working on Computer Vision and text-based projects. Yes I like drawing model cars for fun</p>
+ 
+        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
+        
     </div>
 
     <div class="toggles">
@@ -90,7 +95,7 @@
             <label class="custom-control-label" for="toggleModern">Modern</label>
         </div>
         <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="toggleMinimalist" onchange="setTheme('minimalist')" />
+            <input type="checkbox" class="custom-control-input" id="toggleMinimalist" onchange="setTheme('minimalist')" checked />
             <label class="custom-control-label" for="toggleMinimalist">Minimalist</label>
         </div>
         <div class="custom-control custom-switch">
