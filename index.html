@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hi!</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/heroicons@1.0.6/outline.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -18,17 +19,36 @@
             overflow-x: hidden;
             overflow-y: auto;
             font-size: 18px;
-            background-color: #f5f5f5; /* A neutral background for all devices */
-            color: #333; /* Standard text color */
-            font-family: Arial, sans-serif;
         }
-
         .container {
-            width: 90%;
-            max-width: 800px;
+            width: 60%;
             text-align: left;
         }
-
+        .toggles {
+            position: fixed;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-left: 5px;
+        }
+        .toggle button {
+            font-size: 12px;
+            padding: 5px 10px;
+            background-color: transparent;
+            border: 2px solid #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toggle button:hover {
+            background-color: #444;
+        }
         .movie-quotes {
             position: fixed;
             bottom: 5px;
@@ -40,38 +60,36 @@
             overflow-y: auto;
             word-wrap: break-word;
         }
-
         .footer {
             position: fixed;
             bottom: 5px;
             left: 5px;
             font-size: 8px;
-            color: #ff5733; /* Unique bright color for the footer */
-        }
-
-        /* Responsive Design */
-        @media screen and (max-width: 600px) {
-            body {
-                font-size: 16px; /* Adjust font size for smaller screens */
-            }
-
-            .container {
-                width: 100%;
-            }
-
-            .movie-quotes {
-                width: 80%;
-                font-size: 8px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h3>Media Artist from SCL</h3>
-        <img src="00000000000000.PNG" alt="Text Based CV Project" style="width: 100%; height: auto;">
+        <img src="00000000000000.PNG" alt="Text Based CV Project">
         <p>Currently working on Computer Vision and text-based projects.</p>
-        <p>Contact me for projects at <a href="mailto:sakoppipoipoipoj@icloud.com" id="email" style="color: #ff5733;">sakayamiuyiuy@icloud.com</a></p>
+        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p> 
+    </div>
+
+    <div class="toggles">
+        <button onclick="setTheme('retro')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M4 4h16v16H4z" /></svg> Retro</button>
+        <button onclick="setTheme('cyberpunk')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M8 5v14l11-7z" /></svg> Cyberpunk</button>
+        <button onclick="setTheme('gothic')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M5 4h14v16H5z" /></svg> Gothic</button>
+        <button onclick="setTheme('hacker')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M10 15v6l4-3-4-3z" /></svg> Hacker</button>
+        <button onclick="setTheme('neon')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M12 2l5 5h-3v10h-4V7H7z" /></svg> Neon</button>
+        <button onclick="setTheme('ocean')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M12 17l4-4h-8z" /></svg> Ocean</button>
+        <button onclick="setTheme('classic')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M5 5h14v14H5z" /></svg> Classic</button>
+        <button onclick="setTheme('modern')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M12 4v16m8-8H4" /></svg> Modern</button>
+        <button onclick="setTheme('minimalist')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M12 2v20m8-10H4" /></svg> Minimalist</button>
+        <button onclick="setTheme('unicorn')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M14 2l4 4-4 4z" /></svg> Unicorn</button>
+        <button onclick="setTheme('hello_kitty')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M12 2l5 5h-3v10h-4V7H7z" /></svg> Hello Kitty</button>
+        <button onclick="setTheme('kuromi')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M4 2h16v16H4z" /></svg> Kuromi</button>
+        <button onclick="setTheme('keroppi')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M8 5v14l11-7z" /></svg> Keroppi</button>
     </div>
 
     <div class="movie-quotes">
@@ -81,17 +99,28 @@
                 "Il faut tenter l'impossible pour atteindre le possible.", "La vie est un long fleuve tranquille.", "Un homme qui ne passe pas de temps avec sa famille n'est pas vraiment un homme.",
                 "J'adore l'odeur du napalm au petit matin.", "Il Buono, il Brutto, il Cattivo.", "L'enfer, c'est les autres.", "Hasta la vista, baby.", "Here's Johnny!", "You can't handle the truth!", "I see dead people.",
                 "To be, or not to be, that is the question.", "All that we see or seem is but a dream within a dream.", "The only thing we have to fear is fear itself.",
-                "Et in Arcadia ego.", "Cogito, ergo sum.", "Les sanglots longs des violons de l'automne blessent mon cœur d'une langueur monotone.",
-                "L'homme est condamné à être libre.", "Ceci n'est pas une pipe.", "Tout comprendre, c'est tout pardonner.",
+                "Et in Arcadia ego.", "Cogito, ergo sum.", "Les sanglots longs des violons de l’automne blessent mon cœur d’une langueur monotone.",
+                "L’homme est condamné à être libre.", "Ceci n’est pas une pipe.", "Tout comprendre, c’est tout pardonner.",
                 "The truth is rarely pure and never simple.", "Not all those who wander are lost.", "Tant que l’on n’a pas aimé un animal, une partie de notre âme reste endormie.",
                 "The journey of a thousand miles begins with a single step.", "A mind needs books as a sword needs a whetstone.", "Fear is the mind-killer.", "Elementary, my dear Watson."
             ];
-            let formattedQuotes = texts.sort(() => Math.random() - 0.5).map(q => `${q} <br><br>`);
-            document.write(formattedQuotes.join(''));
+            let formattedQuotes = texts.sort(() => Math.random() - 0.5).map(q => `${q} <br />`).join('');
+            document.querySelector('.movie-quotes').innerHTML = formattedQuotes;
         </script>
     </div>
 
-    <div class="footer">All rights reserved. (c) SCL MEDIA 2025.</div>
+    <div class="footer">
+        <p>Updated: <span id="timestamp"></span></p>
+        <script>
+            document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        </script>
+    </div>
+
+    <script>
+        function setTheme(theme) {
+            document.body.className = theme;
+        }
+    </script>
 </body>
 </html>
 
