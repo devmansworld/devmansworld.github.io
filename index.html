@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hi!</title>
+    <title>Theme Selector</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/heroicons@1.0.6/outline.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -34,20 +33,8 @@
             gap: 10px;
             padding-left: 5px;
         }
-        .toggle button {
-            font-size: 12px;
-            padding: 5px 10px;
-            background-color: transparent;
-            border: 2px solid #fff;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .toggle button:hover {
-            background-color: #444;
+        .toggle {
+            margin-bottom: 10px;
         }
         .movie-quotes {
             position: fixed;
@@ -73,23 +60,88 @@
         <h3>Media Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
         <p>Currently working on Computer Vision and text-based projects.</p>
-        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p> 
+        <p>Contact me for projects at <a href="mailto:sakoppipoipoipoj@icloud.com" id="email">sakayamiuyiuy@icloud.com</a></p> 
     </div>
 
     <div class="toggles">
-        <button onclick="setTheme('retro')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M4 4h16v16H4z" /></svg> Retro</button>
-        <button onclick="setTheme('cyberpunk')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M8 5v14l11-7z" /></svg> Cyberpunk</button>
-        <button onclick="setTheme('gothic')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M5 4h14v16H5z" /></svg> Gothic</button>
-        <button onclick="setTheme('hacker')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M10 15v6l4-3-4-3z" /></svg> Hacker</button>
-        <button onclick="setTheme('neon')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M12 2l5 5h-3v10h-4V7H7z" /></svg> Neon</button>
-        <button onclick="setTheme('ocean')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M12 17l4-4h-8z" /></svg> Ocean</button>
-        <button onclick="setTheme('classic')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M5 5h14v14H5z" /></svg> Classic</button>
-        <button onclick="setTheme('modern')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M12 4v16m8-8H4" /></svg> Modern</button>
-        <button onclick="setTheme('minimalist')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M12 2v20m8-10H4" /></svg> Minimalist</button>
-        <button onclick="setTheme('unicorn')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M14 2l4 4-4 4z" /></svg> Unicorn</button>
-        <button onclick="setTheme('hello_kitty')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M12 2l5 5h-3v10h-4V7H7z" /></svg> Hello Kitty</button>
-        <button onclick="setTheme('kuromi')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M4 2h16v16H4z" /></svg> Kuromi</button>
-        <button onclick="setTheme('keroppi')"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5"><path d="M8 5v14l11-7z" /></svg> Keroppi</button>
+        <div class="toggle">
+            <label for="retroToggle" class="btn btn-outline-primary">
+                Retro
+                <input type="radio" id="retroToggle" name="themeToggle" onclick="setTheme('retro')" />
+            </label>
+        </div>
+        <div class="toggle">
+            <label for="cyberpunkToggle" class="btn btn-outline-primary">
+                Cyberpunk
+                <input type="radio" id="cyberpunkToggle" name="themeToggle" onclick="setTheme('cyberpunk')" />
+            </label>
+        </div>
+        <div class="toggle">
+            <label for="gothicToggle" class="btn btn-outline-primary">
+                Gothic
+                <input type="radio" id="gothicToggle" name="themeToggle" onclick="setTheme('gothic')" />
+            </label>
+        </div>
+        <div class="toggle">
+            <label for="hackerToggle" class="btn btn-outline-primary">
+                Hacker
+                <input type="radio" id="hackerToggle" name="themeToggle" onclick="setTheme('hacker')" />
+            </label>
+        </div>
+        <div class="toggle">
+            <label for="neonToggle" class="btn btn-outline-primary">
+                Neon
+                <input type="radio" id="neonToggle" name="themeToggle" onclick="setTheme('neon')" />
+            </label>
+        </div>
+        <div class="toggle">
+            <label for="oceanToggle" class="btn btn-outline-primary">
+                Ocean
+                <input type="radio" id="oceanToggle" name="themeToggle" onclick="setTheme('ocean')" />
+            </label>
+        </div>
+        <div class="toggle">
+            <label for="classicToggle" class="btn btn-outline-primary">
+                Classic
+                <input type="radio" id="classicToggle" name="themeToggle" onclick="setTheme('classic')" />
+            </label>
+        </div>
+        <div class="toggle">
+            <label for="modernToggle" class="btn btn-outline-primary">
+                Modern
+                <input type="radio" id="modernToggle" name="themeToggle" onclick="setTheme('modern')" />
+            </label>
+        </div>
+        <div class="toggle">
+            <label for="minimalistToggle" class="btn btn-outline-primary">
+                Minimalist
+                <input type="radio" id="minimalistToggle" name="themeToggle" onclick="setTheme('minimalist')" />
+            </label>
+        </div>
+        <div class="toggle">
+            <label for="unicornToggle" class="btn btn-outline-primary">
+                Unicorn
+                <input type="radio" id="unicornToggle" name="themeToggle" onclick="setTheme('unicorn')" />
+            </label>
+        </div>
+        <div class="toggle">
+            <label for="helloKittyToggle" class="btn btn-outline-primary">
+                Hello Kitty
+                <input type="radio" id="helloKittyToggle" name="themeToggle" onclick="setTheme('hello_kitty')" />
+            </label>
+        </div>
+        <div class="toggle">
+            <label for="kuromiToggle" class="btn btn-outline-primary">
+                Kuromi
+                <input type="radio" id="kuromiToggle" name="themeToggle" onclick="setTheme('kuromi')" />
+            </label>
+        </div>
+        <div class="toggle">
+            <label for="keroppiToggle" class="btn btn-outline-primary">
+                Keroppi
+                <input type="radio" id="keroppiToggle" name="themeToggle" onclick="setTheme('keroppi')" />
+            </label>
+        </div>
     </div>
 
     <div class="movie-quotes">
@@ -118,7 +170,16 @@
 
     <script>
         function setTheme(theme) {
-            document.body.className = theme;
+            // Reset all themes by removing the theme class
+            const themes = ['retro', 'cyberpunk', 'gothic', 'hacker', 'neon', 'ocean', 'classic', 'modern', 'minimalist', 'unicorn', 'hello_kitty', 'kuromi', 'keroppi'];
+            themes.forEach(t => {
+                document.body.classList.remove(t);
+                document.getElementById(t + 'Toggle').checked = false; // Uncheck other toggles
+            });
+
+            // Add the selected theme class
+            document.body.classList.add(theme);
+            document.getElementById(theme + 'Toggle').checked = true; // Ensure the clicked toggle stays checked
         }
     </script>
 </body>
