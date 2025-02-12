@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Artist/title>
+    <title>Theme Selector</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -52,63 +52,63 @@
         <h3>Media Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
         <p>Currently working on Computer Vision and text-based projects.</p>
-        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayamma666@icloud.com</a></p>
+        <p>Contact me for projects at <a href="mailto:sakoppipoipoipoj@icloud.com" id="email">sakayamiuyiuy@icloud.com</a></p>
         <p>I teach technologies in web, mobile, and media design tools for art and architecture and design professionals, including 3D technologies, code applied to design modeling, service design, and job interview preparations for tech roles.</p>
     </div>
 
     <div class="toggles">
-        <label class="btn btn-outline-primary">
-            Retro
-            <input type="radio" name="themeToggle" onclick="setTheme('retro')" />
-        </label>
-        <label class="btn btn-outline-primary">
-            Cyberpunk
-            <input type="radio" name="themeToggle" onclick="setTheme('cyberpunk')" />
-        </label>
-        <label class="btn btn-outline-primary">
-            Gothic
-            <input type="radio" name="themeToggle" onclick="setTheme('gothic')" />
-        </label>
-        <label class="btn btn-outline-primary">
-            Hacker
-            <input type="radio" name="themeToggle" onclick="setTheme('hacker')" />
-        </label>
-        <label class="btn btn-outline-primary">
-            Neon
-            <input type="radio" name="themeToggle" onclick="setTheme('neon')" />
-        </label>
-        <label class="btn btn-outline-primary">
-            Ocean
-            <input type="radio" name="themeToggle" onclick="setTheme('ocean')" />
-        </label>
-        <label class="btn btn-outline-primary">
-            Classic
-            <input type="radio" name="themeToggle" onclick="setTheme('classic')" />
-        </label>
-        <label class="btn btn-outline-primary">
-            Modern
-            <input type="radio" name="themeToggle" onclick="setTheme('modern')" />
-        </label>
-        <label class="btn btn-outline-primary">
-            Minimalist
-            <input type="radio" name="themeToggle" onclick="setTheme('minimalist')" />
-        </label>
-        <label class="btn btn-outline-primary">
-            Unicorn
-            <input type="radio" name="themeToggle" onclick="setTheme('unicorn')" />
-        </label>
-        <label class="btn btn-outline-primary">
-            Hello Kitty
-            <input type="radio" name="themeToggle" onclick="setTheme('hello_kitty')" />
-        </label>
-        <label class="btn btn-outline-primary">
-            Kuromi
-            <input type="radio" name="themeToggle" onclick="setTheme('kuromi')" />
-        </label>
-        <label class="btn btn-outline-primary">
-            Keroppi
-            <input type="radio" name="themeToggle" onclick="setTheme('keroppi')" />
-        </label>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleRetro" onchange="setTheme('retro')" />
+            <label class="custom-control-label" for="toggleRetro">Retro</label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleCyberpunk" onchange="setTheme('cyberpunk')" />
+            <label class="custom-control-label" for="toggleCyberpunk">Cyberpunk</label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleGothic" onchange="setTheme('gothic')" />
+            <label class="custom-control-label" for="toggleGothic">Gothic</label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleHacker" onchange="setTheme('hacker')" />
+            <label class="custom-control-label" for="toggleHacker">Hacker</label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleNeon" onchange="setTheme('neon')" />
+            <label class="custom-control-label" for="toggleNeon">Neon</label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleOcean" onchange="setTheme('ocean')" />
+            <label class="custom-control-label" for="toggleOcean">Ocean</label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleClassic" onchange="setTheme('classic')" />
+            <label class="custom-control-label" for="toggleClassic">Classic</label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleModern" onchange="setTheme('modern')" />
+            <label class="custom-control-label" for="toggleModern">Modern</label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleMinimalist" onchange="setTheme('minimalist')" />
+            <label class="custom-control-label" for="toggleMinimalist">Minimalist</label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleUnicorn" onchange="setTheme('unicorn')" />
+            <label class="custom-control-label" for="toggleUnicorn">Unicorn</label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleHelloKitty" onchange="setTheme('hello_kitty')" />
+            <label class="custom-control-label" for="toggleHelloKitty">Hello Kitty</label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleKuromi" onchange="setTheme('kuromi')" />
+            <label class="custom-control-label" for="toggleKuromi">Kuromi</label>
+        </div>
+        <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="toggleKeroppi" onchange="setTheme('keroppi')" />
+            <label class="custom-control-label" for="toggleKeroppi">Keroppi</label>
+        </div>
     </div>
 
     <div class="movie-quotes">
@@ -141,17 +141,16 @@
             const themes = ['retro', 'cyberpunk', 'gothic', 'hacker', 'neon', 'ocean', 'classic', 'modern', 'minimalist', 'unicorn', 'hello_kitty', 'kuromi', 'keroppi'];
             themes.forEach(t => {
                 document.body.classList.remove(t);
+                document.getElementById(`toggle${t.charAt(0).toUpperCase() + t.slice(1)}`).checked = false; // Uncheck other toggles
             });
 
             // Add the selected theme class
             document.body.classList.add(theme);
+            document.getElementById(`toggle${theme.charAt(0).toUpperCase() + theme.slice(1)}`).checked = true; // Check the selected toggle
         }
     </script>
 </body>
 </html>
-
-
-
 
 
 
