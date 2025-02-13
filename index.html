@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hi!</title>
@@ -10,7 +9,7 @@
         body {
             margin: 0;
             padding: 0;
-            font-size: clamp(1rem, 2vw + 1rem, 1.5rem); /* Auto-shrinking text */
+            font-size: 1rem;
             background-color: #fff;
             color: #000;
             text-align: left;
@@ -28,7 +27,6 @@
             padding: 20px;
             margin: 0 auto;
             text-align: justify;
-            overflow: auto;
             box-sizing: border-box;
         }
 
@@ -46,27 +44,36 @@
             overflow: hidden;
         }
 
-        .movie-quotes, .footer {
+        .footer {
             position: fixed;
             bottom: 5px;
             left: 10px;
-            font-size: clamp(0.5rem, 1vw + 0.5rem, 1rem); /* Auto-shrinking text */
+            font-size: 10px;
             text-align: center;
             width: 100%;
             max-width: 100%;
             color: #555;
         }
 
-        /* Toggle Styles */
-        .toggles {
+        /* Sidebar Styling */
+        .sidebar {
             position: fixed;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            z-index: 10;
-            display: flex;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            z-index: 1000;
+            padding: 15px;
+            display: none;
             flex-direction: column;
-            gap: 5px;
+            gap: 15px;
+            overflow-x: scroll;
+            padding-bottom: 20px;
+        }
+
+        .sidebar.active {
+            display: flex;
         }
 
         .toggle-container {
@@ -74,6 +81,8 @@
             align-items: center;
             gap: 10px;
             font-size: 0.9rem;
+            padding: 5px;
+            cursor: pointer;
         }
 
         .toggle {
@@ -112,10 +121,66 @@
             font-family: "Arial", sans-serif;
         }
 
+        /* Gothic Theme */
+        .gothic-theme {
+            background-color: #2f2f2f;
+            color: #bb3333;
+            font-family: 'Times New Roman', serif;
+        }
+
+        /* Halloween Theme */
+        .halloween-theme {
+            background-color: #222222;
+            color: orange;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Dracula Theme */
+        .dracula-theme {
+            background-color: #282a36;
+            color: #f8f8f2;
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Forest Theme */
+        .forest-theme {
+            background-color: #004d00;
+            color: #b5e8b5;
+            font-family: 'Georgia', serif;
+        }
+
+        /* Food Theme */
+        .food-theme {
+            background-color: #f5c942;
+            color: #000;
+            font-family: 'Verdana', sans-serif;
+        }
+
+        /* Flower Theme */
+        .flower-theme {
+            background-color: #fae1e1;
+            color: #ff4081;
+            font-family: 'Comic Sans MS', cursive;
+        }
+
+        /* Unicorn Theme */
+        .unicorn-theme {
+            background-color: #9b59b6;
+            color: #ffffff;
+            font-family: 'Helvetica', sans-serif;
+        }
+
+        /* Kuromi Theme */
+        .kuromi-theme {
+            background-color: #4f1b1b;
+            color: #ff82ab;
+            font-family: 'Arial', sans-serif;
+        }
+
         /* Adjust for smaller screens */
         @media (max-width: 768px) {
             body {
-                font-size: clamp(0.8rem, 1.5vw + 0.8rem, 1rem); /* Auto-shrinking text */
+                font-size: 0.9rem;
                 padding: 10px;
             }
 
@@ -124,20 +189,24 @@
                 font-size: 0.9rem;
             }
 
-            .movie-quotes, .footer {
+            .footer {
                 font-size: 8px;
                 bottom: 0;
             }
 
-            .toggles {
-                left: 5px;
-                top: 10px;
+            .sidebar {
+                bottom: 0;
+                padding-bottom: 40px;
+            }
+
+            .toggle-container {
+                padding: 8px 0;
             }
         }
 
         @media (max-width: 480px) {
             body {
-                font-size: clamp(0.7rem, 2vw + 0.7rem, 0.8rem); /* Auto-shrinking text */
+                font-size: 0.8rem;
                 padding: 10px;
             }
 
@@ -146,14 +215,25 @@
                 padding: 5px;
             }
 
-            .movie-quotes, .footer {
+            .footer {
                 font-size: 6px;
             }
 
-            .toggles {
-                left: 2px;
-                top: 5px;
+            .sidebar {
+                bottom: 0;
+                padding-bottom: 60px;
             }
+        }
+
+        /* Hamburger Button */
+        .hamburger {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            font-size: 30px;
+            cursor: pointer;
+            color: #333;
         }
     </style>
 </head>
@@ -167,60 +247,87 @@
         <p>... and go to the apps <a href="demo.html">page</a> where you can find all demo apps from app1 to app9.</p>
     </div>
 
-    <div class="toggles">
-        <div class="toggle-container">
-            <div class="toggle" id="default-theme" onclick="setTheme('default')"></div>
-            <span class="toggle-label">Default Theme</span>
-        </div>
-        <!-- Add other themes here as needed -->
-    </div>
-
-    <div class="movie-quotes">
-        <script>
-            const quotes = [
-                "Je vais lui faire une offre qu'il ne pourra pas refuser.", "Let there be light.", 
-                "I think, therefore I am.", "To be or not to be.", "The only thing we have to fear is fear itself.",
-                "That's one small step for man, one giant leap for mankind.", "In the beginning, God created the heavens and the earth.",
-                "To infinity and beyond!", "May the force be with you.", "Live long and prosper.",
-                "I’ll be back.", "Here's looking at you, kid.", "I feel the need – the need for speed.",
-                "The stuff that dreams are made of.", "It’s a beautiful day in the neighborhood.",
-                "I coulda had class. I could’ve been a contender.", "Toto, I’ve a feeling we’re not in Kansas anymore.",
-                "I’m king of the world!", "You can’t handle the truth!", "E.T. phone home.", 
-                "You had me at ‘hello’.", "Why so serious?", "Carpe Diem.", "Mamma mia!",
-                "Houston, we have a problem.", "I’ll make him an offer he can’t refuse.", "You talking to me?",
-                "Here’s Johnny!", "Keep the change, ya filthy animal.", "It’s alive! It’s alive!", 
-                "You’ve got a friend in me.", "There’s no place like home.", "I am your father.", 
-                "Don’t call it a comeback!", "I wish I knew how to quit you.", "You can’t stop the signal.",
-                "The force will be with you, always.", "I am Groot.", "I drink your milkshake!", "Yippee-ki-yay, motherfucker.",
-                "I’m Batman.", "It’s not who I am underneath, but what I do that defines me.",
-                "I’m the king of the world!", "It’s a trap!", "Just keep swimming.", "This is the start of a beautiful friendship.",
-                "I’ve seen things you people wouldn’t believe.", "I can resist everything except temptation.",
-                "After all, tomorrow is another day!", "Nobody puts Baby in a corner.", "I’m too old for this shit.", 
-                "I am vengeance. I am the night.", "You’ll shoot your eye out.", "It’s a wonderful life."
-            ];
-            const quote = quotes[Math.floor(Math.random() * quotes.length)];
-            document.write(quote);
-        </script>
-    </div>
-
     <div class="footer">
         <a href="demo.html">Go to App Demos</a>
     </div>
 
+    <!-- Hamburger Menu for Sidebar -->
+    <div class="hamburger" onclick="toggleSidebar()">☰</div>
+
+    <!-- Sidebar with Theme Toggles -->
+    <div class="sidebar" id="sidebar">
+        <div class="toggle-container">
+            <div class="toggle" id="default-theme" onclick="setTheme('default')"></div>
+            <span>Default Theme</span>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle" id="gothic-theme" onclick="setTheme('gothic')"></div>
+            <span>Gothic Theme</span>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle" id="halloween-theme" onclick="setTheme('halloween')"></div>
+            <span>Halloween Theme</span>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle" id="dracula-theme" onclick="setTheme('dracula')"></div>
+            <span>Dracula Theme</span>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle" id="forest-theme" onclick="setTheme('forest')"></div>
+            <span>Forest Theme</span>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle" id="food-theme" onclick="setTheme('food')"></div>
+            <span>Food Theme</span>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle" id="flower-theme" onclick="setTheme('flower')"></div>
+            <span>Flower Theme</span>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle" id="unicorn-theme" onclick="setTheme('unicorn')"></div>
+            <span>Unicorn Theme</span>
+        </div>
+        <div class="toggle-container">
+            <div class="toggle" id="kuromi-theme" onclick="setTheme('kuromi')"></div>
+            <span>Kuromi Theme</span>
+        </div>
+    </div>
+
     <script>
+        // Toggle the sidebar visibility
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("active");
+        }
+
+        // Set the theme based on user selection
         function setTheme(theme) {
             const body = document.body;
             const toggles = document.querySelectorAll(".toggle");
             toggles.forEach(toggle => toggle.classList.remove("active"));
-            const defaultThemeBtn = document.getElementById("default-theme");
-            defaultThemeBtn.classList.add("active");
             
-            // Reset to default clean theme on click
-            if (theme === 'default') {
-                body.classList.remove('hello_kitty', 'keroppi', 'snoopy', 'forest', 'food', 'flowers', 'unicorn', 'kuromi');
-                body.classList.add('default-theme');
-            }
+            const themeBtns = {
+                default: 'default-theme',
+                gothic: 'gothic-theme',
+                halloween: 'halloween-theme',
+                dracula: 'dracula-theme',
+                forest: 'forest-theme',
+                food: 'food-theme',
+                flower: 'flower-theme',
+                unicorn: 'unicorn-theme',
+                kuromi: 'kuromi-theme'
+            };
+
+            Object.keys(themeBtns).forEach(t => {
+                body.classList.remove(themeBtns[t]);
+            });
+
+            body.classList.add(themeBtns[theme]);
+            const activeBtn = document.getElementById(`${theme}-theme`);
+            activeBtn.classList.add("active");
         }
     </script>
 </body>
 </html>
+
