@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meme Generator</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            transition: background-color 0.3s, color 0.3s;
         }
         .container {
             margin-top: 50px;
@@ -30,14 +32,29 @@
             font-size: 12px;
             text-align: center;
         }
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .light-mode {
+            background-color: #ffffff;
+            color: #000000;
+        }
     </style>
 </head>
-<body>
+<body class="light-mode" id="body">
 
     <div class="container">
         <h1>Meme Generator</h1>
         <p>Enter text and create your own meme!</p>
         
+        <!-- Dark/Light Mode Toggle -->
+        <label class="switch">
+            <input type="checkbox" id="darkModeSwitch">
+            <span class="slider round"></span>
+        </label>
+        <span id="modeText"> Light Mode</span>
+
         <div class="input-field">
             <input type="text" id="topText" class="form-control" placeholder="Top Text" required>
         </div>
@@ -55,11 +72,14 @@
         </div>
 
         <button class="btn btn-primary" onclick="generateMeme()">Generate Meme</button>
+        <button class="btn btn-success" onclick="saveMeme()">Save Meme as JPG</button>
 
         <div class="meme-output" id="memeOutput">
-            <img id="memeImage" class="meme-image" src="" alt="Meme">
-            <div id="topTextOutput" class="text-top"></div>
-            <div id="bottomTextOutput" class="text-bottom"></div>
+            <div id="memeContainer">
+                <img id="memeImage" class="meme-image" src="" alt="Meme">
+                <div id="topTextOutput" class="text-top"></div>
+                <div id="bottomTextOutput" class="text-bottom"></div>
+            </div>
         </div>
 
         <div class="footer">
@@ -68,6 +88,22 @@
     </div>
 
     <script>
+        // Dark/Light Mode Toggle
+        document.getElementById("darkModeSwitch").addEventListener("change", function() {
+            const body = document.getElementById("body");
+            const modeText = document.getElementById("modeText");
+            if (this.checked) {
+                body.classList.remove("light-mode");
+                body.classList.add("dark-mode");
+                modeText.textContent = " Dark Mode";
+            } else {
+                body.classList.remove("dark-mode");
+                body.classList.add("light-mode");
+                modeText.textContent = " Light Mode";
+            }
+        });
+
+        // Meme Generator Function
         function generateMeme() {
             const topText = document.getElementById("topText").value;
             const bottomText = document.getElementById("bottomText").value;
@@ -80,6 +116,18 @@
 
             // Show meme output
             document.getElementById("memeOutput").style.display = "block";
+        }
+
+        // Save Meme as JPG using html2canvas
+        function saveMeme() {
+            const memeContainer = document.getElementById("memeContainer");
+
+            html2canvas(memeContainer).then(function(canvas) {
+                const link = document.createElement("a");
+                link.download = "meme.jpg";
+                link.href = canvas.toDataURL("image/jpeg");
+                link.click();
+            });
         }
     </script>
 
