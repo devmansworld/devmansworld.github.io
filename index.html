@@ -3,88 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hi!</title>
+    <title>Themed Page</title>
+
+    <!-- Link to Bootstrap 4 for styling -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* Base styling for the body */
         body {
+            font-family: 'Poppins', sans-serif; /* Default font */
             margin: 0;
             padding: 0;
-            font-size: 1rem;
-            background-color: #fff;
-            color: #000;
-            text-align: left;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            min-height: 100vh;
             transition: all 0.5s ease;
-            padding: 20px;
         }
 
-        .container {
-            flex: 1;
-            max-width: 800px;
-            padding: 20px;
-            margin: 0 auto;
-            text-align: justify;
-            box-sizing: border-box;
+        /* Header section with title and hamburger icon */
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            height: 20vh; /* Header takes up 20% of viewport height */
         }
 
-        .container p {
-            margin-bottom: 1em;
-        }
-
-        .container img {
-            display: block;
-            margin: 20px auto;
-            width: 80%;
-            height: auto;
-            max-width: 100%;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .footer {
-            position: fixed;
-            bottom: 5px;
-            left: 10px;
-            font-size: 10px;
+        .header h3 {
+            position: absolute;
+            font-size: 3rem; /* Title font size */
+            font-weight: 600;
+            z-index: 1;
             text-align: center;
-            width: 100%;
-            max-width: 100%;
-            color: #555;
         }
 
-        /* Sidebar Styling */
-        .sidebar {
+        /* Hamburger icon styling */
+        .hamburger {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        /* Sidebar menu for theme selection */
+        .hamburger-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 100vh;
+            background-color: #333;
+            color: white;
+            padding-top: 50px;
+            z-index: 3;
+        }
+
+        /* Links in the hamburger menu */
+        .hamburger-menu a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            font-size: 1.5rem;
+        }
+
+        .hamburger-menu a:hover {
+            background-color: #575757;
+        }
+
+        /* Theme classes */
+        .unicorn-theme {
+            background: linear-gradient(45deg, #ff8fff, #a9c9ff);
+            color: #ff66cc;
+        }
+
+        .snoopy-theme {
+            background-color: #f0f0f0;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .keroppi-theme {
+            background-color: #8ac926;
+            color: white;
+        }
+
+        .kuromi-theme {
+            background-color: #ff00ff;
+            color: white;
+        }
+
+        .my-melody-theme {
+            background-color: #ffb6c1;
+            color: white;
+        }
+
+        .snow-theme {
+            background-color: #f0f8ff;
+            color: #333;
+        }
+
+        .beach-theme {
+            background-color: #f8d1a3;
+            color: #333;
+        }
+
+        .forest-theme {
+            background-color: #228b22;
+            color: white;
+        }
+
+        .food-theme {
+            background-color: #f0a500;
+            color: white;
+        }
+
+        .yellow-theme {
+            background-color: #ffd700;
+            color: white;
+        }
+
+        .black-theme {
+            background-color: #000000;
+            color: white;
+        }
+
+        .roboto-theme {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Footer styling */
+        .footer {
             position: fixed;
             bottom: 0;
             left: 0;
+            font-size: 12px;
+            text-align: center;
             width: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            z-index: 1000;
-            padding: 15px;
-            display: none;
-            flex-direction: column;
-            gap: 15px;
-            overflow-x: scroll;
-            padding-bottom: 20px;
+            color: #555;
         }
 
-        .sidebar.active {
-            display: flex;
-        }
-
+        /* Toggle switch container to center it */
         .toggle-container {
             display: flex;
             align-items: center;
+            justify-content: center; /* Center the toggle switch horizontally */
             gap: 10px;
-            font-size: 0.9rem;
-            padding: 5px;
-            cursor: pointer;
+            font-size: 1.2vw;
         }
 
+        /* Bootstrap toggle switch style */
         .toggle {
             width: 25px;
             height: 15px;
@@ -107,214 +182,79 @@
         }
 
         .toggle.active {
-            background: #4CAF50;
+            background: #4CAF50; /* Green when active */
         }
 
         .toggle.active:before {
-            left: 10px;
+            left: 10px; /* Moves the circle to the right when active */
         }
 
-        /* Minimal Theme */
-        .minimal-theme {
-            background-color: #f0f0f0;
-            color: #333;
-            font-family: "Arial", sans-serif;
-        }
-
-        /* Gothic Theme */
-        .gothic-theme {
-            background-color: #2f2f2f;
-            color: #bb3333;
-            font-family: 'Times New Roman', serif;
-        }
-
-        /* Halloween Theme */
-        .halloween-theme {
-            background-color: #222222;
-            color: orange;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* Dracula Theme */
-        .dracula-theme {
-            background-color: #282a36;
-            color: #f8f8f2;
-            font-family: 'Fira Code', monospace;
-        }
-
-        /* Forest Theme */
-        .forest-theme {
-            background-color: #004d00;
-            color: #b5e8b5;
-            font-family: 'Georgia', serif;
-        }
-
-        /* Food Theme */
-        .food-theme {
-            background-color: #f5c942;
-            color: #000;
-            font-family: 'Verdana', sans-serif;
-        }
-
-        /* Flower Theme */
-        .flower-theme {
-            background-color: #fae1e1;
-            color: #ff4081;
-            font-family: 'Comic Sans MS', cursive;
-        }
-
-        /* Unicorn Theme */
-        .unicorn-theme {
-            background-color: #9b59b6;
-            color: #ffffff;
-            font-family: 'Helvetica', sans-serif;
-        }
-
-        /* Kuromi Theme */
-        .kuromi-theme {
-            background-color: #4f1b1b;
-            color: #ff82ab;
-            font-family: 'Arial', sans-serif;
-        }
-
-        /* Adjust for smaller screens */
+        /* Adjust for mobile devices */
         @media (max-width: 768px) {
             body {
-                font-size: 0.9rem;
+                font-size: 3vw; /* Smaller font size for smaller screens */
                 padding: 10px;
-            }
-
-            .container {
-                padding: 10px;
-                font-size: 0.9rem;
             }
 
             .footer {
                 font-size: 8px;
-                bottom: 0;
             }
-
-            .sidebar {
-                bottom: 0;
-                padding-bottom: 40px;
-            }
-
-            .toggle-container {
-                padding: 8px 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                font-size: 0.8rem;
-                padding: 10px;
-            }
-
-            .container {
-                font-size: 0.8rem;
-                padding: 5px;
-            }
-
-            .footer {
-                font-size: 6px;
-            }
-
-            .sidebar {
-                bottom: 0;
-                padding-bottom: 60px;
-            }
-        }
-
-        /* Hamburger Button */
-        .hamburger {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 1001;
-            font-size: 30px;
-            cursor: pointer;
-            color: #333;
         }
     </style>
 </head>
-<body class="minimal-theme">
+<body class="default-theme">
+    <!-- Header section with title and hamburger menu -->
+    <div class="header">
+        <h3>Themed Page</h3>
+        <span class="hamburger" onclick="toggleMenu()">&#9776;</span> <!-- Hamburger icon -->
+    </div>
+
+    <!-- Hamburger menu with theme options -->
+    <div class="hamburger-menu" id="hamburger-menu">
+        <a href="demo.html">Go to App Demos</a>
+        <a href="#" onclick="setTheme('unicorn')">Unicorn Theme</a>
+        <a href="#" onclick="setTheme('snoopy')">Snoopy Theme</a>
+        <a href="#" onclick="setTheme('keroppi')">Keroppi Theme</a>
+        <a href="#" onclick="setTheme('kuromi')">Kuromi Theme</a>
+        <a href="#" onclick="setTheme('my-melody')">My Melody Theme</a>
+        <a href="#" onclick="setTheme('snow')">Snow Theme</a>
+        <a href="#" onclick="setTheme('beach')">Beach Theme</a>
+        <a href="#" onclick="setTheme('forest')">Forest Theme</a>
+        <a href="#" onclick="setTheme('food')">Food Theme</a>
+        <a href="#" onclick="setTheme('yellow')">Yellow Theme</a>
+        <a href="#" onclick="setTheme('black')">Black Theme</a>
+        <a href="#" onclick="setTheme('roboto')">Roboto Theme</a>
+    </div>
+
+    <!-- Main content section -->
     <div class="container">
         <h3>Digital Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
         <p>Former teaching assistant in Pure Data software in Sound Art Diploma at U. de Chile, where I wrote about concrete music and the futurist manifesto.<br>&nbsp;</p>
         <p>Currently working on Computer Vision and text-based applications.<br>&nbsp;</p>
-        <p>More? Listen to the <a href="https://labalahumana.bandcamp.com/" target="_blank"> bandcamp </a> site.<br> , or contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
+        <p>More? Listen to the <a href="https://labalahumana.bandcamp.com/" target="_blank">bandcamp</a> site.<br> , or contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
         <p>... and go to the apps <a href="demo.html">page</a> where you can find all demo apps from app1 to app9.</p>
     </div>
 
+    <!-- Footer section -->
     <div class="footer">
         <a href="demo.html">Go to App Demos</a>
     </div>
 
-    <!-- Hamburger Menu for Sidebar -->
-    <div class="hamburger" onclick="toggleSidebar()">☰</div>
-
-    <!-- Sidebar with Theme Toggles -->
-    <div class="sidebar" id="sidebar">
-        <div class="toggle-container">
-            <div class="toggle" id="minimal-theme" onclick="setTheme('minimal')"></div>
-            <span>Minimal Theme</span>
-        </div>
-        <div class="toggle-container">
-            <div class="toggle" id="gothic-theme" onclick="setTheme('gothic')"></div>
-            <span>Gothic Theme</span>
-        </div>
-        <div class="toggle-container">
-            <div class="toggle" id="halloween-theme" onclick="setTheme('halloween')"></div>
-            <span>Halloween Theme</span>
-        </div>
-        <div class="toggle-container">
-            <div class="toggle" id="dracula-theme" onclick="setTheme('dracula')"></div>
-            <span>Dracula Theme</span>
-        </div>
-        <div class="toggle-container">
-            <div class="toggle" id="forest-theme" onclick="setTheme('forest')"></div>
-            <span>Forest Theme</span>
-        </div>
-        <div class="toggle-container">
-            <div class="toggle" id="food-theme" onclick="setTheme('food')"></div>
-            <span>Food Theme</span>
-        </div>
-        <div class="toggle-container">
-            <div class="toggle" id="flower-theme" onclick="setTheme('flower')"></div>
-            <span>Flower Theme</span>
-        </div>
-        <div class="toggle-container">
-            <div class="toggle" id="unicorn-theme" onclick="setTheme('unicorn')"></div>
-            <span>Unicorn Theme</span>
-        </div>
-        <div class="toggle-container">
-            <div class="toggle" id="kuromi-theme" onclick="setTheme('kuromi')"></div>
-            <span>Kuromi Theme</span>
-        </div>
-    </div>
-
     <script>
-        // Toggle the sidebar visibility
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
+        // Toggle visibility of the hamburger menu
+        function toggleMenu() {
+            const menu = document.getElementById('hamburger-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         }
 
-        // Save the theme in localStorage
+        // Change the theme based on selection
         function setTheme(theme) {
-            document.body.className = `${theme}-theme`;
-            localStorage.setItem('selectedTheme', theme);
-        }
-
-        // On page load, apply the last selected theme or default to minimal
-        window.onload = function () {
-            let theme = localStorage.getItem('selectedTheme') || 'minimal';
-            document.body.className = `${theme}-theme`;
-            // Highlight the corresponding toggle
-            document.querySelectorAll('.toggle').forEach(toggle => {
-                toggle.classList.remove('active');
-            });
-            document.getElementById(`${theme}-theme`).classList.add('active');
+            const body = document.body;
+            const toggles = document.querySelectorAll(".toggle");
+            toggles.forEach(toggle => toggle.classList.remove("active"));
+            
+            body.className = theme + '-theme'; // Apply selected theme class
         }
     </script>
 </body>
