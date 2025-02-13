@@ -86,9 +86,14 @@
                 <option value="Ab">Ab</option>
                 <option value="B">B</option>
                 <option value="C">C</option>
-                <option value="Csharp">C#</option>
+                <option value="C#">C#</option>
                 <option value="D">D</option>
-                <!-- Add other notes as required -->
+                <option value="D#">D#</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+                <option value="F#">F#</option>
+                <option value="G">G</option>
+                <option value="G#">G#</option>
             </select>
         </div>
 
@@ -97,7 +102,6 @@
             <select id="temperament">
                 <option value="equal">Equal</option>
                 <option value="just">Just</option>
-                <!-- Add other temperaments -->
             </select>
         </div>
 
@@ -118,19 +122,34 @@
     <div class="keyboard" id="keyboard"></div>
 
     <script>
-        let notes = ['A', 'Ab', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']; // Define your available notes
-        let scales = ['Gypsy', 'Indian', 'Pelog', 'Chromatic', 'Jazz']; // List of scales
-        let selectedScale = 'Gypsy'; // Default scale
-        let selectedNote = 'A'; // Default note
+        let notes = ['A', 'Ab', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'];
+        let scales = ['Gypsy', 'Indian', 'Pelog', 'Chromatic', 'Jazz'];
+        let selectedScale = 'Gypsy';
+        let selectedNote = 'A';
         let reverbAmount = 0.5;
         let volume = 0.5;
+
+        // Frequencies for each note (in Hz)
+        let noteFrequencies = {
+            'A': 440,
+            'Ab': 415.3,
+            'B': 466.16,
+            'C': 261.63,
+            'C#': 277.18,
+            'D': 293.66,
+            'D#': 311.13,
+            'E': 329.63,
+            'F': 349.23,
+            'F#': 369.99,
+            'G': 392.00,
+            'G#': 415.30
+        };
 
         // p5.js setup function
         function setup() {
             createCanvas(400, 400);
             noLoop();
 
-            // Generate scale toggle buttons dynamically
             let scaleOptions = document.getElementById('scaleOptions');
             scales.forEach((scale) => {
                 let button = document.createElement('button');
@@ -140,21 +159,19 @@
                 scaleOptions.appendChild(button);
             });
 
-            // Initialize the keyboard layout
             createKeyboard();
 
-            // Event listeners for the reverb and volume sliders
             document.getElementById('reverb').addEventListener('input', (e) => reverbAmount = e.target.value);
             document.getElementById('volume').addEventListener('input', (e) => volume = e.target.value);
 
-            // Display frequency and note
             document.getElementById('frequencyDisplay').textContent = `Frequency (Hz): --`;
             document.getElementById('noteDisplay').textContent = `Note: ${selectedNote}`;
         }
 
+        // Function to create the keyboard layout
         function createKeyboard() {
             let keyboardDiv = document.getElementById('keyboard');
-            notes.forEach((note, index) => {
+            notes.forEach((note) => {
                 let key = document.createElement('div');
                 key.classList.add('key');
                 key.dataset.note = note;
@@ -163,17 +180,20 @@
             });
         }
 
+        // Toggle scale function
         function toggleScale(scale, button) {
             selectedScale = scale;
             document.querySelectorAll('.toggle-btn').forEach((btn) => btn.classList.remove('active'));
             button.classList.add('active');
         }
 
+        // Function to play a note when the key is clicked
         function playNote(note) {
             selectedNote = note;
             let frequency = getFrequency(note);
             document.getElementById('frequencyDisplay').textContent = `Frequency (Hz): ${frequency}`;
             document.getElementById('noteDisplay').textContent = `Note: ${note}`;
+
             let sound = new p5.Oscillator();
             sound.setType('sine');
             sound.freq(frequency);
@@ -182,16 +202,9 @@
             sound.connect(new p5.Reverb().process(sound, reverbAmount));
         }
 
+        // Function to get frequency for the selected note
         function getFrequency(note) {
-            let baseFreq = {
-                'A': 440,
-                'Ab': 415.3,
-                'B': 466.16,
-                'C': 261.63,
-                'C#': 277.18,
-                // Add other notes frequencies here...
-            };
-            return baseFreq[note] || 440; // Default to A
+            return noteFrequencies[note] || 440; // Default to A
         }
 
         // Run the setup function
@@ -199,3 +212,4 @@
     </script>
 </body>
 </html>
+
