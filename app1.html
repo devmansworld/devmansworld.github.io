@@ -46,8 +46,8 @@
 
     <div class="container">
         <h1>Meme Generator</h1>
-        <p>Enter text and create your own meme!</p>
-        
+        <p>Search for memes, add text, and create your own meme!</p>
+
         <!-- Dark/Light Mode Toggle -->
         <label class="switch">
             <input type="checkbox" id="darkModeSwitch">
@@ -55,20 +55,24 @@
         </label>
         <span id="modeText"> Light Mode</span>
 
+        <!-- Meme Search -->
+        <div class="input-field">
+            <input type="text" id="memeSearch" class="form-control" placeholder="Search for a meme" oninput="searchMemes()">
+        </div>
+
+        <div class="input-field">
+            <select id="imageSelect" class="form-control">
+                <option value="">Select a meme</option>
+            </select>
+        </div>
+
+        <!-- Top and Bottom Text Input -->
         <div class="input-field">
             <input type="text" id="topText" class="form-control" placeholder="Top Text" required>
         </div>
 
         <div class="input-field">
             <input type="text" id="bottomText" class="form-control" placeholder="Bottom Text" required>
-        </div>
-
-        <div class="input-field">
-            <select id="imageSelect" class="form-control">
-                <option value="https://i.imgci.com/link_to_image/meme1.jpg">Meme Image 1</option>
-                <option value="https://i.imgci.com/link_to_image/meme2.jpg">Meme Image 2</option>
-                <option value="https://i.imgci.com/link_to_image/meme3.jpg">Meme Image 3</option>
-            </select>
         </div>
 
         <button class="btn btn-primary" onclick="generateMeme()">Generate Meme</button>
@@ -103,11 +107,36 @@
             }
         });
 
-        // Meme Generator Function
+        // Fetch memes from the Imgflip API based on search term
+        function searchMemes() {
+            const query = document.getElementById("memeSearch").value;
+            if (query.length > 2) {
+                fetch(`https://api.imgflip.com/get_memes`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const memeSelect = document.getElementById("imageSelect");
+                        memeSelect.innerHTML = '<option value="">Select a meme</option>'; // Clear options
+                        const memes = data.data.memes.filter(meme => meme.name.toLowerCase().includes(query.toLowerCase()));
+                        memes.forEach(meme => {
+                            const option = document.createElement("option");
+                            option.value = meme.url;
+                            option.textContent = meme.name;
+                            memeSelect.appendChild(option);
+                        });
+                    });
+            }
+        }
+
+        // Generate Meme with custom top and bottom text
         function generateMeme() {
             const topText = document.getElementById("topText").value;
             const bottomText = document.getElementById("bottomText").value;
             const imageUrl = document.getElementById("imageSelect").value;
+
+            if (!imageUrl) {
+                alert("Please select a meme image");
+                return;
+            }
 
             // Set the meme image and text
             document.getElementById("memeImage").src = imageUrl;
@@ -133,7 +162,6 @@
 
 </body>
 </html>
-
 
 
 
