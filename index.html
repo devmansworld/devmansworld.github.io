@@ -16,30 +16,32 @@
             text-align: left;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Center-align content */
+            align-items: center;
             justify-content: flex-start;
             height: 100vh;
             transition: all 0.5s ease;
+            padding: 20px;
         }
 
         .container {
             width: 100%;
             max-width: 800px;
-            padding: 10px;
-            text-align: justify; /* Justify text */
+            padding: 20px;
+            text-align: justify;
             margin-top: 20px;
+            overflow: auto;
         }
 
         .container p {
-            margin-bottom: 1em; /* Add space between paragraphs */
+            margin-bottom: 1em;
         }
 
         .container img {
             display: block;
-            margin: 0 auto; /* Ensure image is centered */
-            width: 80%; /* Make image responsive */
+            margin: 0 auto;
+            width: 80%;
             height: auto;
-            max-width: 100%; /* Ensure it scales within container */
+            max-width: 100%;
         }
 
         .toggles {
@@ -51,6 +53,9 @@
             flex-direction: column;
             gap: 3px;
             z-index: 10;
+            padding: 10px;
+            max-width: 25%; /* Default max width for toggles */
+            overflow-x: hidden;
         }
 
         .toggle-container {
@@ -126,6 +131,7 @@
                 left: 10px;
                 flex-direction: row;
                 gap: 10px;
+                max-width: 33%; /* Adjust for medium screens */
             }
 
             .toggle-container {
@@ -156,6 +162,7 @@
                 gap: 5px;
                 top: 10px;
                 left: 10px;
+                max-width: 50%; /* Adjust for smaller screens */
             }
 
             .toggle-container {
@@ -186,7 +193,12 @@
         <script>
             const themes = [
                 "hello_kitty", "snoopy", "keroppi", "unicorn", "kuromi", "gothic", "sky", "forest",
-                "fruits", "flowers", "food", "space", "soccer"
+                "fruits", "flowers", "food", "space", "soccer", "vintage", "tech", "nature", "dark", 
+                "light", "minimal", "artsy", "retro", "modern", "classic", "punk", "chic", "futuristic", 
+                "abstract", "geometric", "boho", "eco", "urban", "neon", "cosmic", "edgy", "grunge", 
+                "whimsical", "hippie", "classic", "punk", "pop", "graphic", "playful", "abstract", "vintage", 
+                "avant-garde", "expressionist", "bohemian", "psychedelic", "boho-chic", "trendy", "elegant", 
+                "hip", "rustic", "feminine", "masculine", "androgynous", "sporty", "vibrant", "calm"
             ];
             themes.forEach(theme => {
                 document.write(`
@@ -201,16 +213,35 @@
 
     <div class="movie-quotes">
         <script>
-            // Randomly selected one quote from the list
             const quotes = [
-                "Je vais lui faire une offre qu'il ne pourra pas refuser."
+                "Je vais lui faire une offre qu'il ne pourra pas refuser.", "Let there be light.", 
+                "I think, therefore I am.", "To be or not to be.", "The only thing we have to fear is fear itself.",
+                "That's one small step for man, one giant leap for mankind.", "In the beginning, God created the heavens and the earth.",
+                "To infinity and beyond!", "May the force be with you.", "Live long and prosper.",
+                "I’ll be back.", "Here's looking at you, kid.", "I feel the need – the need for speed.",
+                "The stuff that dreams are made of.", "It’s a beautiful day in the neighborhood.",
+                "I coulda had class. I could’ve been a contender.", "Toto, I’ve a feeling we’re not in Kansas anymore.",
+                "I’m king of the world!", "You can’t handle the truth!", "E.T. phone home.", 
+                "You had me at ‘hello’.", "Why so serious?", "Carpe Diem.", "Mamma mia!",
+                "Houston, we have a problem.", "I’ll make him an offer he can’t refuse.", "You talking to me?",
+                "Here’s Johnny!", "Keep the change, ya filthy animal.", "It’s alive! It’s alive!", 
+                "You’ve got a friend in me.", "There’s no place like home.", "I am your father.", 
+                "Don’t call it a comeback!", "I wish I knew how to quit you.", "You can’t stop the signal.",
+                "The force will be with you, always.", "I am Groot.", "I drink your milkshake!", "Yippee-ki-yay, motherfucker.",
+                "I’m Batman.", "It’s not who I am underneath, but what I do that defines me.",
+                "I’m the king of the world!", "It’s a trap!", "Just keep swimming.", "This is the start of a beautiful friendship.",
+                "I’ve seen things you people wouldn’t believe.", "I can resist everything except temptation.",
+                "After all, tomorrow is another day!", "Nobody puts Baby in a corner.", "I’m too old for this shit.", 
+                "I am vengeance. I am the night.", "You’ll shoot your eye out.", "It’s a wonderful life."
             ];
             const quote = quotes[Math.floor(Math.random() * quotes.length)];
             document.write(quote);
         </script>
     </div>
 
-    <div class="footer">All rights reserved. (c) SCL MEDIA 2025.</div>
+    <div class="footer">
+        <a href="app1.html">Go to App1 (Word Generator)</a>
+    </div>
 
     <script>
         function setTheme(theme) {
@@ -226,12 +257,7 @@
                 kuromi: { background: "#333", color: "#ff66b2", font: "Tahoma", emailColor: "#ff66b2" },
                 gothic: { background: "#1a1a1a", color: "#e6e6e6", font: "Times New Roman", emailColor: "#e6e6e6" },
                 sky: { background: "#87ceeb", color: "#fff", font: "Arial", emailColor: "#fff" },
-                forest: { background: "#228b22", color: "#fff", font: "Georgia", emailColor: "#fff" },
-                fruits: { background: "#f0e68c", color: "#ff6347", font: "Verdana", emailColor: "#ff6347" },
-                flowers: { background: "#ffb6c1", color: "#ff69b4", font: "Calibri", emailColor: "#ff69b4" },
-                food: { background: "#f5deb3", color: "#ff4500", font: "Helvetica", emailColor: "#ff4500" },
-                space: { background: "#000", color: "#fff", font: "Verdana", emailColor: "#fff" },
-                soccer: { background: "#33cc33", color: "#fff", font: "Arial", emailColor: "#fff" }
+                forest: { background: "#228b22", color: "#fff", font: "Georgia", emailColor: "#fff" }
             };
 
             document.body.style.backgroundColor = themeStyles[theme].background;
