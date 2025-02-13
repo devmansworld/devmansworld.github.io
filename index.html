@@ -16,7 +16,7 @@
             text-align: left;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Center-align content */
+            align-items: center;
             justify-content: flex-start;
             height: 100vh;
             transition: all 0.5s ease;
@@ -24,21 +24,20 @@
 
         .container {
             width: 100%;
-            max-width: 800px;
             padding: 10px;
-            text-align: justify; /* Justify text */
+            text-align: justify;
             margin-top: 20px;
         }
 
         .container p {
-            margin-bottom: 1em; /* Add space between paragraphs */
+            margin-bottom: 1em;
         }
 
         .container img {
             display: block;
             margin-left: auto;
             margin-right: auto;
-            width: 80%; /* Make image responsive */
+            width: 80%;
             height: auto;
         }
 
@@ -51,10 +50,13 @@
             flex-direction: column;
             gap: 3px;
             z-index: 10;
+            overflow-x: auto; /* Enable horizontal scroll */
+            white-space: nowrap; /* Prevent wrapping */
+            width: 100%; /* Ensure it uses the full width */
         }
 
         .toggle-container {
-            display: flex;
+            display: inline-block;
             align-items: center;
             gap: 3px;
         }
@@ -249,4 +251,3 @@
     </script>
 </body>
 </html>
-
