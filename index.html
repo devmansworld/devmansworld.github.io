@@ -1,168 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Themed Page</title>
-
-    <!-- Link to Bootstrap 4 for styling -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    
+    <title>Hi!</title>
+    <link href="Hi!_files/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Base styling for the body */
         body {
-            font-family: 'Poppins', sans-serif; /* Default font */
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            font-size: 14px;
+            background-color: #fff;
+            color: #000;
+            text-align: left;
             display: flex;
             flex-direction: column;
+            align-items: center; /* Center-align content */
             justify-content: flex-start;
+            height: 100vh;
             transition: all 0.5s ease;
         }
 
-        /* Header section with title and hamburger icon */
-        .header {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            height: 20vh; /* Header takes up 20% of viewport height */
-        }
-
-        .header h3 {
-            position: absolute;
-            font-size: 3rem; /* Title font size */
-            font-weight: 600;
-            z-index: 1;
-            text-align: center;
-        }
-
-        /* Hamburger icon styling */
-        .hamburger {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            font-size: 30px;
-            cursor: pointer;
-            z-index: 2;
-        }
-
-        /* Sidebar menu for theme selection */
-        .hamburger-menu {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 200px;
-            height: 100vh;
-            background-color: #333;
-            color: white;
-            padding-top: 50px;
-            z-index: 3;
-        }
-
-        /* Links in the hamburger menu */
-        .hamburger-menu a {
-            color: white;
-            text-decoration: none;
-            display: block;
-            padding: 10px;
-            font-size: 1.5rem;
-        }
-
-        .hamburger-menu a:hover {
-            background-color: #575757;
-        }
-
-        /* Theme classes */
-        .unicorn-theme {
-            background: linear-gradient(45deg, #ff8fff, #a9c9ff);
-            color: #ff66cc;
-        }
-
-        .snoopy-theme {
-            background-color: #f0f0f0;
-            color: #333;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .keroppi-theme {
-            background-color: #8ac926;
-            color: white;
-        }
-
-        .kuromi-theme {
-            background-color: #ff00ff;
-            color: white;
-        }
-
-        .my-melody-theme {
-            background-color: #ffb6c1;
-            color: white;
-        }
-
-        .snow-theme {
-            background-color: #f0f8ff;
-            color: #333;
-        }
-
-        .beach-theme {
-            background-color: #f8d1a3;
-            color: #333;
-        }
-
-        .forest-theme {
-            background-color: #228b22;
-            color: white;
-        }
-
-        .food-theme {
-            background-color: #f0a500;
-            color: white;
-        }
-
-        .yellow-theme {
-            background-color: #ffd700;
-            color: white;
-        }
-
-        .black-theme {
-            background-color: #000000;
-            color: white;
-        }
-
-        .roboto-theme {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-
-        /* Footer styling */
-        .footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            font-size: 12px;
-            text-align: center;
+        .container {
             width: 100%;
-            color: #555;
+            max-width: 800px;
+            padding: 10px;
+            text-align: justify; /* Justify text */
+            margin-top: 20px;
         }
 
-        /* Toggle switch container to center it */
+        .container p {
+            margin-bottom: 1em; /* Add space between paragraphs */
+        }
+
+        .container img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%; /* Make image responsive */
+            height: auto;
+        }
+
+        .toggles {
+            position: fixed;
+            top: 50%;
+            left: 5px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            z-index: 10;
+        }
+
         .toggle-container {
             display: flex;
             align-items: center;
-            justify-content: center; /* Center the toggle switch horizontally */
-            gap: 10px;
-            font-size: 1.2vw;
+            gap: 3px;
         }
 
-        /* Bootstrap toggle switch style */
         .toggle {
             width: 25px;
-            height: 15px;
+            height: 12px;
             background: #ccc;
             border-radius: 10px;
             position: relative;
@@ -171,8 +70,8 @@
 
         .toggle:before {
             content: '';
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             background: white;
             position: absolute;
             top: 1px;
@@ -182,82 +81,172 @@
         }
 
         .toggle.active {
-            background: #4CAF50; /* Green when active */
+            background: #4CAF50;
         }
 
         .toggle.active:before {
-            left: 10px; /* Moves the circle to the right when active */
+            left: 13px;
         }
 
-        /* Adjust for mobile devices */
-        @media (max-width: 768px) {
+        .toggle-label {
+            font-size: 10px;
+        }
+
+        .movie-quotes {
+            position: fixed;
+            bottom: 5px;
+            right: 5px;
+            font-size: 8px;
+            text-align: right;
+            width: 20%;
+            max-height: 50vh;
+            overflow-y: auto;
+            word-wrap: break-word;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 5px;
+            left: 5px;
+            font-size: 8px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
             body {
-                font-size: 3vw; /* Smaller font size for smaller screens */
-                padding: 10px;
+                font-size: 12px;
+            }
+
+            .container {
+                padding: 5px;
+            }
+
+            .toggles {
+                top: 10px;
+                left: 10px;
+                flex-direction: row;
+                gap: 10px;
+            }
+
+            .toggle-container {
+                font-size: 10px;
+            }
+
+            .movie-quotes {
+                font-size: 6px;
+                width: 40%;
             }
 
             .footer {
+                font-size: 7px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 10px;
+            }
+
+            .container {
+                padding: 3px;
+            }
+
+            .toggles {
+                top: 10px;
+                left: 10px;
+                flex-direction: row;
+                gap: 5px;
+            }
+
+            .toggle-container {
                 font-size: 8px;
+            }
+
+            .movie-quotes {
+                font-size: 5px;
+                width: 100%;
+            }
+
+            .footer {
+                font-size: 6px;
             }
         }
     </style>
 </head>
-<body class="default-theme">
-    <!-- Header section with title and hamburger menu -->
-    <div class="header">
-        <h3>Themed Page</h3>
-        <span class="hamburger" onclick="toggleMenu()">&#9776;</span> <!-- Hamburger icon -->
-    </div>
-
-    <!-- Hamburger menu with theme options -->
-    <div class="hamburger-menu" id="hamburger-menu">
-        <a href="demo.html">Go to App Demos</a>
-        <a href="#" onclick="setTheme('unicorn')">Unicorn Theme</a>
-        <a href="#" onclick="setTheme('snoopy')">Snoopy Theme</a>
-        <a href="#" onclick="setTheme('keroppi')">Keroppi Theme</a>
-        <a href="#" onclick="setTheme('kuromi')">Kuromi Theme</a>
-        <a href="#" onclick="setTheme('my-melody')">My Melody Theme</a>
-        <a href="#" onclick="setTheme('snow')">Snow Theme</a>
-        <a href="#" onclick="setTheme('beach')">Beach Theme</a>
-        <a href="#" onclick="setTheme('forest')">Forest Theme</a>
-        <a href="#" onclick="setTheme('food')">Food Theme</a>
-        <a href="#" onclick="setTheme('yellow')">Yellow Theme</a>
-        <a href="#" onclick="setTheme('black')">Black Theme</a>
-        <a href="#" onclick="setTheme('roboto')">Roboto Theme</a>
-    </div>
-
-    <!-- Main content section -->
+<body>
     <div class="container">
-        <h3>Digital Artist from SCL</h3>
+        <h3>Media Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
-        <p>Former teaching assistant in Pure Data software in Sound Art Diploma at U. de Chile, where I wrote about concrete music and the futurist manifesto.<br>&nbsp;</p>
-        <p>Currently working on Computer Vision and text-based applications.<br>&nbsp;</p>
-        <p>More? Listen to the <a href="https://labalahumana.bandcamp.com/" target="_blank">bandcamp</a> site.<br> , or contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
-        <p>... and go to the apps <a href="demo.html">page</a> where you can find all demo apps from app1 to app9.</p>
+        <p>Currently working on Computer Vision and text-based projects.<br>&nbsp;</p>
+        <p>I was a teaching assistant in Pure Data software in Sound Art Diploma at U. de Chile, where I explored concrete music and the futurist manifesto.<br>&nbsp;</p>
+        <p>I'm also a writer for magazines such as Nación Eléctrica, and you can find me in the alternative music world at <a href="https://labalahumana.bandcamp.com/" target="_blank">Labalahumana Bandcamp</a>.<br>&nbsp;</p>
+        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
     </div>
 
-    <!-- Footer section -->
-    <div class="footer">
-        <a href="demo.html">Go to App Demos</a>
+    <div class="toggles">
+        <script>
+            const themes = [
+                "hello_kitty", "snoopy", "keroppi", "unicorn", "kuromi", "gothic", "sky", "forest",
+                "fruits", "flowers", "food", "space", "soccer"
+            ];
+            themes.forEach(theme => {
+                document.write(`
+                    <div class="toggle-container">
+                        <div class="toggle" id="${theme}" onclick="setTheme('${theme}')"></div>
+                        <span class="toggle-label">${theme.replace('_', ' ')}</span>
+                    </div>
+                `);
+            });
+        </script>
     </div>
+
+    <div class="movie-quotes">
+        <script>
+            const texts = [
+                "Je vais lui faire une offre qu'il ne pourra pas refuser.", "La vita è bella.", "C'est arrivé près de chez vous.",
+                "Il faut tenter l'impossible pour atteindre le possible.", "La vie est un long fleuve tranquille.", "Un homme qui ne passe pas de temps avec sa famille n'est pas vraiment un homme.",
+                "J'adore l'odeur du napalm au petit matin.", "Il Buono, il Brutto, il Cattivo.", "L'enfer, c'est les autres.", "Hasta la vista, baby.", "Here's Johnny!", "You can't handle the truth!", "I see dead people.",
+                "To be, or not to be, that is the question.", "All that we see or seem is but a dream within a dream.", "The only thing we have to fear is fear itself.",
+                "Et in Arcadia ego.", "Cogito, ergo sum.", "Les sanglots longs des violons de l'automne blessent mon cœur d'une langueur monotone.",
+                "L'homme est condamné à être libre.", "Ceci n'est pas une pipe.", "Tout comprendre, c'est tout pardonner.",
+                "The truth is rarely pure and never simple.", "Not all those who wander are lost.", "Tant que l’on n’a pas aimé un animal, une partie de notre âme reste endormie.",
+                "The journey of a thousand miles begins with a single step.", "A mind needs books as a sword needs a whetstone.", "Fear is the mind-killer.", "Elementary, my dear Watson."
+            ];
+            let formattedQuotes = texts.sort(() => Math.random() - 0.5).map(q => `${q}<br><br>`);
+            document.write(formattedQuotes.join(''));
+        </script>
+    </div>
+
+    <div class="footer">All rights reserved. (c) SCL MEDIA 2025.</div>
 
     <script>
-        // Toggle visibility of the hamburger menu
-        function toggleMenu() {
-            const menu = document.getElementById('hamburger-menu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        }
-
-        // Change the theme based on selection
         function setTheme(theme) {
-            const body = document.body;
             const toggles = document.querySelectorAll(".toggle");
             toggles.forEach(toggle => toggle.classList.remove("active"));
-            
-            body.className = theme + '-theme'; // Apply selected theme class
+            document.getElementById(theme).classList.add("active");
+
+            const themeStyles = {
+                hello_kitty: { background: "#ffe4e1", color: "#ff1493", font: "Arial Rounded MT", emailColor: "#ff1493" },
+                snoopy: { background: "#fefefe", color: "#000", font: "Courier New", emailColor: "#000" },
+                keroppi: { background: "#b6d53c", color: "#008000", font: "Trebuchet MS", emailColor: "#008000" },
+                unicorn: { background: "#ffccff", color: "#9900cc", font: "Comic Sans MS", emailColor: "#9900cc" },
+                kuromi: { background: "#333", color: "#ff66b2", font: "Tahoma", emailColor: "#ff66b2" },
+                gothic: { background: "#1a1a1a", color: "#e6e6e6", font: "Times New Roman", emailColor: "#e6e6e6" },
+                sky: { background: "#87ceeb", color: "#fff", font: "Arial", emailColor: "#fff" },
+                forest: { background: "#228b22", color: "#fff", font: "Georgia", emailColor: "#fff" },
+                fruits: { background: "#f0e68c", color: "#ff6347", font: "Verdana", emailColor: "#ff6347" },
+                flowers: { background: "#ffb6c1", color: "#ff69b4", font: "Calibri", emailColor: "#ff69b4" },
+                food: { background: "#f5deb3", color: "#ff4500", font: "Helvetica", emailColor: "#ff4500" },
+                space: { background: "#000", color: "#fff", font: "Verdana", emailColor: "#fff" },
+                soccer: { background: "#33cc33", color: "#fff", font: "Arial", emailColor: "#fff" }
+            };
+
+            document.body.style.backgroundColor = themeStyles[theme].background;
+            document.body.style.color = themeStyles[theme].color;
+            document.body.style.fontFamily = themeStyles[theme].font;
+            document.getElementById('email').style.color = themeStyles[theme].emailColor;
         }
     </script>
 </body>
 </html>
-
 
