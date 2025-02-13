@@ -111,28 +111,6 @@
             font-size: 8px;
         }
 
-        /* Hamburger Menu */
-        .hamburger-menu {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            cursor: pointer;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-
-        .hamburger-menu div {
-            width: 30px;
-            height: 4px;
-            background: black;
-        }
-
-        /* Toggle visibility for mobile */
-        .toggles.hidden {
-            display: none;
-        }
-
         /* Responsive Styles */
         @media (max-width: 1024px) {
             body {
@@ -173,16 +151,11 @@
                 padding: 3px;
             }
 
-            .hamburger-menu {
-                display: flex;
-            }
-
             .toggles {
-                display: none;
                 flex-direction: column;
                 gap: 5px;
-                top: 50px;
-                right: 10px;
+                top: 10px;
+                left: 10px;
             }
 
             .toggle-container {
@@ -209,13 +182,6 @@
         <p>More? Listen to the <a href="https://labalahumana.bandcamp.com/" target="_blank"> bandcamp </a> site.<br> , or contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
     </div>
 
-    <!-- Hamburger Menu -->
-    <div class="hamburger-menu" onclick="toggleMenu()">
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-
     <div class="toggles">
         <script>
             const themes = [
@@ -230,28 +196,17 @@
                     </div>
                 `);
             });
-
-            function toggleMenu() {
-                const toggles = document.querySelector(".toggles");
-                toggles.classList.toggle("hidden");
-            }
         </script>
     </div>
 
     <div class="movie-quotes">
         <script>
-            const texts = [
-                "Je vais lui faire une offre qu'il ne pourra pas refuser.", "La vita è bella.", "C'est arrivé près de chez vous.",
-                "Il faut tenter l'impossible pour atteindre le possible.", "La vie est un long fleuve tranquille.", "Un homme qui ne passe pas de temps avec sa famille n'est pas vraiment un homme.",
-                "J'adore l'odeur du napalm au petit matin.", "Il Buono, il Brutto, il Cattivo.", "L'enfer, c'est les autres.", "Hasta la vista, baby.", "Here's Johnny!", "You can't handle the truth!", "I see dead people.",
-                "To be, or not to be, that is the question.", "All that we see or seem is but a dream within a dream.", "The only thing we have to fear is fear itself.",
-                "Et in Arcadia ego.", "Cogito, ergo sum.", "Les sanglots longs des violons de l'automne blessent mon cœur d'une langueur monotone.",
-                "L'homme est condamné à être libre.", "Ceci n'est pas une pipe.", "Tout comprendre, c'est tout pardonner.",
-                "The truth is rarely pure and never simple.", "Not all those who wander are lost.", "Tant que l’on n’a pas aimé un animal, une partie de notre âme reste endormie.",
-                "The journey of a thousand miles begins with a single step.", "A mind needs books as a sword needs a whetstone.", "Fear is the mind-killer.", "Elementary, my dear Watson."
+            // Randomly selected one quote from the list
+            const quotes = [
+                "Je vais lui faire une offre qu'il ne pourra pas refuser."
             ];
-            let formattedQuotes = texts.sort(() => Math.random() - 0.5).map(q => `${q}<br><br>`);
-            document.write(formattedQuotes.join(''));
+            const quote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.write(quote);
         </script>
     </div>
 
@@ -287,6 +242,7 @@
     </script>
 </body>
 </html>
+
 
 
 
