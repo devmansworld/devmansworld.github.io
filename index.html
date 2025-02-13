@@ -5,32 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hi!</title>
-    <link href="Hi!_files/bootstrap.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-size: 14px;
+            font-size: clamp(1rem, 2vw + 1rem, 1.5rem); /* Auto-shrinking text */
             background-color: #fff;
             color: #000;
             text-align: left;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: flex-start;
-            height: 100vh;
+            min-height: 100vh;
             transition: all 0.5s ease;
             padding: 20px;
-            overflow-x: auto;
         }
 
         .container {
-            width: 100%;
+            flex: 1;
             max-width: 800px;
             padding: 20px;
+            margin: 0 auto;
             text-align: justify;
-            margin-top: 20px;
             overflow: auto;
+            box-sizing: border-box;
         }
 
         .container p {
@@ -39,36 +38,47 @@
 
         .container img {
             display: block;
-            margin: 0 auto;
+            margin: 20px auto;
             width: 80%;
             height: auto;
             max-width: 100%;
+            border-radius: 5px;
             overflow: hidden;
         }
 
+        .movie-quotes, .footer {
+            position: fixed;
+            bottom: 5px;
+            left: 10px;
+            font-size: clamp(0.5rem, 1vw + 0.5rem, 1rem); /* Auto-shrinking text */
+            text-align: center;
+            width: 100%;
+            max-width: 100%;
+            color: #555;
+        }
+
+        /* Toggle Styles */
         .toggles {
             position: fixed;
             top: 50%;
-            left: 5px;
+            left: 10px;
             transform: translateY(-50%);
+            z-index: 10;
             display: flex;
             flex-direction: column;
-            gap: 3px;
-            z-index: 10;
-            padding: 10px;
-            max-width: 25%;
-            overflow-x: hidden;
+            gap: 5px;
         }
 
         .toggle-container {
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 10px;
+            font-size: 0.9rem;
         }
 
         .toggle {
             width: 25px;
-            height: 12px;
+            height: 15px;
             background: #ccc;
             border-radius: 10px;
             position: relative;
@@ -77,8 +87,8 @@
 
         .toggle:before {
             content: '';
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             background: white;
             position: absolute;
             top: 1px;
@@ -92,97 +102,62 @@
         }
 
         .toggle.active:before {
-            left: 13px;
+            left: 10px;
         }
 
-        .toggle-label {
-            font-size: 10px;
+        /* Default Theme */
+        .default-theme {
+            background-color: #f0f0f0;
+            color: #333;
+            font-family: "Arial", sans-serif;
         }
 
-        .movie-quotes {
-            position: fixed;
-            bottom: 5px;
-            right: 5px;
-            font-size: 8px;
-            text-align: right;
-            width: 20%;
-            max-height: 50vh;
-            overflow-y: auto;
-            word-wrap: break-word;
-        }
-
-        .footer {
-            position: fixed;
-            bottom: 5px;
-            left: 5px;
-            font-size: 8px;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 1024px) {
+        /* Adjust for smaller screens */
+        @media (max-width: 768px) {
             body {
-                font-size: 12px;
+                font-size: clamp(0.8rem, 1.5vw + 0.8rem, 1rem); /* Auto-shrinking text */
+                padding: 10px;
             }
 
             .container {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .movie-quotes, .footer {
+                font-size: 8px;
+                bottom: 0;
+            }
+
+            .toggles {
+                left: 5px;
+                top: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                font-size: clamp(0.7rem, 2vw + 0.7rem, 0.8rem); /* Auto-shrinking text */
+                padding: 10px;
+            }
+
+            .container {
+                font-size: 0.8rem;
                 padding: 5px;
             }
 
-            .toggles {
-                top: 10px;
-                left: 10px;
-                flex-direction: row;
-                gap: 10px;
-                max-width: 33%;
-            }
-
-            .toggle-container {
-                font-size: 10px;
-            }
-
-            .movie-quotes {
+            .movie-quotes, .footer {
                 font-size: 6px;
-                width: 40%;
-            }
-
-            .footer {
-                font-size: 7px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            body {
-                font-size: 10px;
-            }
-
-            .container {
-                padding: 3px;
             }
 
             .toggles {
-                flex-direction: column;
-                gap: 5px;
-                top: 10px;
-                left: 10px;
-                max-width: 50%;
-            }
-
-            .toggle-container {
-                font-size: 8px;
-            }
-
-            .movie-quotes {
-                font-size: 5px;
-                width: 100%;
-            }
-
-            .footer {
-                font-size: 6px;
+                left: 2px;
+                top: 5px;
             }
         }
     </style>
 </head>
-<body>
+<body class="default-theme">
     <div class="container">
         <h3>Digital Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
@@ -193,22 +168,11 @@
     </div>
 
     <div class="toggles">
-        <script>
-            const themes = [
-                "hello_kitty", "keroppi", "snoopy", "forest", "food", "flowers", "unicorn", "kuromi",
-                "gothic", "sky", "space", "tech", "minimal", "modern", "retro", "vintage", "punk", "classic", 
-                "artsy", "futuristic", "pop", "geometric", "boho", "eco", "urban", "neon", "cosmic", "whimsical"
-            ];
-
-            themes.forEach(theme => {
-                document.write(`
-                    <div class="toggle-container">
-                        <div class="toggle" id="${theme}" onclick="setTheme('${theme}')"></div>
-                        <span class="toggle-label">${theme.replace('_', ' ')}</span>
-                    </div>
-                `);
-            });
-        </script>
+        <div class="toggle-container">
+            <div class="toggle" id="default-theme" onclick="setTheme('default')"></div>
+            <span class="toggle-label">Default Theme</span>
+        </div>
+        <!-- Add other themes here as needed -->
     </div>
 
     <div class="movie-quotes">
@@ -245,27 +209,17 @@
 
     <script>
         function setTheme(theme) {
+            const body = document.body;
             const toggles = document.querySelectorAll(".toggle");
             toggles.forEach(toggle => toggle.classList.remove("active"));
-            document.getElementById(theme).classList.add("active");
-
-            const themeStyles = {
-                hello_kitty: { background: "#ffe4e1", color: "#ff1493", font: "Arial Rounded MT", emailColor: "#ff1493" },
-                keroppi: { background: "#b6e6b3", color: "#008000", font: "Comic Sans MS", emailColor: "#008000" },
-                snoopy: { background: "#fefefe", color: "#000", font: "Courier New", emailColor: "#000" },
-                forest: { background: "#228B22", color: "#fff", font: "Georgia", emailColor: "#fff" },
-                food: { background: "#ffebcd", color: "#ff6347", font: "Verdana", emailColor: "#ff6347" },
-                flowers: { background: "#fffae1", color: "#ff69b4", font: "Times New Roman", emailColor: "#ff69b4" },
-                unicorn: { background: "#e0e0ff", color: "#b19cd9", font: "Georgia", emailColor: "#b19cd9" },
-                kuromi: { background: "#f5d3f7", color: "#000", font: "Arial", emailColor: "#000" },
-                // Add more themes as needed
-            };
-
-            const selectedTheme = themeStyles[theme] || themeStyles["hello_kitty"];
-            document.body.style.backgroundColor = selectedTheme.background;
-            document.body.style.color = selectedTheme.color;
-            document.getElementById("email").style.color = selectedTheme.emailColor;
-            document.body.style.fontFamily = selectedTheme.font;
+            const defaultThemeBtn = document.getElementById("default-theme");
+            defaultThemeBtn.classList.add("active");
+            
+            // Reset to default clean theme on click
+            if (theme === 'default') {
+                body.classList.remove('hello_kitty', 'keroppi', 'snoopy', 'forest', 'food', 'flowers', 'unicorn', 'kuromi');
+                body.classList.add('default-theme');
+            }
         }
     </script>
 </body>
