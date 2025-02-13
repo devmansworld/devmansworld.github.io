@@ -16,21 +16,6 @@
         .container {
             margin-top: 50px;
         }
-        .meme-output {
-            margin-top: 20px;
-            display: none;
-            position: relative;
-            background-color: rgba(0, 0, 0, 0.4);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-        }
-        .meme-image {
-            width: 100%;
-            max-width: 500px;
-            height: auto;
-            border-radius: 8px;
-        }
         .input-field {
             margin: 10px 0;
         }
@@ -38,6 +23,27 @@
             margin-top: 30px;
             font-size: 12px;
             text-align: center;
+        }
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .meme-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+            justify-items: center;
+        }
+        .meme-image {
+            max-width: 100%;
+            height: auto;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
         .dark-mode {
             background-color: #121212;
@@ -65,35 +71,10 @@
             color: black;
             border: 1px solid #ccc;
         }
-        .meme-text {
-            position: absolute;
-            width: 100%;
-            text-align: center;
-            color: white;
-            font-family: "Impact", sans-serif;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
-        }
-        .text-top {
-            top: 10px;
-            font-size: 30px;
-            font-weight: bold;
-        }
-        .text-bottom {
-            bottom: 10px;
-            font-size: 30px;
-            font-weight: bold;
-        }
         .switch {
             position: absolute;
             top: 20px;
             right: 20px;
-        }
-        .footer a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .footer a:hover {
-            text-decoration: underline;
         }
     </style>
 </head>
@@ -112,33 +93,12 @@
 
         <!-- Meme Search -->
         <div class="input-field">
-            <input type="text" id="memeSearch" class="form-control" placeholder="Search for a meme" oninput="searchMemes()">
+            <input type="text" id="memeSearch" class="form-control" placeholder="Search for memes" oninput="searchMemes()">
         </div>
 
-        <div class="input-field">
-            <select id="imageSelect" class="form-control">
-                <option value="">Select a meme</option>
-            </select>
-        </div>
-
-        <!-- Top and Bottom Text Input -->
-        <div class="input-field">
-            <input type="text" id="topText" class="form-control" placeholder="Top Text" required>
-        </div>
-
-        <div class="input-field">
-            <input type="text" id="bottomText" class="form-control" placeholder="Bottom Text" required>
-        </div>
-
-        <button class="btn btn-primary" onclick="generateMeme()">Generate Meme</button>
-        <button class="btn btn-success" onclick="saveMeme()">Save Meme as JPG</button>
-
-        <div class="meme-output" id="memeOutput">
-            <div id="memeContainer">
-                <img id="memeImage" class="meme-image" src="" alt="Meme">
-                <div id="topTextOutput" class="text-top meme-text"></div>
-                <div id="bottomTextOutput" class="text-bottom meme-text"></div>
-            </div>
+        <!-- Meme Grid -->
+        <div class="meme-grid" id="memeGrid">
+            <!-- Meme images will be dynamically inserted here -->
         </div>
 
         <div class="footer">
@@ -162,85 +122,38 @@
             }
         });
 
-        // Fetch memes from the Imgflip API (Primary)
+        // Search for memes from Imgflip API
         function searchMemes() {
             const query = document.getElementById("memeSearch").value;
             if (query.length > 2) {
                 fetch(`https://api.imgflip.com/get_memes`)
                     .then(response => response.json())
                     .then(data => {
-                        const memeSelect = document.getElementById("imageSelect");
-                        memeSelect.innerHTML = '<option value="">Select a meme</option>'; // Clear options
+                        const memeGrid = document.getElementById("memeGrid");
+                        memeGrid.innerHTML = ''; // Clear the previous results
+
                         const memes = data.data.memes.filter(meme => meme.name.toLowerCase().includes(query.toLowerCase()));
-                        memes.forEach(meme => {
-                            const option = document.createElement("option");
-                            option.value = meme.url;
-                            option.textContent = meme.name;
-                            memeSelect.appendChild(option);
+                        memes.slice(0, 36).forEach(meme => { // Limit to 36 images (6x6 grid)
+                            const memeDiv = document.createElement("div");
+                            memeDiv.classList.add("meme-div");
+                            const memeImage = document.createElement("img");
+                            memeImage.src = meme.url;
+                            memeImage.classList.add("meme-image");
+                            memeImage.alt = meme.name;
+                            memeImage.title = meme.name;
+                            memeDiv.appendChild(memeImage);
+                            memeGrid.appendChild(memeDiv);
                         });
                     })
                     .catch(error => {
                         console.error("Error fetching memes from Imgflip:", error);
-                        alert("Failed to fetch memes from Imgflip. Trying backup API.");
-                        fetchBackupMemes(query);
                     });
             }
-        }
-
-        // Backup API if Imgflip fails (using Random User API for meme search)
-        function fetchBackupMemes(query) {
-            fetch(`https://dog.ceo/api/breeds/image/random`)
-                .then(response => response.json())
-                .then(data => {
-                    const memeSelect = document.getElementById("imageSelect");
-                    memeSelect.innerHTML = '<option value="">Select a meme</option>'; // Clear options
-                    const option = document.createElement("option");
-                    option.value = data.message;
-                    option.textContent = "Random Meme Image";
-                    memeSelect.appendChild(option);
-                })
-                .catch(error => {
-                    console.error("Error fetching backup memes:", error);
-                    alert("Failed to fetch memes from the backup API.");
-                });
-        }
-
-        // Generate Meme with custom top and bottom text
-        function generateMeme() {
-            const topText = document.getElementById("topText").value;
-            const bottomText = document.getElementById("bottomText").value;
-            const imageUrl = document.getElementById("imageSelect").value;
-
-            if (!imageUrl) {
-                alert("Please select a meme image");
-                return;
-            }
-
-            // Set the meme image and text
-            document.getElementById("memeImage").src = imageUrl;
-            document.getElementById("topTextOutput").innerText = topText;
-            document.getElementById("bottomTextOutput").innerText = bottomText;
-
-            // Show meme output
-            document.getElementById("memeOutput").style.display = "block";
-        }
-
-        // Save Meme as JPG using html2canvas
-        function saveMeme() {
-            const memeContainer = document.getElementById("memeContainer");
-
-            html2canvas(memeContainer).then(function(canvas) {
-                const link = document.createElement("a");
-                link.download = "meme.jpg";
-                link.href = canvas.toDataURL("image/jpeg");
-                link.click();
-            });
         }
     </script>
 
 </body>
 </html>
-
 
 
 
