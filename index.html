@@ -114,8 +114,8 @@
             left: 10px;
         }
 
-        /* Default Theme */
-        .default-theme {
+        /* Minimal Theme */
+        .minimal-theme {
             background-color: #f0f0f0;
             color: #333;
             font-family: "Arial", sans-serif;
@@ -237,7 +237,7 @@
         }
     </style>
 </head>
-<body class="default-theme">
+<body class="minimal-theme">
     <div class="container">
         <h3>Digital Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
@@ -257,8 +257,8 @@
     <!-- Sidebar with Theme Toggles -->
     <div class="sidebar" id="sidebar">
         <div class="toggle-container">
-            <div class="toggle" id="default-theme" onclick="setTheme('default')"></div>
-            <span>Default Theme</span>
+            <div class="toggle" id="minimal-theme" onclick="setTheme('minimal')"></div>
+            <span>Minimal Theme</span>
         </div>
         <div class="toggle-container">
             <div class="toggle" id="gothic-theme" onclick="setTheme('gothic')"></div>
@@ -297,37 +297,27 @@
     <script>
         // Toggle the sidebar visibility
         function toggleSidebar() {
-            const sidebar = document.getElementById("sidebar");
-            sidebar.classList.toggle("active");
+            document.getElementById('sidebar').classList.toggle('active');
         }
 
-        // Set the theme based on user selection
+        // Save the theme in localStorage
         function setTheme(theme) {
-            const body = document.body;
-            const toggles = document.querySelectorAll(".toggle");
-            toggles.forEach(toggle => toggle.classList.remove("active"));
-            
-            const themeBtns = {
-                default: 'default-theme',
-                gothic: 'gothic-theme',
-                halloween: 'halloween-theme',
-                dracula: 'dracula-theme',
-                forest: 'forest-theme',
-                food: 'food-theme',
-                flower: 'flower-theme',
-                unicorn: 'unicorn-theme',
-                kuromi: 'kuromi-theme'
-            };
+            document.body.className = `${theme}-theme`;
+            localStorage.setItem('selectedTheme', theme);
+        }
 
-            Object.keys(themeBtns).forEach(t => {
-                body.classList.remove(themeBtns[t]);
+        // On page load, apply the last selected theme or default to minimal
+        window.onload = function () {
+            let theme = localStorage.getItem('selectedTheme') || 'minimal';
+            document.body.className = `${theme}-theme`;
+            // Highlight the corresponding toggle
+            document.querySelectorAll('.toggle').forEach(toggle => {
+                toggle.classList.remove('active');
             });
-
-            body.classList.add(themeBtns[theme]);
-            const activeBtn = document.getElementById(`${theme}-theme`);
-            activeBtn.classList.add("active");
+            document.getElementById(`${theme}-theme`).classList.add('active');
         }
     </script>
 </body>
 </html>
+
 
