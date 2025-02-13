@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style & Color Generator</title>
+    <link href="Hi!_files/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            background-color: #f0f8ff;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+        }
+
+        .theme-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .color-box {
+            width: 30px;
+            height: 30px;
+            margin: 2px;
+            display: inline-block;
+        }
+
+        .color-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .color-info div {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>Daily Word and Color Generator</h3>
+        <p>Click to generate a daily word and its color theme:</p>
+        <button class="btn btn-primary" onclick="generateWord()">Generate Word</button>
+        <div id="wordOutput"></div>
+        <div id="bookTitle"></div>
+
+        <!-- Theme List with Scroll -->
+        <div class="theme-list">
+            <h4>Color Themes</h4>
+            <ul id="themeList"></ul>
+        </div>
+
+        <div class="color-info" id="colorInfo"></div>
+    </div>
+
+    <div class="footer">
+        <a href="index.html">Back to Main Page</a>
+    </div>
+
+    <script>
+        // List of words and books
+        const words = ["Innovation", "Creativity", "Pioneering", "Art", "Design", "Technology", "Imagination", "Futuristic"];
+        const books = {
+            Innovation: "The Innovator's Dilemma by Clayton Christensen",
+            Creativity: "Steal Like an Artist by Austin Kleon",
+            Pioneering: "The Pioneer Woman by Ree Drummond",
+            Art: "The Art Book",
+            Design: "The Design of Everyday Things by Don Norman",
+            Technology: "The Second Machine Age by Erik Brynjolfsson",
+            Imagination: "The Imagination Revolution by Ben Waggoner",
+            Futuristic: "The Singularity is Near by Ray Kurzweil"
+        };
+
+        // Color themes with harmonious tones
+        const colorThemes = [
+            { theme: 'Ocean Breeze', mainColor: '#1E90FF', harmonizedColor: '#32CD32', fourthColor: '#FFD700' },
+            { theme: 'Sunset Glow', mainColor: '#FF6347', harmonizedColor: '#FFD700', fourthColor: '#FF8C00' },
+            { theme: 'Forest Green', mainColor: '#228B22', harmonizedColor: '#32CD32', fourthColor: '#8B4513' },
+            { theme: 'Morning Sky', mainColor: '#87CEFA', harmonizedColor: '#00BFFF', fourthColor: '#1E90FF' },
+            { theme: 'Lavender Dream', mainColor: '#E6E6FA', harmonizedColor: '#DDA0DD', fourthColor: '#8A2BE2' },
+            // Add more themes here
+        ];
+
+        function generateWord() {
+            const word = words[Math.floor(Math.random() * words.length)];
+            document.getElementById('wordOutput').innerText = `Today's Word: ${word}`;
+            document.getElementById('bookTitle').innerText = `Book to read: ${books[word]}`;
+
+            // Random color theme logic
+            const randomTheme = colorThemes[Math.floor(Math.random() * colorThemes.length)];
+            displayColorTheme(randomTheme);
+        }
+
+        function displayColorTheme(theme) {
+            // Display the color theme
+            const colorInfoDiv = document.getElementById('colorInfo');
+            colorInfoDiv.innerHTML = `
+                <div><div class="color-box" style="background-color:${theme.mainColor}"></div><span>${theme.mainColor}</span></div>
+                <div><div class="color-box" style="background-color:${theme.harmonizedColor}"></div><span>${theme.harmonizedColor}</span></div>
+                <div><div class="color-box" style="background-color:${theme.fourthColor}"></div><span>${theme.fourthColor}</span></div>
+            `;
+        }
+
+        // Add themes to the list with scroll functionality
+        const themeList = document.getElementById('themeList');
+        colorThemes.forEach(theme => {
+            const li = document.createElement('li');
+            li.textContent = theme.theme;
+            li.style.backgroundColor = theme.mainColor;
+            themeList.appendChild(li);
+        });
+    </script>
+</body>
+</html>
+
+
+
+
