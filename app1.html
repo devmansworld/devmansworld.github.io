@@ -11,6 +11,7 @@
             font-family: Arial, sans-serif;
             text-align: center;
             transition: background-color 0.3s, color 0.3s;
+            background-color: #f7f7f7;
         }
         .container {
             margin-top: 50px;
@@ -18,11 +19,17 @@
         .meme-output {
             margin-top: 20px;
             display: none;
+            position: relative;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
         }
         .meme-image {
             width: 100%;
             max-width: 500px;
             height: auto;
+            border-radius: 8px;
         }
         .input-field {
             margin: 10px 0;
@@ -39,6 +46,54 @@
         .light-mode {
             background-color: #ffffff;
             color: #000000;
+        }
+        #memeSearch {
+            border-radius: 25px;
+            padding: 15px;
+            font-size: 18px;
+            width: 100%;
+            max-width: 350px;
+            margin: 20px auto;
+        }
+        .dark-mode #memeSearch {
+            background-color: #333;
+            color: white;
+            border: 1px solid #555;
+        }
+        .light-mode #memeSearch {
+            background-color: #f8f9fa;
+            color: black;
+            border: 1px solid #ccc;
+        }
+        .meme-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-family: "Impact", sans-serif;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+        .text-top {
+            top: 10px;
+            font-size: 30px;
+            font-weight: bold;
+        }
+        .text-bottom {
+            bottom: 10px;
+            font-size: 30px;
+            font-weight: bold;
+        }
+        .switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -81,8 +136,8 @@
         <div class="meme-output" id="memeOutput">
             <div id="memeContainer">
                 <img id="memeImage" class="meme-image" src="" alt="Meme">
-                <div id="topTextOutput" class="text-top"></div>
-                <div id="bottomTextOutput" class="text-bottom"></div>
+                <div id="topTextOutput" class="text-top meme-text"></div>
+                <div id="bottomTextOutput" class="text-bottom meme-text"></div>
             </div>
         </div>
 
@@ -107,7 +162,7 @@
             }
         });
 
-        // Fetch memes from the Imgflip API based on search term
+        // Fetch memes from the Imgflip API (Primary)
         function searchMemes() {
             const query = document.getElementById("memeSearch").value;
             if (query.length > 2) {
@@ -123,8 +178,31 @@
                             option.textContent = meme.name;
                             memeSelect.appendChild(option);
                         });
+                    })
+                    .catch(error => {
+                        console.error("Error fetching memes from Imgflip:", error);
+                        alert("Failed to fetch memes from Imgflip. Trying backup API.");
+                        fetchBackupMemes(query);
                     });
             }
+        }
+
+        // Backup API if Imgflip fails (using Random User API for meme search)
+        function fetchBackupMemes(query) {
+            fetch(`https://dog.ceo/api/breeds/image/random`)
+                .then(response => response.json())
+                .then(data => {
+                    const memeSelect = document.getElementById("imageSelect");
+                    memeSelect.innerHTML = '<option value="">Select a meme</option>'; // Clear options
+                    const option = document.createElement("option");
+                    option.value = data.message;
+                    option.textContent = "Random Meme Image";
+                    memeSelect.appendChild(option);
+                })
+                .catch(error => {
+                    console.error("Error fetching backup memes:", error);
+                    alert("Failed to fetch memes from the backup API.");
+                });
         }
 
         // Generate Meme with custom top and bottom text
