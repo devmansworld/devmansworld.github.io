@@ -5,19 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meme Generator</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
             transition: background-color 0.3s, color 0.3s;
             background-color: #f7f7f7;
         }
         .container {
             margin-top: 50px;
         }
-        .input-field {
-            margin: 10px 0;
+        .img-container {
+            position: relative;
+            display: inline-block;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            background-color: #eee;
+            overflow: hidden;
+        }
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .text-box {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .bottom-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .light-mode {
+            background-color: #ffffff;
+            color: #000000;
+        }
+        #memeTextInputTop, #memeTextInputBottom {
+            margin-top: 10px;
+        }
+        .switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .meme-options {
+            margin-top: 20px;
         }
         .footer {
             margin-top: 30px;
@@ -31,58 +82,13 @@
         .footer a:hover {
             text-decoration: underline;
         }
-        .meme-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 15px;
-            margin-top: 30px;
-            justify-items: center;
-        }
-        .meme-image {
-            max-width: 100%;
-            height: auto;
-            cursor: pointer;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        }
-        .dark-mode {
-            background-color: #121212;
-            color: #ffffff;
-        }
-        .light-mode {
-            background-color: #ffffff;
-            color: #000000;
-        }
-        #memeSearch {
-            border-radius: 25px;
-            padding: 15px;
-            font-size: 18px;
-            width: 100%;
-            max-width: 350px;
-            margin: 20px auto;
-        }
-        .dark-mode #memeSearch {
-            background-color: #333;
-            color: white;
-            border: 1px solid #555;
-        }
-        .light-mode #memeSearch {
-            background-color: #f8f9fa;
-            color: black;
-            border: 1px solid #ccc;
-        }
-        .switch {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
     </style>
 </head>
 <body class="light-mode" id="body">
 
     <div class="container">
         <h1>Meme Generator</h1>
-        <p>Search for memes, add text, and create your own meme!</p>
+        <p>Upload your own image, add text, and create your meme!</p>
 
         <!-- Dark/Light Mode Toggle -->
         <label class="switch">
@@ -91,15 +97,50 @@
         </label>
         <span id="modeText"> Light Mode</span>
 
-        <!-- Meme Search -->
-        <div class="input-field">
-            <input type="text" id="memeSearch" class="form-control" placeholder="Search for memes" oninput="searchMemes()">
+        <!-- Upload Image -->
+        <div class="meme-options">
+            <label for="imageUpload">Upload Image:</label>
+            <input type="file" id="imageUpload" class="form-control" accept="image/*">
         </div>
 
-        <!-- Meme Grid -->
-        <div class="meme-grid" id="memeGrid">
-            <!-- Meme images will be dynamically inserted here -->
+        <!-- Meme Text Inputs -->
+        <div class="meme-options">
+            <label for="memeTextInputTop">Top Text:</label>
+            <input type="text" id="memeTextInputTop" class="form-control" placeholder="Enter top text">
         </div>
+
+        <div class="meme-options">
+            <label for="memeTextInputBottom">Bottom Text:</label>
+            <input type="text" id="memeTextInputBottom" class="form-control" placeholder="Enter bottom text">
+        </div>
+
+        <!-- Text Customization Options -->
+        <div class="meme-options">
+            <label>Text Style:</label>
+            <select id="textFontTop" class="form-control">
+                <option value="Arial">Arial</option>
+                <option value="Comic Sans MS">Comic Sans MS</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Verdana">Verdana</option>
+            </select>
+        </div>
+
+        <div class="meme-options">
+            <label for="capsSwitch">All Caps:</label>
+            <input type="checkbox" id="capsSwitch">
+        </div>
+
+        <!-- Meme Image Display -->
+        <div class="img-container" id="memeImageContainer">
+            <img id="memeImage" src="" alt="Your Meme" style="display: none;">
+            <div class="text-box" id="topTextBox"></div>
+            <div class="bottom-text" id="bottomTextBox"></div>
+        </div>
+
+        <!-- Save Meme -->
+        <button id="saveMemeBtn" class="btn btn-primary">Save Meme as JPEG</button>
 
         <div class="footer">
             <a href="demo.html">Back to Demo List</a>
@@ -122,38 +163,64 @@
             }
         });
 
-        // Search for memes from Imgflip API
-        function searchMemes() {
-            const query = document.getElementById("memeSearch").value;
-            if (query.length > 2) {
-                fetch(`https://api.imgflip.com/get_memes`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const memeGrid = document.getElementById("memeGrid");
-                        memeGrid.innerHTML = ''; // Clear the previous results
+        // Upload Image
+        document.getElementById("imageUpload").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
 
-                        const memes = data.data.memes.filter(meme => meme.name.toLowerCase().includes(query.toLowerCase()));
-                        memes.slice(0, 36).forEach(meme => { // Limit to 36 images (6x6 grid)
-                            const memeDiv = document.createElement("div");
-                            memeDiv.classList.add("meme-div");
-                            const memeImage = document.createElement("img");
-                            memeImage.src = meme.url;
-                            memeImage.classList.add("meme-image");
-                            memeImage.alt = meme.name;
-                            memeImage.title = meme.name;
-                            memeDiv.appendChild(memeImage);
-                            memeGrid.appendChild(memeDiv);
-                        });
-                    })
-                    .catch(error => {
-                        console.error("Error fetching memes from Imgflip:", error);
-                    });
+            reader.onload = function(e) {
+                const imageUrl = e.target.result;
+                const imageElement = document.getElementById("memeImage");
+                imageElement.src = imageUrl;
+                imageElement.style.display = "block";
             }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Update Meme Text
+        document.getElementById("memeTextInputTop").addEventListener("input", updateMemeText);
+        document.getElementById("memeTextInputBottom").addEventListener("input", updateMemeText);
+        document.getElementById("textFontTop").addEventListener("change", updateMemeText);
+        document.getElementById("capsSwitch").addEventListener("change", updateMemeText);
+
+        function updateMemeText() {
+            const topText = document.getElementById("memeTextInputTop").value;
+            const bottomText = document.getElementById("memeTextInputBottom").value;
+            const font = document.getElementById("textFontTop").value;
+            const isCaps = document.getElementById("capsSwitch").checked;
+
+            // Handle All Caps
+            const displayTopText = isCaps ? topText.toUpperCase() : topText;
+            const displayBottomText = isCaps ? bottomText.toUpperCase() : bottomText;
+
+            const topTextBox = document.getElementById("topTextBox");
+            const bottomTextBox = document.getElementById("bottomTextBox");
+
+            topTextBox.textContent = displayTopText;
+            bottomTextBox.textContent = displayBottomText;
+
+            topTextBox.style.fontFamily = font;
+            bottomTextBox.style.fontFamily = font;
         }
+
+        // Save Meme as JPEG
+        document.getElementById("saveMemeBtn").addEventListener("click", function() {
+            const memeImageContainer = document.getElementById("memeImageContainer");
+            html2canvas(memeImageContainer).then(function(canvas) {
+                const link = document.createElement('a');
+                link.download = 'meme.jpg';
+                link.href = canvas.toDataURL('image/jpeg');
+                link.click();
+            });
+        });
     </script>
 
 </body>
 </html>
+
 
 
 
