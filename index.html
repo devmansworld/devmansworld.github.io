@@ -8,38 +8,164 @@
     <link href="Hi!_files/bootstrap.min.css" rel="stylesheet">
 
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-        font-size: 14px;
-        background-color: #fff;
-        color: #000;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        height: 100vh;
-        transition: all 0.5s ease;
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    background-color: #fff;
+    color: #000;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    transition: all 0.5s ease;
+    padding: 10px;
+}
+
+.container {
+    width: 90%;
+    max-width: 800px;
+    padding: 15px;
+    display: flex;
+    align-items: flex-start;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.image-wrapper {
+    flex-shrink: 0;
+    max-width: 50%;
+}
+
+.image-wrapper img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.text-wrapper {
+    flex-grow: 1;
+    text-align: justify;
+}
+
+.text-wrapper p {
+    margin-bottom: 1em;
+}
+
+.toggles {
+    position: fixed;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 10;
+    width: auto;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.toggle {
+    width: 25px;
+    height: 12px;
+    background: rgba(200, 200, 200, 0.5);
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    border: none;
+}
+
+.toggle:before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: white;
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.toggle.active {
+    background: rgba(76, 175, 80, 0.5);
+}
+
+.toggle.active:before {
+    left: 13px;
+}
+
+.toggle-label {
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.movie-quotes {
+    position: fixed;
+    bottom: 5px;
+    right: 5px;
+    font-size: 8px;
+    text-align: right;
+    width: 20%;
+    max-height: 50vh;
+    overflow-y: auto;
+    word-wrap: break-word;
+}
+
+.footer {
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+    font-size: 8px;
+}
+
+/* Hide toggles on mobile & show hamburger button */
+@media (max-width: 600px) {
+    .toggles {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 10px;
+        width: 80%;
+        max-width: 250px;
+        background: rgba(255, 255, 255, 0.6);
         padding: 10px;
+        border-radius: 5px;
     }
 
-    .container {
-        width: 90%;
-        max-width: 800px;
-        padding: 15px;
-        text-align: center;
-        margin-top: 20px;
-    }
-
-    .container p {
-        margin-bottom: 1em;
-    }
-
-    .container img {
+    .hamburger {
         display: block;
-        margin: 
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 20;
+    }
+}
 
+/* Show toggles when hamburger is active */
+.hamburger.active + .toggles {
+    display: flex;
+}
+</style>
 
 
     
