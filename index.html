@@ -57,12 +57,13 @@
         width: 100%;
     }
 
-    .toggle-container {
-        display: inline-block;
+ .toggle-container {
+        display: flex;
         align-items: center;
-        gap: 3px;
+        gap: 5px;
+        white-space: nowrap; /* Ensures labels don't break */
     }
-
+    
     .toggle {
         width: 25px;
         height: 12px;
@@ -93,9 +94,10 @@
     }
 
     .toggle-label {
-        font-size: 10px;
+        font-size: 12px;
+        color: #000; /* Ensure it's visible */
     }
-
+    
     .movie-quotes {
         position: fixed;
         bottom: 5px;
