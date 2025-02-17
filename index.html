@@ -1,69 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hi!</title>
-    <link href="Hi!_files/bootstrap.min.css" rel="stylesheet">
+    <title>Themed Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            font-size: 14px;
-            background-color: #fff;
-            color: #000;
-            text-align: left;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: flex-start;
-            height: 100vh;
             transition: all 0.5s ease;
         }
 
-        .container {
-            width: 100%;
-            padding: 10px;
-            text-align: justify;
-            margin-top: 20px;
-        }
-
-        .container p {
-            margin-bottom: 1em;
-        }
-
-        .container img {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            width: 80%;
-            height: auto;
-        }
-
-        .toggles {
-            position: fixed;
-            top: 50%;
-            left: 5px;
-            transform: translateY(-50%);
+        .header {
             display: flex;
-            flex-direction: column;
-            gap: 3px;
-            z-index: 10;
-            overflow-x: auto;
-            white-space: nowrap;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            height: 20vh;
+        }
+
+        .header h3 {
+            position: absolute;
+            font-size: 3rem;
+            font-weight: 600;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .hamburger {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .hamburger-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 100vh;
+            background-color: #333;
+            color: white;
+            padding-top: 50px;
+            z-index: 3;
+        }
+
+        .hamburger-menu a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            font-size: 1.5rem;
+        }
+
+        .hamburger-menu a:hover {
+            background-color: #575757;
+        }
+
+        /* Themes */
+        .unicorn-theme {
+            background: linear-gradient(45deg, #ff8fff, #a9c9ff);
+            color: #ff66cc;
+        }
+
+        .snoopy-theme {
+            background-color: #f0f0f0;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .keroppi-theme {
+            background-color: #8ac926;
+            color: white;
+        }
+
+        .kuromi-theme {
+            background-color: #ff00ff;
+            color: white;
+        }
+
+        .my-melody-theme {
+            background-color: #ffb6c1;
+            color: white;
+        }
+
+        .snow-theme {
+            background-color: #f0f8ff;
+            color: #333;
+        }
+
+        .beach-theme {
+            background-color: #f8d1a3;
+            color: #333;
+        }
+
+        .forest-theme {
+            background-color: #228b22;
+            color: white;
+        }
+
+        .food-theme {
+            background-color: #f0a500;
+            color: white;
+        }
+
+        .yellow-theme {
+            background-color: #ffd700;
+            color: white;
+        }
+
+        .black-theme {
+            background-color: #000000;
+            color: white;
+        }
+
+        .roboto-theme {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            font-size: 12px;
+            text-align: center;
             width: 100%;
+            color: #555;
         }
 
         .toggle-container {
-            display: inline-block;
+            display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 10px;
+            font-size: 1.2vw;
         }
 
         .toggle {
             width: 25px;
-            height: 12px;
+            height: 15px;
             background: #ccc;
             border-radius: 10px;
             position: relative;
@@ -72,8 +160,8 @@
 
         .toggle:before {
             content: '';
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             background: white;
             position: absolute;
             top: 1px;
@@ -87,87 +175,69 @@
         }
 
         .toggle.active:before {
-            left: 13px;
+            left: 10px;
         }
 
-        .toggle-label {
-            font-size: 10px;
-        }
+        /* Adjust for mobile */
+        @media (max-width: 768px) {
+            body {
+                font-size: 3vw;
+                padding: 10px;
+            }
 
-        .movie-quotes {
-            position: fixed;
-            bottom: 5px;
-            right: 5px;
-            font-size: 8px;
-            text-align: right;
-            width: 20%;
-            max-height: 50vh;
-            overflow-y: auto;
-            word-wrap: break-word;
-        }
-
-        .footer {
-            position: fixed;
-            bottom: 5px;
-            left: 5px;
-            font-size: 8px;
+            .footer {
+                font-size: 8px;
+            }
         }
     </style>
 </head>
-<body>
+<body class="default-theme">
+    <div class="header">
+        <h3>Themed Page</h3>
+        <span class="hamburger" onclick="toggleMenu()">&#9776;</span>
+    </div>
+
+    <div class="hamburger-menu" id="hamburger-menu">
+        <a href="demo.html">Go to App Demos</a>
+        <a href="#" onclick="setTheme('unicorn')">Unicorn Theme</a>
+        <a href="#" onclick="setTheme('snoopy')">Snoopy Theme</a>
+        <a href="#" onclick="setTheme('keroppi')">Keroppi Theme</a>
+        <a href="#" onclick="setTheme('kuromi')">Kuromi Theme</a>
+        <a href="#" onclick="setTheme('my-melody')">My Melody Theme</a>
+        <a href="#" onclick="setTheme('snow')">Snow Theme</a>
+        <a href="#" onclick="setTheme('beach')">Beach Theme</a>
+        <a href="#" onclick="setTheme('forest')">Forest Theme</a>
+        <a href="#" onclick="setTheme('food')">Food Theme</a>
+        <a href="#" onclick="setTheme('yellow')">Yellow Theme</a>
+        <a href="#" onclick="setTheme('black')">Black Theme</a>
+        <a href="#" onclick="setTheme('roboto')">Roboto Theme</a>
+    </div>
+
     <div class="container">
-        <h3>Media Artist from SCL</h3>
+        <h3>Digital Artist from SCL</h3>
         <img src="00000000000000.PNG" alt="Text Based CV Project">
-        <p>Currently working on Computer Vision and text-based projects.<br>&nbsp;</p>
-        <p>I was a teaching assistant in Pure Data software in Sound Art Diploma at U. de Chile, where I explored concrete music and the futurist manifesto.<br>&nbsp;</p>
-        <p>I'm also a writer for magazines such as Nación Eléctrica, and you can find me in the alternative music world at <a href="https://labalahumana.bandcamp.com/" target="_blank">Labalahumana Bandcamp</a>.<br>&nbsp;</p>
-        <p>Contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
+        <p>Former teaching assistant in Pure Data software in Sound Art Diploma at U. de Chile, where I wrote about concrete music and the futurist manifesto.<br>&nbsp;</p>
+        <p>Currently working on Computer Vision and text-based applications.<br>&nbsp;</p>
+        <p>More? Listen to the <a href="https://labalahumana.bandcamp.com/" target="_blank">bandcamp</a> site.<br> , or contact me for projects at <a href="mailto:sakayama666@icloud.com" id="email">sakayama666@icloud.com</a></p>
+        <p>... and go to the apps <a href="demo.html">page</a> where you can find all demo apps from app1 to app9.</p>
     </div>
 
-    <div class="toggles">
-        <script>
-            const themes = [
-                "hello_kitty", "snoopy", "keroppi", "unicorn", "kuromi", "gothic", "sky", "forest",
-                "fruits", "flowers", "food", "space", "soccer"
-            ];
-            themes.forEach(theme => {
-                document.write(`
-                    <div class="toggle-container">
-                        <div class="toggle" id="${theme}" onclick="setTheme('${theme}')"></div>
-                        <span class="toggle-label">${theme.replace('_', ' ')}</span>
-                    </div>
-                `);
-            });
-        </script>
+    <div class="footer">
+        <a href="demo.html">Go to App Demos</a>
     </div>
-
-    <div class="movie-quotes">
-        <script>
-            const texts = [
-                "Je vais lui faire une offre qu'il ne pourra pas refuser.", "La vita è bella.", "C'est arrivé près de chez vous.",
-                "Il faut tenter l'impossible pour atteindre le possible.", "La vie est un long fleuve tranquille.", "Un homme qui ne passe pas de temps avec sa famille n'est pas vraiment un homme."
-            ];
-            let formattedQuotes = texts.sort(() => Math.random() - 0.5).map(q => `${q}<br><br>`);
-            document.write(formattedQuotes.join(''));
-        </script>
-    </div>
-
-    <div class="footer">All rights reserved. (c) SCL MEDIA 2025.</div>
 
     <script>
+        function toggleMenu() {
+            const menu = document.getElementById('hamburger-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
         function setTheme(theme) {
+            const body = document.body;
             const toggles = document.querySelectorAll(".toggle");
             toggles.forEach(toggle => toggle.classList.remove("active"));
-            document.getElementById(theme).classList.add("active");
-
-            const themeStyles = {
-                hello_kitty: { background: "#ffe4e1", color: "#ff1493" },
-                snoopy: { background: "#fefefe", color: "#000" },
-                keroppi: { background: "#b6d53c", color: "#008000" }
-            };
-
-            document.body.style.backgroundColor = themeStyles[theme].background;
-            document.body.style.color = themeStyles[theme].color;
+            
+            body.className = theme + '-theme';
         }
     </script>
 </body>
