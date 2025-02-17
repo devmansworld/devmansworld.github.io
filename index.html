@@ -6,169 +6,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hi!</title>
     <link href="Hi!_files/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+            background-color: #fff;
+            color: #000;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            transition: all 0.5s ease;
+        }
 
-<style>
-body {
-    margin: 0;
-    padding: 0;
-    font-size: 14px;
-    background-color: #fff;
-    color: #000;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    height: 100vh;
-    transition: all 0.5s ease;
-    padding: 10px;
-}
+        .container {
+            width: 100%;
+            padding: 10px;
+            text-align: justify;
+            margin-top: 20px;
+        }
 
-.container {
-    width: 90%;
-    max-width: 800px;
-    padding: 15px;
-    display: flex;
-    align-items: flex-start;
-    margin-top: 20px;
-    gap: 10px;
-}
+        .container p {
+            margin-bottom: 1em;
+        }
 
-.image-wrapper {
-    flex-shrink: 0;
-    max-width: 50%;
-}
+        .container img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%;
+            height: auto;
+        }
 
-.image-wrapper img {
-    display: block;
-    width: 100%;
-    height: auto;
-}
+        .toggles {
+            position: fixed;
+            top: 50%;
+            left: 5px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            z-index: 10;
+            overflow-x: auto;
+            white-space: nowrap;
+            width: 100%;
+        }
 
-.text-wrapper {
-    flex-grow: 1;
-    text-align: justify;
-}
+        .toggle-container {
+            display: inline-block;
+            align-items: center;
+            gap: 3px;
+        }
 
-.text-wrapper p {
-    margin-bottom: 1em;
-}
+        .toggle {
+            width: 25px;
+            height: 12px;
+            background: #ccc;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+        }
 
-.toggles {
-    position: fixed;
-    top: 50%;
-    left: 5px;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    z-index: 10;
-    width: auto;
-    background: rgba(255, 255, 255, 0.5);
-    padding: 10px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-}
+        .toggle:before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: white;
+            position: absolute;
+            top: 1px;
+            left: 2px;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
 
-.toggle-container {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px;
-    border-radius: 5px;
-}
+        .toggle.active {
+            background: #4CAF50;
+        }
 
-.toggle {
-    width: 25px;
-    height: 12px;
-    background: rgba(200, 200, 200, 0.5);
-    border-radius: 10px;
-    position: relative;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    border: none;
-}
+        .toggle.active:before {
+            left: 13px;
+        }
 
-.toggle:before {
-    content: '';
-    width: 10px;
-    height: 10px;
-    background: white;
-    position: absolute;
-    top: 1px;
-    left: 2px;
-    border-radius: 50%;
-    transition: 0.3s;
-}
+        .toggle-label {
+            font-size: 10px;
+        }
 
-.toggle.active {
-    background: rgba(76, 175, 80, 0.5);
-}
+        .movie-quotes {
+            position: fixed;
+            bottom: 5px;
+            right: 5px;
+            font-size: 8px;
+            text-align: right;
+            width: 20%;
+            max-height: 50vh;
+            overflow-y: auto;
+            word-wrap: break-word;
+        }
 
-.toggle.active:before {
-    left: 13px;
-}
-
-.toggle-label {
-    font-size: 12px;
-    white-space: nowrap;
-}
-
-.movie-quotes {
-    position: fixed;
-    bottom: 5px;
-    right: 5px;
-    font-size: 8px;
-    text-align: right;
-    width: 20%;
-    max-height: 50vh;
-    overflow-y: auto;
-    word-wrap: break-word;
-}
-
-.footer {
-    position: fixed;
-    bottom: 5px;
-    left: 5px;
-    font-size: 8px;
-}
-
-/* Hide toggles on mobile & show hamburger button */
-@media (max-width: 600px) {
-    .toggles {
-        display: none;
-        position: absolute;
-        top: 60px;
-        left: 10px;
-        width: 80%;
-        max-width: 250px;
-        background: rgba(255, 255, 255, 0.6);
-        padding: 10px;
-        border-radius: 5px;
-    }
-
-    .hamburger {
-        display: block;
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        background: rgba(0, 0, 0, 0.6);
-        color: white;
-        padding: 10px;
-        border-radius: 5px;
-        cursor: pointer;
-        z-index: 20;
-    }
-}
-
-/* Show toggles when hamburger is active */
-.hamburger.active + .toggles {
-    display: flex;
-}
-</style>
-
-
-    
+        .footer {
+            position: fixed;
+            bottom: 5px;
+            left: 5px;
+            font-size: 8px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -201,13 +145,7 @@ body {
         <script>
             const texts = [
                 "Je vais lui faire une offre qu'il ne pourra pas refuser.", "La vita è bella.", "C'est arrivé près de chez vous.",
-                "Il faut tenter l'impossible pour atteindre le possible.", "La vie est un long fleuve tranquille.", "Un homme qui ne passe pas de temps avec sa famille n'est pas vraiment un homme.",
-                "J'adore l'odeur du napalm au petit matin.", "Il Buono, il Brutto, il Cattivo.", "L'enfer, c'est les autres.", "Hasta la vista, baby.", "Here's Johnny!", "You can't handle the truth!", "I see dead people.",
-                "To be, or not to be, that is the question.", "All that we see or seem is but a dream within a dream.", "The only thing we have to fear is fear itself.",
-                "Et in Arcadia ego.", "Cogito, ergo sum.", "Les sanglots longs des violons de l'automne blessent mon cœur d'une langueur monotone.",
-                "L'homme est condamné à être libre.", "Ceci n'est pas une pipe.", "Tout comprendre, c'est tout pardonner.",
-                "The truth is rarely pure and never simple.", "Not all those who wander are lost.", "Tant que l’on n’a pas aimé un animal, une partie de notre âme reste endormie.",
-                "The journey of a thousand miles begins with a single step.", "A mind needs books as a sword needs a whetstone.", "Fear is the mind-killer.", "Elementary, my dear Watson."
+                "Il faut tenter l'impossible pour atteindre le possible.", "La vie est un long fleuve tranquille.", "Un homme qui ne passe pas de temps avec sa famille n'est pas vraiment un homme."
             ];
             let formattedQuotes = texts.sort(() => Math.random() - 0.5).map(q => `${q}<br><br>`);
             document.write(formattedQuotes.join(''));
@@ -223,25 +161,13 @@ body {
             document.getElementById(theme).classList.add("active");
 
             const themeStyles = {
-                hello_kitty: { background: "#ffe4e1", color: "#ff1493", font: "Arial Rounded MT", emailColor: "#ff1493" },
-                snoopy: { background: "#fefefe", color: "#000", font: "Courier New", emailColor: "#000" },
-                keroppi: { background: "#b6d53c", color: "#008000", font: "Trebuchet MS", emailColor: "#008000" },
-                unicorn: { background: "#ffccff", color: "#9900cc", font: "Comic Sans MS", emailColor: "#9900cc" },
-                kuromi: { background: "#333", color: "#ff66b2", font: "Tahoma", emailColor: "#ff66b2" },
-                gothic: { background: "#1a1a1a", color: "#e6e6e6", font: "Times New Roman", emailColor: "#e6e6e6" },
-                sky: { background: "#87ceeb", color: "#fff", font: "Arial", emailColor: "#fff" },
-                forest: { background: "#228b22", color: "#fff", font: "Georgia", emailColor: "#fff" },
-                fruits: { background: "#f0e68c", color: "#ff6347", font: "Verdana", emailColor: "#ff6347" },
-                flowers: { background: "#ffb6c1", color: "#ff69b4", font: "Calibri", emailColor: "#ff69b4" },
-                food: { background: "#f5deb3", color: "#ff4500", font: "Helvetica", emailColor: "#ff4500" },
-                space: { background: "#000", color: "#fff", font: "Verdana", emailColor: "#fff" },
-                soccer: { background: "#33cc33", color: "#fff", font: "Arial", emailColor: "#fff" }
+                hello_kitty: { background: "#ffe4e1", color: "#ff1493" },
+                snoopy: { background: "#fefefe", color: "#000" },
+                keroppi: { background: "#b6d53c", color: "#008000" }
             };
 
             document.body.style.backgroundColor = themeStyles[theme].background;
             document.body.style.color = themeStyles[theme].color;
-            document.body.style.fontFamily = themeStyles[theme].font;
-            document.getElementById('email').style.color = themeStyles[theme].emailColor;
         }
     </script>
 </body>
