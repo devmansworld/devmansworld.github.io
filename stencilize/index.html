@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stencelizer v0.6.1</title>
+
+<!-- p5.js library. Local processing only, no server or build step needed. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
+<style>
+/* ================================================================
+   RESET
+   ================================================================ */
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:"JetBrains Mono","Fira Code",Consolas,"Courier New",monospace;
+    letter-spacing:0.5px;
+}
+
+/* ================================================================
+   THEMES
+   Light = default now. Dark ("Black Terminal") is opt-in.
+   ================================================================ */
+body.dark{
+    background:#000000;
+    color:#39FF14;
+}
+body.light{
+    background:#F5F5F5;
+    color:#000000;
+}
+
+/* ================================================================
+   HEADER BAR
+   ================================================================ */
+#headerBar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 16px;
+    border-bottom:3px solid #0066FF;
+    font-weight:bold;
+    letter-spacing:2px;
+}
+body.dark #headerBar{
+    border-bottom:3px solid #39FF14;
+}
+#headerBar .title{
+    font-size:16px;
+}
+#headerDot{
+    color:#0066FF;
+    margin-right:6px;
+}
+body.dark #headerDot{
+    color:#39FF14;
+}
+
+/* ================================================================
+   TWO COLUMN APP LAYOUT
+   ================================================================ */
+#appBody{
+    display:flex;
+    align-items:flex-start;
+}
+#controlsColumn{
+    width:34%;
+    box-sizing:border-box;
+    max-height:calc(100vh - 50px);
+    overflow-y:auto;
+}
+#imageColumn{
+    width:66%;
+    position:sticky;
+    top:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:16px;
+    box-sizing:border-box;
+}
+
+/* ================================================================
+   PANELS
+   ================================================================ */
+.panel{
+    border:2px solid #0066FF;
+    margin:10px 16px;
+    padding:8px;
+}
+body.dark .panel{
+    border:2px solid #39FF14;
+}
+body.noBorders .panel{
+    border-color:transparent;
+}
+.panelLabel{
+    font-size:11px;
+    font-weight:bold;
+    letter-spacing:2px;
+    margin-bottom:6px;
+    opacity:0.8;
+}
+.panelRow{
+    margin:5px 0;
+    padding:6px 0;
+}
+.subPanel{
+    border:1px solid #99b3ff;
+    padding:6px;
+    margin:6px 0;
+}
+body.dark .subPanel{
+    border:1px solid #226622;
+}
+body.noBorders .subPanel{
+    border-color:transparent;
+}
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+button{
+    font-family:inherit;
+    font-weight:bold;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    background:#FF8800;
+    color:#000000;
+    border:3px solid #0066FF;
+    border-radius:0;
+    padding:7px 10px;
+    margin:3px;
+    font-size:12px;
+    cursor:pointer;
+}
+body.dark button{
+    border:3px solid #39FF14;
+}
+button:hover{
+    background:#FF00FF;
+    color:#FFFFFF;
+}
+button:active,
+button.active{
+    background:#000000;
+    color:#FF8800;
+}
+button:disabled{
+    opacity:0.35;
+    cursor:not-allowed;
+}
+button.sizeBtn{
+    padding:5px 9px;
+    margin:2px;
+}
+button.resetBtn{
+    background:#000000;
+    color:#FF8800;
+    border:3px solid #FF8800;
+}
+button.resetBtn:hover{
+    background:#FF8800;
+    color:#000000;
+}
+
+input[type="file"]{
+    font-family:inherit;
+    color:inherit;
+    max-width:100%;
+}
+
+/* ================================================================
+   FORM CONTROLS
+   ================================================================ */
+input[type="text"]{
+    font-family:inherit;
+    background:transparent;
+    color:inherit;
+    border:2px solid #0066FF;
+    border-radius:0;
+    padding:5px 7px;
+    width:100%;
+    max-width:100%;
+    margin-bottom:5px;
+}
+body.dark input[type="text"]{
+    border:2px solid #39FF14;
+}
+input[type="color"]{
+    width:36px;
+    height:28px;
+    border:2px solid #0066FF;
+    border-radius:0;
+    padding:0;
+    background:transparent;
+    cursor:pointer;
+    vertical-align:middle;
+}
+body.dark input[type="color"]{
+    border:2px solid #39FF14;
+}
+input[type="range"]{
+    vertical-align:middle;
+    width:100px;
+}
+label{
+    display:inline-block;
+    margin:3px 8px 3px 0;
+    font-size:12px;
+}
+.sizeDisplay{
+    display:inline-block;
+    width:40px;
+    text-align:center;
+    font-size:12px;
+}
+
+/* ================================================================
+   ACCURACY CONTROL
+   ================================================================ */
+.accuracyOption{
+    display:inline-block;
+    font-size:18px;
+    padding:4px 6px;
+    margin:2px;
+    border:2px solid transparent;
+    cursor:pointer;
+}
+.accuracyOption:hover{
+    color:#FF00FF;
+}
+.accuracyOption.selected{
+    color:#FF8800;
+    border:2px solid #FF8800;
+}
+
+/* ================================================================
+   CANVAS
+   ================================================================ */
+#canvasHolder{
+    display:flex;
+    justify-content:center;
+    width:100%;
+}
+canvas{
+    border:3px solid #0066FF;
+    box-shadow:0 0 8px rgba(0,0,0,0.2);
+    max-width:100%;
+    height:auto;
+}
+body.dark canvas{
+    border:3px solid #39FF14;
+    box-shadow:0 0 12px rgba(57,255,20,0.4);
+}
+
+/* ================================================================
+   STATUS BAR
+   ================================================================ */
+#statusBar{
+    padding:8px 12px;
+    border-top:3px solid #0066FF;
+    font-size:12px;
+    width:100%;
+    text-align:center;
+    margin-top:10px;
+}
+body.dark #statusBar{
+    border-top:3px solid #39FF14;
+}
+
+/* ================================================================
+   MOBILE / SMALL SCREEN ADJUSTMENTS
+   ================================================================ */
+@media (max-width: 780px){
+    #appBody{
+        flex-direction:column;
+    }
+    #controlsColumn{
+        width:100%;
+        max-height:none;
+        overflow-y:visible;
+    }
+    #imageColumn{
+        width:100%;
+        position:static;
+        padding:10px;
+    }
+    #headerBar{
+        padding:8px 10px;
+    }
+    #headerBar .title{
+        font-size:13px;
+    }
+    .panel{
+        margin:8px 6px;
+        padding:8px;
+    }
+    input[type="range"]{
+        width:90px;
+    }
+}
+</style>
+</head>
+<body class="light">
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<div id="headerBar">
+    <div class="title">STENCELIZER v0.6.1</div>
+    <div><span id="headerDot">&#9679;</span><span id="headerDotLabel">Ready</span></div>
+</div>
+
+<div id="appBody">
+
+<!-- ============================================================
+     CONTROLS COLUMN (left, one third of the width)
+     ============================================================ -->
+<div id="controlsColumn">
+
+    <!-- FILE PANEL -->
+    <div class="panel">
+        <div class="panelLabel">FILE</div>
+        <input type="file" id="imageLoader" accept="image/*">
+    </div>
+
+    <!-- THEME / DISPLAY PANEL -->
+    <div class="panel">
+        <div class="panelLabel">THEME &amp; DISPLAY</div>
+        <label>
+            <input type="checkbox" id="themeSwitch">
+            Black Terminal
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" id="hideBordersToggle">
+            Hide panel borders
+        </label>
+    </div>
+
+    <!-- MODES PANEL -->
+    <div class="panel">
+        <div class="panelLabel">MODES</div>
+        <button id="btn-original" onclick="setMode('original')">Original</button>
+        <button id="btn-stencil" onclick="setMode('stencil')">Stencil</button>
+        <button id="btn-rgb" onclick="setMode('rgb')">Basic RGB</button>
+        <button id="btn-harmony" onclick="setMode('harmony')">Harmony</button>
+        <button id="btn-gross" onclick="setMode('gross')">Gross Lines</button>
+        <button class="resetBtn" onclick="resetAllParameters()">Reset / Default</button>
+    </div>
+
+    <!-- HARMONY TYPE PANEL -->
+    <div class="panel">
+        <div class="panelLabel">HARMONY TYPE</div>
+        <button id="harm-complementary" onclick="setHarmonyType('complementary')">Complementary</button>
+        <button id="harm-triadic" onclick="setHarmonyType('triadic')">Triadic</button>
+        <button id="harm-tetradic" onclick="setHarmonyType('tetradic')">Tetradic</button>
+    </div>
+
+    <!-- ACCURACY PANEL -->
+    <div class="panel">
+        <div class="panelLabel">ACCURACY</div>
+        <span class="accuracyOption" id="acc-1" onclick="setAccuracy(1)">&#9312;</span>
+        <span class="accuracyOption" id="acc-2" onclick="setAccuracy(2)">&#9313;</span>
+        <span class="accuracyOption" id="acc-3" onclick="setAccuracy(3)">&#9314;</span>
+        <span class="accuracyOption" id="acc-4" onclick="setAccuracy(4)">&#9315;</span>
+        <span class="accuracyOption selected" id="acc-5" onclick="setAccuracy(5)">&#9316;</span>
+        <span class="accuracyOption" id="acc-6" onclick="setAccuracy(6)">&#9317;</span>
+        <span class="accuracyOption" id="acc-7" onclick="setAccuracy(7)">&#9318;</span>
+        <span class="accuracyOption" id="acc-8" onclick="setAccuracy(8)">&#9319;</span>
+        <span class="accuracyOption" id="acc-9" onclick="setAccuracy(9)">&#9320;</span>
+        <span class="accuracyOption" id="acc-10" onclick="setAccuracy(10)">&#9321;</span>
+    </div>
+
+    <!-- MARGINS PANEL -->
+    <div class="panel">
+        <div class="panelLabel">MARGINS</div>
+        <div class="panelRow">
+            <label>Horizontal
+                <input type="range" id="hMarginInput" min="0" max="50" value="0">
+            </label>
+            <span class="sizeDisplay" id="hMarginDisplay">0%</span>
+            <label><input type="checkbox" id="hMarginBlackToggle"> Black</label>
+        </div>
+        <div class="panelRow">
+            <label>Vertical
+                <input type="range" id="vMarginInput" min="0" max="50" value="0">
+            </label>
+            <span class="sizeDisplay" id="vMarginDisplay">0%</span>
+            <label><input type="checkbox" id="vMarginBlackToggle"> Black</label>
+        </div>
+    </div>
+
+    <!-- OUTPUT FILTERS PANEL -->
+    <div class="panel">
+        <div class="panelLabel">OUTPUT FILTERS</div>
+
+        <div class="panelRow">
+            <div class="panelLabel">COLOR ADJUST</div>
+            <label>Hue <input type="range" id="hueInput" min="-180" max="180" value="0"></label>
+            <span class="sizeDisplay" id="hueDisplay">0&deg;</span>
+            <br>
+            <label>Saturation <input type="range" id="satInput" min="0" max="200" value="100"></label>
+            <span class="sizeDisplay" id="satDisplay">100%</span>
+            <br>
+            <label>R <input type="range" id="rGainInput" min="0" max="200" value="100"></label>
+            <span class="sizeDisplay" id="rGainDisplay">100%</span>
+            <br>
+            <label>G <input type="range" id="gGainInput" min="0" max="200" value="100"></label>
+            <span class="sizeDisplay" id="gGainDisplay">100%</span>
+            <br>
+            <label>B <input type="range" id="bGainInput" min="0" max="200" value="100"></label>
+            <span class="sizeDisplay" id="bGainDisplay">100%</span>
+        </div>
+
+        <div class="panelRow">
+            <div class="panelLabel">CHANNEL COMBINE</div>
+            <label><input type="checkbox" id="channelRToggle" checked> R</label>
+            <label><input type="checkbox" id="channelGToggle" checked> G</label>
+            <label><input type="checkbox" id="channelBToggle" checked> B</label>
+            <button id="channelModeBtn" onclick="toggleChannelMode()">Mode: Additive</button>
+        </div>
+
+        <div class="panelRow">
+            <label>
+                <input type="checkbox" id="monochromeToggle">
+                Monochrome
+            </label>
+        </div>
+    </div>
+
+    <!-- MEMETIZER PANEL -->
+    <div class="panel">
+        <div class="panelLabel">MEMETIZER</div>
+
+        <div class="subPanel">
+            <div class="panelLabel">TOP TEXT</div>
+            <input type="text" id="topTextInput" placeholder="TOP TEXT">
+
+            <label>Text color <input type="color" id="topTextColorInput" value="#ffffff"></label>
+            <label>Border color <input type="color" id="topBorderColorInput" value="#000000"></label>
+            <label><input type="checkbox" id="topBorderToggle" checked> Border</label>
+            <br>
+            <label>Border width <input type="range" id="topBorderWidthInput" min="0" max="10" value="3"></label>
+            <label>Line width <input type="range" id="topLineWidthInput" min="40" max="100" value="90"></label>
+            <br>
+            <label>Height
+                <button type="button" class="sizeBtn" onclick="adjustFontScale('top',-0.1)">-</button>
+                <span class="sizeDisplay" id="topSizeDisplay">100%</span>
+                <button type="button" class="sizeBtn" onclick="adjustFontScale('top',0.1)">+</button>
+            </label>
+            <label>Width
+                <button type="button" class="sizeBtn" onclick="adjustFontWidthScale('top',-0.1)">-</button>
+                <span class="sizeDisplay" id="topWidthDisplay">100%</span>
+                <button type="button" class="sizeBtn" onclick="adjustFontWidthScale('top',0.1)">+</button>
+            </label>
+        </div>
+
+        <div class="subPanel">
+            <div class="panelLabel">BOTTOM TEXT</div>
+            <input type="text" id="bottomTextInput" placeholder="BOTTOM TEXT">
+
+            <label>Text color <input type="color" id="bottomTextColorInput" value="#ffffff"></label>
+            <label>Border color <input type="color" id="bottomBorderColorInput" value="#000000"></label>
+            <label><input type="checkbox" id="bottomBorderToggle" checked> Border</label>
+            <br>
+            <label>Border width <input type="range" id="bottomBorderWidthInput" min="0" max="10" value="3"></label>
+            <label>Line width <input type="range" id="bottomLineWidthInput" min="40" max="100" value="90"></label>
+            <br>
+            <label>Height
+                <button type="button" class="sizeBtn" onclick="adjustFontScale('bottom',-0.1)">-</button>
+                <span class="sizeDisplay" id="bottomSizeDisplay">100%</span>
+                <button type="button" class="sizeBtn" onclick="adjustFontScale('bottom',0.1)">+</button>
+            </label>
+            <label>Width
+                <button type="button" class="sizeBtn" onclick="adjustFontWidthScale('bottom',-0.1)">-</button>
+                <span class="sizeDisplay" id="bottomWidthDisplay">100%</span>
+                <button type="button" class="sizeBtn" onclick="adjustFontWidthScale('bottom',0.1)">+</button>
+            </label>
+        </div>
+
+        <div class="panelRow">
+            <label>
+                <input type="checkbox" id="capitalizeToggle" checked>
+                Capitalize
+            </label>
+        </div>
+
+        <div class="panelRow">
+            <div class="panelLabel">FONT (shared)</div>
+            <button id="font-impact" onclick="setMemeFont('impact')">Impact</button>
+            <button id="font-console" onclick="setMemeFont('console')">Console</button>
+            <button id="font-typewriter" onclick="setMemeFont('typewriter')">Typewriter</button>
+            <button id="font-cursive" onclick="setMemeFont('cursive')">Cursive</button>
+            <button id="font-boldsans" onclick="setMemeFont('boldsans')">Bold Sans</button>
+        </div>
+    </div>
+
+    <!-- SAVE PANEL -->
+    <div class="panel">
+        <div class="panelLabel">SAVE</div>
+        <button id="btn-download" onclick="downloadResult()">Download PNG</button>
+    </div>
+
+</div><!-- /controlsColumn -->
+
+<!-- ============================================================
+     IMAGE COLUMN (right, floating/sticky, two thirds of width)
+     ============================================================ -->
+<div id="imageColumn">
+    <div id="canvasHolder"></div>
+    <div id="statusBar">Status: Ready.</div>
+</div>
+
+</div><!-- /appBody -->
+
+<script>
+/* ================================================================
+   INTERNAL VARIABLES
+   ================================================================ */
+let currentImage  = null;      // the loaded source image, never modified directly
+let currentMode   = "original";
+let harmonyType   = "complementary";
+let accuracy      = 5;         // 1 (finest) to 10 (coarsest)
+let darkTheme     = false;     // light theme is now the default
+let statusMessage = "Ready.";
+let canvas;
+
+const accuracyBlockSizes = {
+    1:1, 2:1, 3:2, 4:3, 5:4,
+    6:5, 7:7, 8:9, 9:12, 10:16
+};
+
+/* ----------------------------------------------------------------
+   Color adjustment state: hue shift, saturation, and separate
+   R/G/B gain, applied before channel combine / monochrome.
+   ---------------------------------------------------------------- */
+let hueShift          = 0;   // -180 to 180 degrees
+let saturationPercent  = 100; // 0 to 200, 100 = unchanged
+let redGainPercent     = 100; // 0 to 200, 100 = unchanged
+let greenGainPercent   = 100;
+let blueGainPercent    = 100;
+
+/* ----------------------------------------------------------------
+   Output filter state: channel combine + monochrome
+   ---------------------------------------------------------------- */
+let channelR = true;
+let channelG = true;
+let channelB = true;
+let channelMode = "additive"; // "additive" or "subtractive"
+let monochromeEnabled = false;
+
+/* ----------------------------------------------------------------
+   Margin state
+   ---------------------------------------------------------------- */
+let horizontalMarginPercent = 0;
+let verticalMarginPercent   = 0;
+let horizontalMarginBlack   = false;
+let verticalMarginBlack     = false;
+
+/* ----------------------------------------------------------------
+   Memetizer state
+   ---------------------------------------------------------------- */
+let topText             = "";
+let topTextColor        = "#ffffff";
+let topBorderColor      = "#000000";
+let topBorderEnabled    = true;
+let topBorderWidth      = 3;
+let topLineWidthPercent = 90;
+let topFontScale        = 1.0;
+let topFontWidthScale   = 1.0;
+
+let bottomText             = "";
+let bottomTextColor        = "#ffffff";
+let bottomBorderColor      = "#000000";
+let bottomBorderEnabled    = true;
+let bottomBorderWidth      = 3;
+let bottomLineWidthPercent = 90;
+let bottomFontScale        = 1.0;
+let bottomFontWidthScale   = 1.0;
+
+let memeCapitalize = true;
+let memeFont        = "impact";
+
+const memeFontStacks = {
+    impact:     "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif",
+    console:    "'Lucida Console', Consolas, Monaco, monospace",
+    typewriter: "'Courier New', 'American Typewriter', Courier, monospace",
+    cursive:    "'Brush Script MT', 'Segoe Script', cursive",
+    boldsans:   "'Arial Black', Arial, sans-serif"
+};
+
+/* ================================================================
+   SETUP
+   ================================================================ */
+function setup(){
+    canvas = createCanvas(900, 600);
+    canvas.parent("canvasHolder");
+    background(220);
+
+    document
+        .getElementById("imageLoader")
+        .addEventListener("change", loadImageLocal);
+
+    document
+        .getElementById("themeSwitch")
+        .addEventListener("change", handleThemeSwitch);
+
+    document
+        .getElementById("hideBordersToggle")
+        .addEventListener("change", function(){
+            document.body.classList.toggle("noBorders", this.checked);
+            setStatus(this.checked ? "Panel borders hidden." : "Panel borders shown.");
+        });
+
+    document
+        .getElementById("monochromeToggle")
+        .addEventListener("change", function(){
+            monochromeEnabled = this.checked;
+            setStatus(monochromeEnabled ? "Monochrome enabled." : "Monochrome disabled.");
+        });
+
+    setupColorAdjustControls();
+    setupChannelControls();
+    setupMarginControls();
+    setupMemetizerControls();
+
+    setStatus("Ready.");
+    highlightActiveModeButton();
+    highlightActiveHarmonyButton();
+    highlightActiveFontButton();
+}
+
+/* ================================================================
+   MAIN DRAW LOOP
+   ================================================================ */
+function draw(){
+    background(240);
+
+    if(currentImage == null){
+        fill(100);
+        textSize(20);
+        textAlign(CENTER, CENTER);
+        text("Load an image...", width / 2, height / 2);
+        return;
+    }
+
+    switch(currentMode){
+        case "original": drawOriginal();   break;
+        case "stencil":  drawStencil();    break;
+        case "rgb":      drawBasicRGB();   break;
+        case "harmony":  drawHarmony();    break;
+        case "gross":    drawGrossLines(); break;
+    }
+
+    drawMemeOverlay();
+}
+
+/* ================================================================
+   IMAGE LOADING
+   ================================================================ */
+function loadImageLocal(event){
+    let file = event.target.files[0];
+    if(!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e){
+        loadImage(e.target.result, function(newImage){
+            currentImage = newImage;
+            setStatus("Loaded: " + file.name);
+        });
+    };
+    reader.readAsDataURL(file);
+}
+
+/* ================================================================
+   MODE / HARMONY TYPE / ACCURACY SWITCHING
+   ================================================================ */
+function setMode(newMode){
+    currentMode = newMode;
+    highlightActiveModeButton();
+    setStatus("Converted to " + modeLabel(newMode));
+}
+
+function setHarmonyType(newType){
+    harmonyType = newType;
+    highlightActiveHarmonyButton();
+    setStatus("Harmony type: " + newType);
+}
+
+function setAccuracy(level){
+    accuracy = level;
+    for(let i = 1; i <= 10; i++){
+        document.getElementById("acc-" + i).classList.remove("selected");
+    }
+    document.getElementById("acc-" + level).classList.add("selected");
+    setStatus("Accuracy set to level " + level + " of 10");
+}
+
+function modeLabel(modeName){
+    if(modeName == "original") return "Original";
+    if(modeName == "stencil")  return "Stencil";
+    if(modeName == "rgb")      return "Basic RGB";
+    if(modeName == "harmony")  return "Harmony";
+    if(modeName == "gross")    return "Gross Lines";
+    return modeName;
+}
+
+function highlightActiveModeButton(){
+    let ids = ["btn-original", "btn-stencil", "btn-rgb", "btn-harmony", "btn-gross"];
+    ids.forEach(function(id){
+        document.getElementById(id).classList.remove("active");
+    });
+    document.getElementById("btn-" + currentMode).classList.add("active");
+}
+
+function highlightActiveHarmonyButton(){
+    let ids = ["harm-complementary", "harm-triadic", "harm-tetradic"];
+    ids.forEach(function(id){
+        document.getElementById(id).classList.remove("active");
+    });
+    document.getElementById("harm-" + harmonyType).classList.add("active");
+}
+
+/* ================================================================
+   COLOR ADJUST CONTROLS (hue, saturation, per-channel gain)
+   ================================================================ */
+function setupColorAdjustControls(){
+    document.getElementById("hueInput").addEventListener("input", function(){
+        hueShift = parseInt(this.value);
+        document.getElementById("hueDisplay").innerText = hueShift + "\u00B0";
+    });
+    document.getElementById("satInput").addEventListener("input", function(){
+        saturationPercent = parseInt(this.value);
+        document.getElementById("satDisplay").innerText = saturationPercent + "%";
+    });
+    document.getElementById("rGainInput").addEventListener("input", function(){
+        redGainPercent = parseInt(this.value);
+        document.getElementById("rGainDisplay").innerText = redGainPercent + "%";
+    });
+    document.getElementById("gGainInput").addEventListener("input", function(){
+        greenGainPercent = parseInt(this.value);
+        document.getElementById("gGainDisplay").innerText = greenGainPercent + "%";
+    });
+    document.getElementById("bGainInput").addEventListener("input", function(){
+        blueGainPercent = parseInt(this.value);
+        document.getElementById("bGainDisplay").innerText = blueGainPercent + "%";
+    });
+}
+
+/* ================================================================
+   CHANNEL COMBINE CONTROLS
+   ================================================================ */
+function setupChannelControls(){
+    document.getElementById("channelRToggle").addEventListener("change", function(){
+        channelR = this.checked;
+        setStatus("Channel R: " + (channelR ? "on" : "off"));
+    });
+    document.getElementById("channelGToggle").addEventListener("change", function(){
+        channelG = this.checked;
+        setStatus("Channel G: " + (channelG ? "on" : "off"));
+    });
+    document.getElementById("channelBToggle").addEventListener("change", function(){
+        channelB = this.checked;
+        setStatus("Channel B: " + (channelB ? "on" : "off"));
+    });
+}
+
+function toggleChannelMode(){
+    channelMode = (channelMode == "additive") ? "subtractive" : "additive";
+    document.getElementById("channelModeBtn").innerText =
+        "Mode: " + (channelMode == "additive" ? "Additive" : "Subtractive");
+    setStatus("Channel mode: " + channelMode);
+}
+
+/* ================================================================
+   MARGIN CONTROLS
+   ================================================================ */
+function setupMarginControls(){
+    document.getElementById("hMarginInput").addEventListener("input", function(){
+        horizontalMarginPercent = parseInt(this.value);
+        document.getElementById("hMarginDisplay").innerText = horizontalMarginPercent + "%";
+    });
+    document.getElementById("vMarginInput").addEventListener("input", function(){
+        verticalMarginPercent = parseInt(this.value);
+        document.getElementById("vMarginDisplay").innerText = verticalMarginPercent + "%";
+    });
+    document.getElementById("hMarginBlackToggle").addEventListener("change", function(){
+        horizontalMarginBlack = this.checked;
+    });
+    document.getElementById("vMarginBlackToggle").addEventListener("change", function(){
+        verticalMarginBlack = this.checked;
+    });
+}
+
+/* ================================================================
+   RESET / DEFAULT
+   ================================================================ */
+function resetAllParameters(){
+    // Mode
+    currentMode = "original";
+    highlightActiveModeButton();
+
+    // Harmony
+    harmonyType = "complementary";
+    highlightActiveHarmonyButton();
+
+    // Accuracy
+    setAccuracy(5);
+
+    // Margins
+    horizontalMarginPercent = 0;
+    verticalMarginPercent = 0;
+    horizontalMarginBlack = false;
+    verticalMarginBlack = false;
+    document.getElementById("hMarginInput").value = 0;
+    document.getElementById("vMarginInput").value = 0;
+    document.getElementById("hMarginDisplay").innerText = "0%";
+    document.getElementById("vMarginDisplay").innerText = "0%";
+    document.getElementById("hMarginBlackToggle").checked = false;
+    document.getElementById("vMarginBlackToggle").checked = false;
+
+    // Color adjustments
+    hueShift = 0;
+    saturationPercent = 100;
+    redGainPercent = 100;
+    greenGainPercent = 100;
+    blueGainPercent = 100;
+    document.getElementById("hueInput").value = 0;
+    document.getElementById("satInput").value = 100;
+    document.getElementById("rGainInput").value = 100;
+    document.getElementById("gGainInput").value = 100;
+    document.getElementById("bGainInput").value = 100;
+    document.getElementById("hueDisplay").innerText = "0\u00B0";
+    document.getElementById("satDisplay").innerText = "100%";
+    document.getElementById("rGainDisplay").innerText = "100%";
+    document.getElementById("gGainDisplay").innerText = "100%";
+    document.getElementById("bGainDisplay").innerText = "100%";
+
+    // Output filters
+    channelR = true; channelG = true; channelB = true;
+    channelMode = "additive";
+    document.getElementById("channelRToggle").checked = true;
+    document.getElementById("channelGToggle").checked = true;
+    document.getElementById("channelBToggle").checked = true;
+    document.getElementById("channelModeBtn").innerText = "Mode: Additive";
+    monochromeEnabled = false;
+    document.getElementById("monochromeToggle").checked = false;
+
+    // Memetizer - top
+    topText = "";
+    topTextColor = "#ffffff";
+    topBorderColor = "#000000";
+    topBorderEnabled = true;
+    topBorderWidth = 3;
+    topLineWidthPercent = 90;
+    topFontScale = 1.0;
+    topFontWidthScale = 1.0;
+    document.getElementById("topTextInput").value = "";
+    document.getElementById("topTextColorInput").value = "#ffffff";
+    document.getElementById("topBorderColorInput").value = "#000000";
+    document.getElementById("topBorderToggle").checked = true;
+    document.getElementById("topBorderWidthInput").value = 3;
+    document.getElementById("topLineWidthInput").value = 90;
+    updateSizeDisplay("top", topFontScale);
+    updateWidthDisplay("top", topFontWidthScale);
+
+    // Memetizer - bottom
+    bottomText = "";
+    bottomTextColor = "#ffffff";
+    bottomBorderColor = "#000000";
+    bottomBorderEnabled = true;
+    bottomBorderWidth = 3;
+    bottomLineWidthPercent = 90;
+    bottomFontScale = 1.0;
+    bottomFontWidthScale = 1.0;
+    document.getElementById("bottomTextInput").value = "";
+    document.getElementById("bottomTextColorInput").value = "#ffffff";
+    document.getElementById("bottomBorderColorInput").value = "#000000";
+    document.getElementById("bottomBorderToggle").checked = true;
+    document.getElementById("bottomBorderWidthInput").value = 3;
+    document.getElementById("bottomLineWidthInput").value = 90;
+    updateSizeDisplay("bottom", bottomFontScale);
+    updateWidthDisplay("bottom", bottomFontWidthScale);
+
+    // Memetizer - shared
+    memeCapitalize = true;
+    document.getElementById("capitalizeToggle").checked = true;
+    memeFont = "impact";
+    highlightActiveFontButton();
+
+    setStatus("All parameters reset to default.");
+}
+
+/* ================================================================
+   ACCURACY / SIMPLIFICATION HELPER
+   ================================================================ */
+function applyBlockAverage(g, block){
+    if(block <= 1) return g;
+
+    g.loadPixels();
+    for(let y = 0; y < g.height; y += block){
+        for(let x = 0; x < g.width; x += block){
+            let rSum = 0, gSum = 0, bSum = 0, count = 0;
+
+            for(let by = y; by < y + block && by < g.height; by++){
+                for(let bx = x; bx < x + block && bx < g.width; bx++){
+                    let i = (by * g.width + bx) * 4;
+                    rSum += g.pixels[i];
+                    gSum += g.pixels[i + 1];
+                    bSum += g.pixels[i + 2];
+                    count++;
+                }
+            }
+            let rAvg = rSum / count;
+            let gAvg = gSum / count;
+            let bAvg = bSum / count;
+
+            for(let by = y; by < y + block && by < g.height; by++){
+                for(let bx = x; bx < x + block && bx < g.width; bx++){
+                    let i = (by * g.width + bx) * 4;
+                    g.pixels[i] = rAvg;
+                    g.pixels[i + 1] = gAvg;
+                    g.pixels[i + 2] = bAvg;
+                }
+            }
+        }
+    }
+    g.updatePixels();
+    return g;
+}
+
+/* ================================================================
+   OUTPUT FILTERS
+   Order: color adjustments (hue/saturation/RGB gain) run first,
+   as a color-grading pass. Channel combine / monochrome run last,
+   since those are more drastic, structural filters.
+   ================================================================ */
+function applyOutputFilters(g){
+    g = applyColorAdjustments(g);
+
+    if(monochromeEnabled){
+        applyMonochromeFilter(g);
+    } else {
+        applyChannelCombine(g);
+    }
+    return g;
+}
+
+// Applies per-channel RGB gain first (simple multiply), then hue
+// shift and saturation scaling via HSB, only when needed.
+function applyColorAdjustments(g){
+    let needsGain = (redGainPercent != 100 || greenGainPercent != 100 || blueGainPercent != 100);
+    let needsHueSat = (hueShift != 0 || saturationPercent != 100);
+    if(!needsGain && !needsHueSat) return g;
+
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        let r = g.pixels[i];
+        let gr = g.pixels[i + 1];
+        let b = g.pixels[i + 2];
+
+        if(needsGain){
+            r = constrain(r * (redGainPercent / 100), 0, 255);
+            gr = constrain(gr * (greenGainPercent / 100), 0, 255);
+            b = constrain(b * (blueGainPercent / 100), 0, 255);
+        }
+
+        if(needsHueSat){
+            let hsb = rgbToHsb(r, gr, b);
+            hsb.h = (hsb.h + hueShift + 360) % 360;
+            hsb.s = constrain(hsb.s * (saturationPercent / 100), 0, 100);
+            let rgb = hsbToRgb(hsb.h, hsb.s, hsb.v);
+            r = rgb.r; gr = rgb.g; b = rgb.b;
+        }
+
+        g.pixels[i] = r; g.pixels[i + 1] = gr; g.pixels[i + 2] = b;
+    }
+    g.updatePixels();
+    return g;
+}
+
+function applyMonochromeFilter(g){
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        let brightness = (g.pixels[i] + g.pixels[i + 1] + g.pixels[i + 2]) / 3;
+        g.pixels[i] = brightness;
+        g.pixels[i + 1] = brightness;
+        g.pixels[i + 2] = brightness;
+    }
+    g.updatePixels();
+}
+
+function applyChannelCombine(g){
+    let keepR, keepG, keepB;
+
+    if(channelMode == "additive"){
+        keepR = channelR; keepG = channelG; keepB = channelB;
+    } else {
+        keepR = !channelR; keepG = !channelG; keepB = !channelB;
+    }
+
+    if(keepR && keepG && keepB) return;
+
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        if(!keepR) g.pixels[i] = 0;
+        if(!keepG) g.pixels[i + 1] = 0;
+        if(!keepB) g.pixels[i + 2] = 0;
+    }
+    g.updatePixels();
+}
+
+/* ================================================================
+   DRAWING FUNCTIONS
+   ================================================================ */
+function drawOriginal(){
+    let g = currentImage.get();
+    g = applyOutputFilters(g);
+    imageFit(g);
+}
+
+function drawStencil(){
+    let g = currentImage.get();
+    g = applyBlockAverage(g, accuracyBlockSizes[accuracy]);
+
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        let brightness = (g.pixels[i] + g.pixels[i + 1] + g.pixels[i + 2]) / 3;
+        let value = brightness > 128 ? 255 : 0;
+        g.pixels[i] = value; g.pixels[i + 1] = value; g.pixels[i + 2] = value;
+    }
+    g.updatePixels();
+
+    g = applyOutputFilters(g);
+    imageFit(g);
+}
+
+function drawBasicRGB(){
+    let g = currentImage.get();
+    g = applyBlockAverage(g, accuracyBlockSizes[accuracy]);
+
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        let r = g.pixels[i];
+        let gr = g.pixels[i + 1];
+        let b = g.pixels[i + 2];
+        let brightness = (r + gr + b) / 3;
+
+        if(brightness < 40){
+            g.pixels[i] = 0; g.pixels[i + 1] = 0; g.pixels[i + 2] = 0;
+        } else if(brightness > 220){
+            g.pixels[i] = 255; g.pixels[i + 1] = 255; g.pixels[i + 2] = 255;
+        } else if(r >= gr && r >= b){
+            g.pixels[i] = 255; g.pixels[i + 1] = 0; g.pixels[i + 2] = 0;
+        } else if(gr >= r && gr >= b){
+            g.pixels[i] = 0; g.pixels[i + 1] = 255; g.pixels[i + 2] = 0;
+        } else {
+            g.pixels[i] = 0; g.pixels[i + 1] = 0; g.pixels[i + 2] = 255;
+        }
+    }
+    g.updatePixels();
+
+    g = applyOutputFilters(g);
+    imageFit(g);
+}
+
+function drawHarmony(){
+    let g = currentImage.get();
+    g = applyBlockAverage(g, accuracyBlockSizes[accuracy]);
+
+    let baseHue = computeAverageHue(g);
+    let paletteColors = buildHarmonyPaletteColors(baseHue, harmonyType);
+
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        let r = g.pixels[i];
+        let gr = g.pixels[i + 1];
+        let b = g.pixels[i + 2];
+        let brightness = (r + gr + b) / 3;
+
+        if(brightness < 40){
+            g.pixels[i] = 0; g.pixels[i + 1] = 0; g.pixels[i + 2] = 0;
+        } else if(brightness > 220){
+            g.pixels[i] = 255; g.pixels[i + 1] = 255; g.pixels[i + 2] = 255;
+        } else {
+            let nearest = nearestPaletteColor(r, gr, b, paletteColors);
+            g.pixels[i] = nearest.r; g.pixels[i + 1] = nearest.g; g.pixels[i + 2] = nearest.b;
+        }
+    }
+    g.updatePixels();
+
+    g = applyOutputFilters(g);
+    imageFit(g);
+}
+
+function drawGrossLines(){
+    let g = currentImage.get();
+    let block = accuracyBlockSizes[accuracy] * 4;
+    g = applyBlockAverage(g, block);
+
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        let brightness = (g.pixels[i] + g.pixels[i + 1] + g.pixels[i + 2]) / 3;
+        let value = brightness > 128 ? 255 : 0;
+        g.pixels[i] = value; g.pixels[i + 1] = value; g.pixels[i + 2] = value;
+    }
+    g.updatePixels();
+
+    g = applyOutputFilters(g);
+    imageFit(g);
+}
+
+/* ================================================================
+   HARMONY / COLOR HELPERS
+   ================================================================ */
+function rgbToHsb(r, g, b){
+    r /= 255; g /= 255; b /= 255;
+    let max = Math.max(r, g, b);
+    let min = Math.min(r, g, b);
+    let delta = max - min;
+    let h = 0;
+
+    if(delta != 0){
+        if(max == r) h = 60 * (((g - b) / delta) % 6);
+        else if(max == g) h = 60 * (((b - r) / delta) + 2);
+        else h = 60 * (((r - g) / delta) + 4);
+    }
+    if(h < 0) h += 360;
+
+    let s = max == 0 ? 0 : delta / max;
+    let v = max;
+
+    return { h: h, s: s * 100, v: v * 100 };
+}
+
+function hsbToRgb(h, s, v){
+    s /= 100; v /= 100;
+    let c = v * s;
+    let x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    let m = v - c;
+    let r = 0, g = 0, b = 0;
+
+    if(h < 60)       { r = c; g = x; b = 0; }
+    else if(h < 120) { r = x; g = c; b = 0; }
+    else if(h < 180) { r = 0; g = c; b = x; }
+    else if(h < 240) { r = 0; g = x; b = c; }
+    else if(h < 300) { r = x; g = 0; b = c; }
+    else             { r = c; g = 0; b = x; }
+
+    return {
+        r: Math.round((r + m) * 255),
+        g: Math.round((g + m) * 255),
+        b: Math.round((b + m) * 255)
+    };
+}
+
+function computeAverageHue(g){
+    let rSum = 0, gSum = 0, bSum = 0, count = 0;
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        rSum += g.pixels[i];
+        gSum += g.pixels[i + 1];
+        bSum += g.pixels[i + 2];
+        count++;
+    }
+    let hsb = rgbToHsb(rSum / count, gSum / count, bSum / count);
+    return hsb.h;
+}
+
+function buildHarmonyHues(baseHue, type){
+    if(type == "triadic"){
+        return [baseHue, (baseHue + 120) % 360, (baseHue + 240) % 360];
+    }
+    if(type == "tetradic"){
+        return [baseHue, (baseHue + 90) % 360, (baseHue + 180) % 360, (baseHue + 270) % 360];
+    }
+    return [baseHue, (baseHue + 180) % 360];
+}
+
+function buildHarmonyPaletteColors(baseHue, type){
+    let hues = buildHarmonyHues(baseHue, type);
+    return hues.map(function(h){
+        return hsbToRgb(h, 80, 90);
+    });
+}
+
+function nearestPaletteColor(r, g, b, palette){
+    let best = palette[0];
+    let bestDistance = Infinity;
+
+    palette.forEach(function(color){
+        let dr = r - color.r;
+        let dg = g - color.g;
+        let db = b - color.b;
+        let distance = dr * dr + dg * dg + db * db;
+        if(distance < bestDistance){
+            bestDistance = distance;
+            best = color;
+        }
+    });
+    return best;
+}
+
+/* ================================================================
+   MEMETIZER
+   ================================================================ */
+function setupMemetizerControls(){
+    document.getElementById("topTextInput").addEventListener("input", function(){
+        topText = this.value;
+    });
+    document.getElementById("topTextColorInput").addEventListener("input", function(){
+        topTextColor = this.value;
+    });
+    document.getElementById("topBorderColorInput").addEventListener("input", function(){
+        topBorderColor = this.value;
+    });
+    document.getElementById("topBorderToggle").addEventListener("change", function(){
+        topBorderEnabled = this.checked;
+    });
+    document.getElementById("topBorderWidthInput").addEventListener("input", function(){
+        topBorderWidth = parseInt(this.value);
+    });
+    document.getElementById("topLineWidthInput").addEventListener("input", function(){
+        topLineWidthPercent = parseInt(this.value);
+    });
+
+    document.getElementById("bottomTextInput").addEventListener("input", function(){
+        bottomText = this.value;
+    });
+    document.getElementById("bottomTextColorInput").addEventListener("input", function(){
+        bottomTextColor = this.value;
+    });
+    document.getElementById("bottomBorderColorInput").addEventListener("input", function(){
+        bottomBorderColor = this.value;
+    });
+    document.getElementById("bottomBorderToggle").addEventListener("change", function(){
+        bottomBorderEnabled = this.checked;
+    });
+    document.getElementById("bottomBorderWidthInput").addEventListener("input", function(){
+        bottomBorderWidth = parseInt(this.value);
+    });
+    document.getElementById("bottomLineWidthInput").addEventListener("input", function(){
+        bottomLineWidthPercent = parseInt(this.value);
+    });
+
+    document.getElementById("capitalizeToggle").addEventListener("change", function(){
+        memeCapitalize = this.checked;
+    });
+}
+
+function adjustFontScale(line, delta){
+    if(line == "top"){
+        topFontScale = clampScale(topFontScale + delta);
+        updateSizeDisplay("top", topFontScale);
+    } else {
+        bottomFontScale = clampScale(bottomFontScale + delta);
+        updateSizeDisplay("bottom", bottomFontScale);
+    }
+}
+
+function adjustFontWidthScale(line, delta){
+    if(line == "top"){
+        topFontWidthScale = clampScale(topFontWidthScale + delta);
+        updateWidthDisplay("top", topFontWidthScale);
+    } else {
+        bottomFontWidthScale = clampScale(bottomFontWidthScale + delta);
+        updateWidthDisplay("bottom", bottomFontWidthScale);
+    }
+}
+
+function clampScale(scale){
+    let rounded = Math.round(scale * 100) / 100;
+    return Math.min(3, Math.max(0.3, rounded));
+}
+
+function updateSizeDisplay(line, scale){
+    document.getElementById(line + "SizeDisplay").innerText = Math.round(scale * 100) + "%";
+}
+
+function updateWidthDisplay(line, scale){
+    document.getElementById(line + "WidthDisplay").innerText = Math.round(scale * 100) + "%";
+}
+
+function setMemeFont(fontName){
+    memeFont = fontName;
+    highlightActiveFontButton();
+    setStatus("Meme font: " + fontName);
+}
+
+function highlightActiveFontButton(){
+    let ids = ["font-impact", "font-console", "font-typewriter", "font-cursive", "font-boldsans"];
+    ids.forEach(function(id){
+        document.getElementById(id).classList.remove("active");
+    });
+    document.getElementById("font-" + memeFont).classList.add("active");
+}
+
+function drawMemeOverlay(){
+    if(topText.trim() === "" && bottomText.trim() === "") return;
+
+    push();
+    textFont(memeFontStacks[memeFont]);
+
+    let baseFontSize = max(16, floor(width / 16));
+    let margin = 14;
+
+    let topFontSize = baseFontSize * topFontScale;
+    let topDisplay = memeCapitalize ? topText.toUpperCase() : topText;
+    textSize(topFontSize);
+    textAlign(CENTER, TOP);
+    let topMaxWidth = width * (topLineWidthPercent / 100);
+    let topLines = wrapMemeText(topDisplay, topMaxWidth);
+    let topLineHeight = topFontSize * 1.15;
+
+    drawMemeTextBlock(
+        topLines, width / 2, margin, topLineHeight,
+        topBorderEnabled, topBorderColor, topBorderWidth, topTextColor, topFontWidthScale
+    );
+
+    let bottomFontSize = baseFontSize * bottomFontScale;
+    let bottomDisplay = memeCapitalize ? bottomText.toUpperCase() : bottomText;
+    textSize(bottomFontSize);
+    let bottomMaxWidth = width * (bottomLineWidthPercent / 100);
+    let bottomLines = wrapMemeText(bottomDisplay, bottomMaxWidth);
+    let bottomLineHeight = bottomFontSize * 1.15;
+    let bottomBlockHeight = bottomLines.length * bottomLineHeight;
+    let bottomStartY = height - margin - bottomBlockHeight;
+
+    drawMemeTextBlock(
+        bottomLines, width / 2, bottomStartY, bottomLineHeight,
+        bottomBorderEnabled, bottomBorderColor, bottomBorderWidth, bottomTextColor, bottomFontWidthScale
+    );
+
+    pop();
+}
+
+function wrapMemeText(str, maxWidth){
+    if(str === "") return [];
+
+    let words = str.split(" ");
+    let lines = [];
+    let current = "";
+
+    words.forEach(function(word){
+        let test = current === "" ? word : current + " " + word;
+        if(textWidth(test) > maxWidth && current !== ""){
+            lines.push(current);
+            current = word;
+        } else {
+            current = test;
+        }
+    });
+    if(current !== "") lines.push(current);
+    return lines;
+}
+
+function drawMemeTextBlock(lines, centerX, startY, lineHeight, borderEnabled, borderColor, borderWidth, textColor, widthScale){
+    lines.forEach(function(line, index){
+        let y = startY + index * lineHeight;
+
+        push();
+        translate(centerX, y);
+        scale(widthScale, 1);
+
+        if(borderEnabled && borderWidth > 0){
+            stroke(borderColor);
+            strokeWeight(borderWidth);
+        } else {
+            noStroke();
+        }
+        fill(textColor);
+        text(line, 0, 0);
+        pop();
+    });
+}
+
+/* ================================================================
+   SAVE / DOWNLOAD
+   ================================================================ */
+function downloadResult(){
+    let filename = "stencelizer-" + currentMode;
+    saveCanvas(canvas, filename, "png");
+    setStatus("Downloaded: " + filename + ".png");
+}
+
+/* ================================================================
+   THEME SWITCHING
+   ================================================================ */
+function handleThemeSwitch(){
+    darkTheme = this.checked;
+    document.body.className = darkTheme ? "dark" : "light";
+    if(document.getElementById("hideBordersToggle").checked){
+        document.body.classList.add("noBorders");
+    }
+    setStatus(darkTheme ? "Dark theme enabled." : "Light theme enabled.");
+}
+
+/* ================================================================
+   STATUS BAR
+   ================================================================ */
+function setStatus(message){
+    statusMessage = message;
+    document.getElementById("statusBar").innerText = "Status: " + message;
+    document.getElementById("headerDotLabel").innerText =
+        message.length > 24 ? message.substring(0, 24) + "..." : message;
+}
+
+/* ================================================================
+   HELPER: fit an image or graphic into the canvas, centered,
+   preserving aspect ratio, leaving room for the margins if set.
+   ================================================================ */
+function imageFit(im){
+    let hMarginPx = width * (horizontalMarginPercent / 100);
+    let vMarginPx = height * (verticalMarginPercent / 100);
+
+    let availW = width - hMarginPx * 2;
+    let availH = height - vMarginPx * 2;
+
+    let ratio = min(availW / im.width, availH / im.height);
+    let w = im.width * ratio;
+    let h = im.height * ratio;
+    let x = (width - w) / 2;
+    let y = (height - h) / 2;
+
+    image(im, x, y, w, h);
+    paintMarginBands(hMarginPx, vMarginPx);
+}
+
+function paintMarginBands(hMarginPx, vMarginPx){
+    push();
+    noStroke();
+    fill(0);
+
+    if(horizontalMarginBlack && hMarginPx > 0){
+        rect(0, 0, hMarginPx, height);
+        rect(width - hMarginPx, 0, hMarginPx, height);
+    }
+    if(verticalMarginBlack && vMarginPx > 0){
+        rect(0, 0, width, vMarginPx);
+        rect(0, height - vMarginPx, width, vMarginPx);
+    }
+    pop();
+}
+</script>
+</body>
+</html>
