@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Stencelizer v0.2</title>
+<title>Stencelizer v0.4.2</title>
 
 <!-- p5.js library. Local processing only, no server or build step needed. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
@@ -36,7 +36,6 @@ body.light{
 
 /* ================================================================
    HEADER BAR
-   Shows app title and a live status dot on the right.
    ================================================================ */
 #headerBar{
     display:flex;
@@ -63,7 +62,6 @@ body.light #headerDot{
 
 /* ================================================================
    PANELS
-   Every group of controls lives in a labeled square panel.
    ================================================================ */
 .panel{
     border:2px solid #39FF14;
@@ -80,11 +78,22 @@ body.light .panel{
     margin-bottom:8px;
     opacity:0.8;
 }
+.panelRow{
+    margin:6px 0;
+    padding:8px 0;
+}
+.subPanel{
+    border:1px solid #226622;
+    padding:8px;
+    margin:8px 0;
+}
+body.light .subPanel{
+    border:1px solid #99b3ff;
+}
 
 /* ================================================================
    BUTTONS
-   Square corners, thick border, uppercase, monospace.
-   Never rounded.
+   Square corners, thick border, uppercase, monospace. Never rounded.
    ================================================================ */
 button{
     font-family:inherit;
@@ -115,21 +124,69 @@ button:disabled{
     opacity:0.35;
     cursor:not-allowed;
 }
+button.sizeBtn{
+    padding:6px 12px;
+    margin:2px;
+}
 
-/* File input styled to match the button language */
 input[type="file"]{
     font-family:inherit;
     color:inherit;
 }
 
 /* ================================================================
+   FORM CONTROLS (Memetizer / Output Filters panels)
+   ================================================================ */
+input[type="text"]{
+    font-family:inherit;
+    background:transparent;
+    color:inherit;
+    border:2px solid #39FF14;
+    border-radius:0;
+    padding:6px 8px;
+    width:260px;
+    margin-bottom:6px;
+}
+body.light input[type="text"]{
+    border:2px solid #0066FF;
+}
+input[type="color"]{
+    width:40px;
+    height:32px;
+    border:2px solid #39FF14;
+    border-radius:0;
+    padding:0;
+    background:transparent;
+    cursor:pointer;
+    vertical-align:middle;
+}
+body.light input[type="color"]{
+    border:2px solid #0066FF;
+}
+input[type="range"]{
+    vertical-align:middle;
+    width:140px;
+}
+label{
+    display:inline-block;
+    margin:4px 10px 4px 0;
+    font-size:13px;
+}
+.sizeDisplay{
+    display:inline-block;
+    width:44px;
+    text-align:center;
+    font-size:13px;
+}
+
+/* ================================================================
    ACCURACY CONTROL
-   Five circled positions instead of a slider.
+   Ten circled positions instead of a slider.
    ================================================================ */
 .accuracyOption{
     display:inline-block;
-    font-size:22px;
-    padding:6px 10px;
+    font-size:20px;
+    padding:5px 8px;
     margin:2px;
     border:2px solid transparent;
     cursor:pointer;
@@ -144,7 +201,6 @@ input[type="file"]{
 
 /* ================================================================
    CANVAS
-   Always centered, bordered, with a subtle shadow.
    ================================================================ */
 #canvasHolder{
     display:flex;
@@ -179,7 +235,7 @@ body.light #statusBar{
      HEADER
      ============================================================ -->
 <div id="headerBar">
-    <div class="title">STENCELIZER v0.2</div>
+    <div class="title">STENCELIZER v0.4.2</div>
     <div><span id="headerDot">&#9679;</span><span id="headerDotLabel">Ready</span></div>
 </div>
 
@@ -210,22 +266,125 @@ body.light #statusBar{
     <button id="btn-original" onclick="setMode('original')">Original</button>
     <button id="btn-stencil" onclick="setMode('stencil')">Stencil</button>
     <button id="btn-rgb" onclick="setMode('rgb')">Basic RGB</button>
-    <button id="btn-harmony" disabled>Harmony</button>
-    <button id="btn-gross" disabled>Gross Lines</button>
+    <button id="btn-harmony" onclick="setMode('harmony')">Harmony</button>
+    <button id="btn-gross" onclick="setMode('gross')">Gross Lines</button>
+</div>
+
+<!-- ============================================================
+     HARMONY TYPE PANEL
+     ============================================================ -->
+<div class="panel">
+    <div class="panelLabel">HARMONY TYPE</div>
+    <button id="harm-complementary" onclick="setHarmonyType('complementary')">Complementary</button>
+    <button id="harm-triadic" onclick="setHarmonyType('triadic')">Triadic</button>
+    <button id="harm-tetradic" onclick="setHarmonyType('tetradic')">Tetradic</button>
 </div>
 
 <!-- ============================================================
      ACCURACY PANEL
-     Circled numbers 1-5. Values are stored now and will drive
-     every algorithm starting in v0.3.
      ============================================================ -->
 <div class="panel">
-    <div class="panelLabel">ACCURACY</div>
+    <div class="panelLabel">ACCURACY (affects Stencil / RGB / Harmony / Gross Lines)</div>
     <span class="accuracyOption" id="acc-1" onclick="setAccuracy(1)">&#9312;</span>
     <span class="accuracyOption" id="acc-2" onclick="setAccuracy(2)">&#9313;</span>
-    <span class="accuracyOption selected" id="acc-3" onclick="setAccuracy(3)">&#9314;</span>
+    <span class="accuracyOption" id="acc-3" onclick="setAccuracy(3)">&#9314;</span>
     <span class="accuracyOption" id="acc-4" onclick="setAccuracy(4)">&#9315;</span>
-    <span class="accuracyOption" id="acc-5" onclick="setAccuracy(5)">&#9316;</span>
+    <span class="accuracyOption selected" id="acc-5" onclick="setAccuracy(5)">&#9316;</span>
+    <span class="accuracyOption" id="acc-6" onclick="setAccuracy(6)">&#9317;</span>
+    <span class="accuracyOption" id="acc-7" onclick="setAccuracy(7)">&#9318;</span>
+    <span class="accuracyOption" id="acc-8" onclick="setAccuracy(8)">&#9319;</span>
+    <span class="accuracyOption" id="acc-9" onclick="setAccuracy(9)">&#9320;</span>
+    <span class="accuracyOption" id="acc-10" onclick="setAccuracy(10)">&#9321;</span>
+</div>
+
+<!-- ============================================================
+     OUTPUT FILTERS PANEL
+     ============================================================ -->
+<div class="panel">
+    <div class="panelLabel">OUTPUT FILTERS</div>
+
+    <div class="panelRow">
+        <div class="panelLabel">CHANNEL (print separations)</div>
+        <button id="chan-all" onclick="setChannel('all')">All</button>
+        <button id="chan-r" onclick="setChannel('r')">R</button>
+        <button id="chan-g" onclick="setChannel('g')">G</button>
+        <button id="chan-b" onclick="setChannel('b')">B</button>
+    </div>
+
+    <div class="panelRow">
+        <label>
+            <input type="checkbox" id="monochromeToggle">
+            Monochrome
+        </label>
+    </div>
+</div>
+
+<!-- ============================================================
+     MEMETIZER PANEL
+     Top and bottom captions are now fully independent: each has
+     its own text color, border color, border toggle, border
+     width, line width, and font size control.
+     ============================================================ -->
+<div class="panel">
+    <div class="panelLabel">MEMETIZER</div>
+
+    <div class="subPanel">
+        <div class="panelLabel">TOP TEXT</div>
+        <input type="text" id="topTextInput" placeholder="TOP TEXT"><br>
+
+        <label>Text color <input type="color" id="topTextColorInput" value="#ffffff"></label>
+        <label>Border color <input type="color" id="topBorderColorInput" value="#000000"></label>
+        <label><input type="checkbox" id="topBorderToggle" checked> Border</label>
+        <br>
+        <label>Border width <input type="range" id="topBorderWidthInput" min="0" max="10" value="3"></label>
+        <label>Line width <input type="range" id="topLineWidthInput" min="40" max="100" value="90"></label>
+        <label>Size
+            <button type="button" class="sizeBtn" onclick="adjustFontScale('top',-0.1)">-</button>
+            <span class="sizeDisplay" id="topSizeDisplay">100%</span>
+            <button type="button" class="sizeBtn" onclick="adjustFontScale('top',0.1)">+</button>
+        </label>
+    </div>
+
+    <div class="subPanel">
+        <div class="panelLabel">BOTTOM TEXT</div>
+        <input type="text" id="bottomTextInput" placeholder="BOTTOM TEXT"><br>
+
+        <label>Text color <input type="color" id="bottomTextColorInput" value="#ffffff"></label>
+        <label>Border color <input type="color" id="bottomBorderColorInput" value="#000000"></label>
+        <label><input type="checkbox" id="bottomBorderToggle" checked> Border</label>
+        <br>
+        <label>Border width <input type="range" id="bottomBorderWidthInput" min="0" max="10" value="3"></label>
+        <label>Line width <input type="range" id="bottomLineWidthInput" min="40" max="100" value="90"></label>
+        <label>Size
+            <button type="button" class="sizeBtn" onclick="adjustFontScale('bottom',-0.1)">-</button>
+            <span class="sizeDisplay" id="bottomSizeDisplay">100%</span>
+            <button type="button" class="sizeBtn" onclick="adjustFontScale('bottom',0.1)">+</button>
+        </label>
+    </div>
+
+    <div class="panelRow">
+        <label>
+            <input type="checkbox" id="capitalizeToggle" checked>
+            Capitalize
+        </label>
+    </div>
+
+    <div class="panelRow">
+        <div class="panelLabel">FONT (shared by both lines)</div>
+        <button id="font-impact" onclick="setMemeFont('impact')">Impact</button>
+        <button id="font-console" onclick="setMemeFont('console')">Console</button>
+        <button id="font-typewriter" onclick="setMemeFont('typewriter')">Typewriter</button>
+        <button id="font-cursive" onclick="setMemeFont('cursive')">Cursive</button>
+        <button id="font-boldsans" onclick="setMemeFont('boldsans')">Bold Sans</button>
+    </div>
+</div>
+
+<!-- ============================================================
+     SAVE PANEL
+     ============================================================ -->
+<div class="panel">
+    <div class="panelLabel">SAVE</div>
+    <button id="btn-download" onclick="downloadResult()">Download PNG</button>
 </div>
 
 <!-- ============================================================
@@ -241,24 +400,56 @@ body.light #statusBar{
 <script>
 /* ================================================================
    INTERNAL VARIABLES
-   Organized and named clearly, per the design specification.
    ================================================================ */
 let currentImage  = null;      // the loaded source image, never modified directly
 let currentMode   = "original";
-let accuracy      = 3;         // 1 (very fine) to 5 (very coarse)
+let harmonyType   = "complementary";
+let accuracy      = 5;         // 1 (finest) to 10 (coarsest)
 let darkTheme     = true;
 let statusMessage = "Ready.";
 let canvas;
 
-// Accuracy levels map to internal simplification values.
-// These are stored now and will drive every processing
-// algorithm starting in v0.3 (Stencil and Basic RGB first).
-const accuracyValues = {
-    1: 0,
-    2: 64,
-    3: 128,
-    4: 192,
-    5: 255
+const accuracyBlockSizes = {
+    1:1, 2:1, 3:2, 4:3, 5:4,
+    6:5, 7:7, 8:9, 9:12, 10:16
+};
+
+/* ----------------------------------------------------------------
+   Output filter state (channel separation + monochrome)
+   ---------------------------------------------------------------- */
+let activeChannel      = "all";   // "all", "r", "g", or "b"
+let monochromeEnabled  = false;
+
+/* ----------------------------------------------------------------
+   Memetizer state
+   Top and bottom captions each carry their own full set of
+   styling options, independent of one another.
+   ---------------------------------------------------------------- */
+let topText             = "";
+let topTextColor        = "#ffffff";
+let topBorderColor      = "#000000";
+let topBorderEnabled    = true;
+let topBorderWidth      = 3;
+let topLineWidthPercent = 90;
+let topFontScale        = 1.0;
+
+let bottomText             = "";
+let bottomTextColor        = "#ffffff";
+let bottomBorderColor      = "#000000";
+let bottomBorderEnabled    = true;
+let bottomBorderWidth      = 3;
+let bottomLineWidthPercent = 90;
+let bottomFontScale        = 1.0;
+
+let memeCapitalize = true;   // shared by both lines
+let memeFont        = "impact"; // shared by both lines
+
+const memeFontStacks = {
+    impact:     "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif",
+    console:    "'Lucida Console', Consolas, Monaco, monospace",
+    typewriter: "'Courier New', 'American Typewriter', Courier, monospace",
+    cursive:    "'Brush Script MT', 'Segoe Script', cursive",
+    boldsans:   "'Arial Black', Arial, sans-serif"
 };
 
 /* ================================================================
@@ -277,14 +468,24 @@ function setup(){
         .getElementById("themeSwitch")
         .addEventListener("change", handleThemeSwitch);
 
+    document
+        .getElementById("monochromeToggle")
+        .addEventListener("change", function(){
+            monochromeEnabled = this.checked;
+            setStatus(monochromeEnabled ? "Monochrome enabled." : "Monochrome disabled.");
+        });
+
+    setupMemetizerControls();
+
     setStatus("Ready.");
     highlightActiveModeButton();
+    highlightActiveHarmonyButton();
+    highlightActiveFontButton();
+    highlightActiveChannelButton();
 }
 
 /* ================================================================
    MAIN DRAW LOOP
-   Dispatches to the correct drawing function using a switch,
-   so adding future modes (Harmony, Gross Lines) stays simple.
    ================================================================ */
 function draw(){
     background(240);
@@ -298,22 +499,14 @@ function draw(){
     }
 
     switch(currentMode){
-        case "original":
-            drawOriginal();
-            break;
-        case "stencil":
-            drawStencil();
-            break;
-        case "rgb":
-            drawBasicRGB();
-            break;
-        case "harmony":
-            // reserved for a future iteration
-            break;
-        case "gross":
-            // reserved for a future iteration
-            break;
+        case "original": drawOriginal();   break;
+        case "stencil":  drawStencil();    break;
+        case "rgb":      drawBasicRGB();   break;
+        case "harmony":  drawHarmony();    break;
+        case "gross":    drawGrossLines(); break;
     }
+
+    drawMemeOverlay();
 }
 
 /* ================================================================
@@ -334,7 +527,7 @@ function loadImageLocal(event){
 }
 
 /* ================================================================
-   MODE SWITCHING
+   MODE / HARMONY TYPE / ACCURACY / CHANNEL SWITCHING
    ================================================================ */
 function setMode(newMode){
     currentMode = newMode;
@@ -342,75 +535,166 @@ function setMode(newMode){
     setStatus("Converted to " + modeLabel(newMode));
 }
 
-// Returns a friendly display name for a mode, used in status messages.
+function setHarmonyType(newType){
+    harmonyType = newType;
+    highlightActiveHarmonyButton();
+    setStatus("Harmony type: " + newType);
+}
+
+function setAccuracy(level){
+    accuracy = level;
+    for(let i = 1; i <= 10; i++){
+        document.getElementById("acc-" + i).classList.remove("selected");
+    }
+    document.getElementById("acc-" + level).classList.add("selected");
+    setStatus("Accuracy set to level " + level + " of 10");
+}
+
+function setChannel(channel){
+    activeChannel = channel;
+    highlightActiveChannelButton();
+    setStatus("Channel view: " + channel.toUpperCase());
+}
+
 function modeLabel(modeName){
     if(modeName == "original") return "Original";
     if(modeName == "stencil")  return "Stencil";
     if(modeName == "rgb")      return "Basic RGB";
+    if(modeName == "harmony")  return "Harmony";
+    if(modeName == "gross")    return "Gross Lines";
     return modeName;
 }
 
-// Adds the "active" style to whichever mode button is selected.
 function highlightActiveModeButton(){
-    let ids = ["btn-original", "btn-stencil", "btn-rgb"];
+    let ids = ["btn-original", "btn-stencil", "btn-rgb", "btn-harmony", "btn-gross"];
     ids.forEach(function(id){
         document.getElementById(id).classList.remove("active");
     });
-    let activeId = "btn-" + (currentMode == "rgb" ? "rgb" : currentMode);
-    let el = document.getElementById(activeId);
-    if(el) el.classList.add("active");
+    document.getElementById("btn-" + currentMode).classList.add("active");
+}
+
+function highlightActiveHarmonyButton(){
+    let ids = ["harm-complementary", "harm-triadic", "harm-tetradic"];
+    ids.forEach(function(id){
+        document.getElementById(id).classList.remove("active");
+    });
+    document.getElementById("harm-" + harmonyType).classList.add("active");
+}
+
+function highlightActiveChannelButton(){
+    let ids = ["chan-all", "chan-r", "chan-g", "chan-b"];
+    ids.forEach(function(id){
+        document.getElementById(id).classList.remove("active");
+    });
+    document.getElementById("chan-" + activeChannel).classList.add("active");
 }
 
 /* ================================================================
-   ACCURACY CONTROL
-   Stores the selected level and highlights the matching circle.
-   Not yet wired into the image algorithms (arrives in v0.3).
+   ACCURACY / SIMPLIFICATION HELPER
    ================================================================ */
-function setAccuracy(level){
-    accuracy = level;
+function applyBlockAverage(g, block){
+    if(block <= 1) return g;
 
-    for(let i = 1; i <= 5; i++){
-        document.getElementById("acc-" + i).classList.remove("selected");
+    g.loadPixels();
+    for(let y = 0; y < g.height; y += block){
+        for(let x = 0; x < g.width; x += block){
+            let rSum = 0, gSum = 0, bSum = 0, count = 0;
+
+            for(let by = y; by < y + block && by < g.height; by++){
+                for(let bx = x; bx < x + block && bx < g.width; bx++){
+                    let i = (by * g.width + bx) * 4;
+                    rSum += g.pixels[i];
+                    gSum += g.pixels[i + 1];
+                    bSum += g.pixels[i + 2];
+                    count++;
+                }
+            }
+            let rAvg = rSum / count;
+            let gAvg = gSum / count;
+            let bAvg = bSum / count;
+
+            for(let by = y; by < y + block && by < g.height; by++){
+                for(let bx = x; bx < x + block && bx < g.width; bx++){
+                    let i = (by * g.width + bx) * 4;
+                    g.pixels[i] = rAvg;
+                    g.pixels[i + 1] = gAvg;
+                    g.pixels[i + 2] = bAvg;
+                }
+            }
+        }
     }
-    document.getElementById("acc-" + level).classList.add("selected");
+    g.updatePixels();
+    return g;
+}
 
-    setStatus("Accuracy set to level " + level +
-        " (value " + accuracyValues[level] + ")");
+/* ================================================================
+   OUTPUT FILTERS: channel separation + monochrome
+   ================================================================ */
+function applyOutputFilters(g){
+    if(monochromeEnabled){
+        applyMonochromeFilter(g);
+    } else if(activeChannel != "all"){
+        applyChannelFilter(g, activeChannel);
+    }
+    return g;
+}
+
+function applyMonochromeFilter(g){
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        let brightness = (g.pixels[i] + g.pixels[i + 1] + g.pixels[i + 2]) / 3;
+        g.pixels[i] = brightness;
+        g.pixels[i + 1] = brightness;
+        g.pixels[i + 2] = brightness;
+    }
+    g.updatePixels();
+}
+
+function applyChannelFilter(g, channel){
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        let value;
+        if(channel == "r") value = g.pixels[i];
+        else if(channel == "g") value = g.pixels[i + 1];
+        else value = g.pixels[i + 2];
+
+        g.pixels[i] = value;
+        g.pixels[i + 1] = value;
+        g.pixels[i + 2] = value;
+    }
+    g.updatePixels();
 }
 
 /* ================================================================
    DRAWING FUNCTIONS
-   Each mode follows the same pipeline:
-   Original Image -> Copy Image -> Modify Pixels -> Display
    ================================================================ */
 function drawOriginal(){
-    imageFit(currentImage);
+    let g = currentImage.get();
+    g = applyOutputFilters(g);
+    imageFit(g);
 }
 
 function drawStencil(){
-    let g = currentImage.get(); // work on a copy, never touch the original
+    let g = currentImage.get();
+    g = applyBlockAverage(g, accuracyBlockSizes[accuracy]);
+
     g.loadPixels();
-
     for(let i = 0; i < g.pixels.length; i += 4){
-        let r = g.pixels[i];
-        let gr = g.pixels[i + 1];
-        let b = g.pixels[i + 2];
-        let brightness = (r + gr + b) / 3;
-
-        if(brightness > 128){
-            g.pixels[i] = 255; g.pixels[i + 1] = 255; g.pixels[i + 2] = 255;
-        } else {
-            g.pixels[i] = 0; g.pixels[i + 1] = 0; g.pixels[i + 2] = 0;
-        }
+        let brightness = (g.pixels[i] + g.pixels[i + 1] + g.pixels[i + 2]) / 3;
+        let value = brightness > 128 ? 255 : 0;
+        g.pixels[i] = value; g.pixels[i + 1] = value; g.pixels[i + 2] = value;
     }
     g.updatePixels();
+
+    g = applyOutputFilters(g);
     imageFit(g);
 }
 
 function drawBasicRGB(){
     let g = currentImage.get();
-    g.loadPixels();
+    g = applyBlockAverage(g, accuracyBlockSizes[accuracy]);
 
+    g.loadPixels();
     for(let i = 0; i < g.pixels.length; i += 4){
         let r = g.pixels[i];
         let gr = g.pixels[i + 1];
@@ -430,15 +714,306 @@ function drawBasicRGB(){
         }
     }
     g.updatePixels();
+
+    g = applyOutputFilters(g);
     imageFit(g);
 }
 
-// Reserved for a future iteration.
 function drawHarmony(){
+    let g = currentImage.get();
+    g = applyBlockAverage(g, accuracyBlockSizes[accuracy]);
+
+    let baseHue = computeAverageHue(g);
+    let paletteHues = buildHarmonyHues(baseHue, harmonyType);
+
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        let hsb = rgbToHsb(g.pixels[i], g.pixels[i + 1], g.pixels[i + 2]);
+        let nearestHue = nearestHueInPalette(hsb.h, paletteHues);
+        let rgb = hsbToRgb(nearestHue, hsb.s, hsb.v);
+        g.pixels[i] = rgb.r; g.pixels[i + 1] = rgb.g; g.pixels[i + 2] = rgb.b;
+    }
+    g.updatePixels();
+
+    g = applyOutputFilters(g);
+    imageFit(g);
 }
 
-// Reserved for a future iteration.
 function drawGrossLines(){
+    let g = currentImage.get();
+    let block = accuracyBlockSizes[accuracy] * 4;
+    g = applyBlockAverage(g, block);
+
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        let brightness = (g.pixels[i] + g.pixels[i + 1] + g.pixels[i + 2]) / 3;
+        let value = brightness > 128 ? 255 : 0;
+        g.pixels[i] = value; g.pixels[i + 1] = value; g.pixels[i + 2] = value;
+    }
+    g.updatePixels();
+
+    g = applyOutputFilters(g);
+    imageFit(g);
+}
+
+/* ================================================================
+   HARMONY COLOR HELPERS
+   ================================================================ */
+function rgbToHsb(r, g, b){
+    r /= 255; g /= 255; b /= 255;
+    let max = Math.max(r, g, b);
+    let min = Math.min(r, g, b);
+    let delta = max - min;
+    let h = 0;
+
+    if(delta != 0){
+        if(max == r) h = 60 * (((g - b) / delta) % 6);
+        else if(max == g) h = 60 * (((b - r) / delta) + 2);
+        else h = 60 * (((r - g) / delta) + 4);
+    }
+    if(h < 0) h += 360;
+
+    let s = max == 0 ? 0 : delta / max;
+    let v = max;
+
+    return { h: h, s: s * 100, v: v * 100 };
+}
+
+function hsbToRgb(h, s, v){
+    s /= 100; v /= 100;
+    let c = v * s;
+    let x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    let m = v - c;
+    let r = 0, g = 0, b = 0;
+
+    if(h < 60)       { r = c; g = x; b = 0; }
+    else if(h < 120) { r = x; g = c; b = 0; }
+    else if(h < 180) { r = 0; g = c; b = x; }
+    else if(h < 240) { r = 0; g = x; b = c; }
+    else if(h < 300) { r = x; g = 0; b = c; }
+    else             { r = c; g = 0; b = x; }
+
+    return {
+        r: Math.round((r + m) * 255),
+        g: Math.round((g + m) * 255),
+        b: Math.round((b + m) * 255)
+    };
+}
+
+function computeAverageHue(g){
+    let rSum = 0, gSum = 0, bSum = 0, count = 0;
+    g.loadPixels();
+    for(let i = 0; i < g.pixels.length; i += 4){
+        rSum += g.pixels[i];
+        gSum += g.pixels[i + 1];
+        bSum += g.pixels[i + 2];
+        count++;
+    }
+    let hsb = rgbToHsb(rSum / count, gSum / count, bSum / count);
+    return hsb.h;
+}
+
+function buildHarmonyHues(baseHue, type){
+    if(type == "triadic"){
+        return [baseHue, (baseHue + 120) % 360, (baseHue + 240) % 360];
+    }
+    if(type == "tetradic"){
+        return [baseHue, (baseHue + 90) % 360, (baseHue + 180) % 360, (baseHue + 270) % 360];
+    }
+    return [baseHue, (baseHue + 180) % 360];
+}
+
+function nearestHueInPalette(hue, palette){
+    let best = palette[0];
+    let bestDistance = 360;
+
+    palette.forEach(function(p){
+        let diff = Math.abs(hue - p);
+        let distance = Math.min(diff, 360 - diff);
+        if(distance < bestDistance){
+            bestDistance = distance;
+            best = p;
+        }
+    });
+    return best;
+}
+
+/* ================================================================
+   MEMETIZER
+   Top and bottom captions are drawn using fully independent
+   settings: color, border color/width/toggle, line width, and
+   font size. Only capitalize and font family are shared.
+   ================================================================ */
+function setupMemetizerControls(){
+    document.getElementById("topTextInput").addEventListener("input", function(){
+        topText = this.value;
+    });
+    document.getElementById("topTextColorInput").addEventListener("input", function(){
+        topTextColor = this.value;
+    });
+    document.getElementById("topBorderColorInput").addEventListener("input", function(){
+        topBorderColor = this.value;
+    });
+    document.getElementById("topBorderToggle").addEventListener("change", function(){
+        topBorderEnabled = this.checked;
+    });
+    document.getElementById("topBorderWidthInput").addEventListener("input", function(){
+        topBorderWidth = parseInt(this.value);
+    });
+    document.getElementById("topLineWidthInput").addEventListener("input", function(){
+        topLineWidthPercent = parseInt(this.value);
+    });
+
+    document.getElementById("bottomTextInput").addEventListener("input", function(){
+        bottomText = this.value;
+    });
+    document.getElementById("bottomTextColorInput").addEventListener("input", function(){
+        bottomTextColor = this.value;
+    });
+    document.getElementById("bottomBorderColorInput").addEventListener("input", function(){
+        bottomBorderColor = this.value;
+    });
+    document.getElementById("bottomBorderToggle").addEventListener("change", function(){
+        bottomBorderEnabled = this.checked;
+    });
+    document.getElementById("bottomBorderWidthInput").addEventListener("input", function(){
+        bottomBorderWidth = parseInt(this.value);
+    });
+    document.getElementById("bottomLineWidthInput").addEventListener("input", function(){
+        bottomLineWidthPercent = parseInt(this.value);
+    });
+
+    document.getElementById("capitalizeToggle").addEventListener("change", function(){
+        memeCapitalize = this.checked;
+    });
+}
+
+// Increases or decreases the font size of the top or bottom
+// caption independently. Scale is a multiplier of the base size,
+// clamped to a sensible range and shown as a percentage.
+function adjustFontScale(line, delta){
+    if(line == "top"){
+        topFontScale = clampFontScale(topFontScale + delta);
+        updateSizeDisplay("top", topFontScale);
+    } else {
+        bottomFontScale = clampFontScale(bottomFontScale + delta);
+        updateSizeDisplay("bottom", bottomFontScale);
+    }
+}
+
+function clampFontScale(scale){
+    let rounded = Math.round(scale * 100) / 100;
+    return Math.min(3, Math.max(0.3, rounded));
+}
+
+function updateSizeDisplay(line, scale){
+    document.getElementById(line + "SizeDisplay").innerText = Math.round(scale * 100) + "%";
+}
+
+function setMemeFont(fontName){
+    memeFont = fontName;
+    highlightActiveFontButton();
+    setStatus("Meme font: " + fontName);
+}
+
+function highlightActiveFontButton(){
+    let ids = ["font-impact", "font-console", "font-typewriter", "font-cursive", "font-boldsans"];
+    ids.forEach(function(id){
+        document.getElementById(id).classList.remove("active");
+    });
+    document.getElementById("font-" + memeFont).classList.add("active");
+}
+
+// Draws the top and bottom captions, each using its own color,
+// border settings, line width, and font size.
+function drawMemeOverlay(){
+    if(topText.trim() === "" && bottomText.trim() === "") return;
+
+    push();
+    textFont(memeFontStacks[memeFont]);
+
+    let baseFontSize = max(16, floor(width / 16));
+    let margin = 14;
+
+    // ---- TOP CAPTION ----
+    let topFontSize = baseFontSize * topFontScale;
+    let topDisplay = memeCapitalize ? topText.toUpperCase() : topText;
+    textSize(topFontSize);
+    textAlign(CENTER, TOP);
+    let topMaxWidth = width * (topLineWidthPercent / 100);
+    let topLines = wrapMemeText(topDisplay, topMaxWidth);
+    let topLineHeight = topFontSize * 1.15;
+
+    drawMemeTextBlock(
+        topLines, width / 2, margin, topLineHeight,
+        topBorderEnabled, topBorderColor, topBorderWidth, topTextColor
+    );
+
+    // ---- BOTTOM CAPTION ----
+    let bottomFontSize = baseFontSize * bottomFontScale;
+    let bottomDisplay = memeCapitalize ? bottomText.toUpperCase() : bottomText;
+    textSize(bottomFontSize);
+    let bottomMaxWidth = width * (bottomLineWidthPercent / 100);
+    let bottomLines = wrapMemeText(bottomDisplay, bottomMaxWidth);
+    let bottomLineHeight = bottomFontSize * 1.15;
+    let bottomBlockHeight = bottomLines.length * bottomLineHeight;
+    let bottomStartY = height - margin - bottomBlockHeight;
+
+    drawMemeTextBlock(
+        bottomLines, width / 2, bottomStartY, bottomLineHeight,
+        bottomBorderEnabled, bottomBorderColor, bottomBorderWidth, bottomTextColor
+    );
+
+    pop();
+}
+
+// Breaks a string into lines that fit within maxWidth, using
+// whichever font and text size is currently active.
+function wrapMemeText(str, maxWidth){
+    if(str === "") return [];
+
+    let words = str.split(" ");
+    let lines = [];
+    let current = "";
+
+    words.forEach(function(word){
+        let test = current === "" ? word : current + " " + word;
+        if(textWidth(test) > maxWidth && current !== ""){
+            lines.push(current);
+            current = word;
+        } else {
+            current = test;
+        }
+    });
+    if(current !== "") lines.push(current);
+    return lines;
+}
+
+// Draws a block of lines with a specific text color and an
+// optional outline border, all passed in as parameters so the
+// top and bottom captions never share style by accident.
+function drawMemeTextBlock(lines, centerX, startY, lineHeight, borderEnabled, borderColor, borderWidth, textColor){
+    lines.forEach(function(line, index){
+        let y = startY + index * lineHeight;
+
+        if(borderEnabled && borderWidth > 0){
+            stroke(borderColor);
+            strokeWeight(borderWidth);
+        } else {
+            noStroke();
+        }
+        fill(textColor);
+        text(line, centerX, y);
+    });
+}
+
+/* ================================================================
+   SAVE / DOWNLOAD
+   ================================================================ */
+function downloadResult(){
+    let filename = "stencelizer-" + currentMode;
+    saveCanvas(canvas, filename, "png");
+    setStatus("Downloaded: " + filename + ".png");
 }
 
 /* ================================================================
@@ -452,7 +1027,6 @@ function handleThemeSwitch(){
 
 /* ================================================================
    STATUS BAR
-   Updates both the bottom status bar and the header status dot.
    ================================================================ */
 function setStatus(message){
     statusMessage = message;
@@ -463,7 +1037,7 @@ function setStatus(message){
 
 /* ================================================================
    HELPER: fit an image or graphic into the canvas, centered,
-   preserving aspect ratio. Never distorts the image.
+   preserving aspect ratio.
    ================================================================ */
 function imageFit(im){
     let ratio = min(width / im.width, height / im.height);
