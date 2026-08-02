@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Stencelizer v0.2</title>
+
+<!-- p5.js library. Local processing only, no server or build step needed. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+
+<style>
+/* ================================================================
+   RESET
+   ================================================================ */
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:"JetBrains Mono","Fira Code",Consolas,"Courier New",monospace;
+    letter-spacing:0.5px;
+}
+
+/* ================================================================
+   THEMES
+   Dark = default (Black Terminal). Light = optional.
+   ================================================================ */
+body.dark{
+    background:#000000;
+    color:#39FF14;
+}
+body.light{
+    background:#F5F5F5;
+    color:#000000;
+}
+
+/* ================================================================
+   HEADER BAR
+   Shows app title and a live status dot on the right.
+   ================================================================ */
+#headerBar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 16px;
+    border-bottom:3px solid #39FF14;
+    font-weight:bold;
+    letter-spacing:2px;
+}
+body.light #headerBar{
+    border-bottom:3px solid #0066FF;
+}
+#headerBar .title{
+    font-size:16px;
+}
+#headerDot{
+    color:#39FF14;
+    margin-right:6px;
+}
+body.light #headerDot{
+    color:#0066FF;
+}
+
+/* ================================================================
+   PANELS
+   Every group of controls lives in a labeled square panel.
+   ================================================================ */
+.panel{
+    border:2px solid #39FF14;
+    margin:10px 16px;
+    padding:10px;
+}
+body.light .panel{
+    border:2px solid #0066FF;
+}
+.panelLabel{
+    font-size:12px;
+    font-weight:bold;
+    letter-spacing:2px;
+    margin-bottom:8px;
+    opacity:0.8;
+}
+
+/* ================================================================
+   BUTTONS
+   Square corners, thick border, uppercase, monospace.
+   Never rounded.
+   ================================================================ */
+button{
+    font-family:inherit;
+    font-weight:bold;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    background:#FF8800;
+    color:#000000;
+    border:3px solid #39FF14;
+    border-radius:0;
+    padding:10px 14px;
+    margin:4px;
+    cursor:pointer;
+}
+body.light button{
+    border:3px solid #0066FF;
+}
+button:hover{
+    background:#FF00FF;
+    color:#FFFFFF;
+}
+button:active,
+button.active{
+    background:#000000;
+    color:#FF8800;
+}
+button:disabled{
+    opacity:0.35;
+    cursor:not-allowed;
+}
+
+/* File input styled to match the button language */
+input[type="file"]{
+    font-family:inherit;
+    color:inherit;
+}
+
+/* ================================================================
+   ACCURACY CONTROL
+   Five circled positions instead of a slider.
+   ================================================================ */
+.accuracyOption{
+    display:inline-block;
+    font-size:22px;
+    padding:6px 10px;
+    margin:2px;
+    border:2px solid transparent;
+    cursor:pointer;
+}
+.accuracyOption:hover{
+    color:#FF00FF;
+}
+.accuracyOption.selected{
+    color:#FF8800;
+    border:2px solid #FF8800;
+}
+
+/* ================================================================
+   CANVAS
+   Always centered, bordered, with a subtle shadow.
+   ================================================================ */
+#canvasHolder{
+    display:flex;
+    justify-content:center;
+    margin:16px;
+}
+canvas{
+    border:3px solid #39FF14;
+    box-shadow:0 0 12px rgba(57,255,20,0.4);
+}
+body.light canvas{
+    border:3px solid #000000;
+    box-shadow:0 0 8px rgba(0,0,0,0.2);
+}
+
+/* ================================================================
+   STATUS BAR
+   ================================================================ */
+#statusBar{
+    padding:8px 16px;
+    border-top:3px solid #39FF14;
+    font-size:13px;
+}
+body.light #statusBar{
+    border-top:3px solid #0066FF;
+}
+</style>
+</head>
+<body class="dark">
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<div id="headerBar">
+    <div class="title">STENCELIZER v0.2</div>
+    <div><span id="headerDot">&#9679;</span><span id="headerDotLabel">Ready</span></div>
+</div>
+
+<!-- ============================================================
+     FILE PANEL
+     ============================================================ -->
+<div class="panel">
+    <div class="panelLabel">FILE</div>
+    <input type="file" id="imageLoader" accept="image/*">
+</div>
+
+<!-- ============================================================
+     THEME PANEL
+     ============================================================ -->
+<div class="panel">
+    <div class="panelLabel">THEME</div>
+    <label>
+        <input type="checkbox" id="themeSwitch" checked>
+        Black Terminal
+    </label>
+</div>
+
+<!-- ============================================================
+     MODES PANEL
+     ============================================================ -->
+<div class="panel">
+    <div class="panelLabel">MODES</div>
+    <button id="btn-original" onclick="setMode('original')">Original</button>
+    <button id="btn-stencil" onclick="setMode('stencil')">Stencil</button>
+    <button id="btn-rgb" onclick="setMode('rgb')">Basic RGB</button>
+    <button id="btn-harmony" disabled>Harmony</button>
+    <button id="btn-gross" disabled>Gross Lines</button>
+</div>
+
+<!-- ============================================================
+     ACCURACY PANEL
+     Circled numbers 1-5. Values are stored now and will drive
+     every algorithm starting in v0.3.
+     ============================================================ -->
+<div class="panel">
+    <div class="panelLabel">ACCURACY</div>
+    <span class="accuracyOption" id="acc-1" onclick="setAccuracy(1)">&#9312;</span>
+    <span class="accuracyOption" id="acc-2" onclick="setAccuracy(2)">&#9313;</span>
+    <span class="accuracyOption selected" id="acc-3" onclick="setAccuracy(3)">&#9314;</span>
+    <span class="accuracyOption" id="acc-4" onclick="setAccuracy(4)">&#9315;</span>
+    <span class="accuracyOption" id="acc-5" onclick="setAccuracy(5)">&#9316;</span>
+</div>
+
+<!-- ============================================================
+     CANVAS
+     ============================================================ -->
+<div id="canvasHolder"></div>
+
+<!-- ============================================================
+     STATUS BAR
+     ============================================================ -->
+<div id="statusBar">Status: Ready.</div>
+
+<script>
+/* ================================================================
+   INTERNAL VARIABLES
+   Organized and named clearly, per the design specification.
+   ================================================================ */
+let currentImage  = null;      // the loaded source image, never modified directly
+let currentMode   = "original";
+let accuracy      = 3;         // 1 (very fine) to 5 (very coarse)
+let darkTheme     = true;
+let statusMessage = "Ready.";
+let canvas;
+
+// Accuracy levels map to internal simplification values.
+// These are stored now and will drive every processing
+// algorithm starting in v0.3 (Stencil and Basic RGB first).
+const accuracyValues = {
+    1: 0,
+    2: 64,
+    3: 128,
+    4: 192,
+    5: 255
+};
+
+/* ================================================================
+   SETUP
+   ================================================================ */
+function setup(){
+    canvas = createCanvas(900, 600);
+    canvas.parent("canvasHolder");
+    background(220);
+
+    document
+        .getElementById("imageLoader")
+        .addEventListener("change", loadImageLocal);
+
+    document
+        .getElementById("themeSwitch")
+        .addEventListener("change", handleThemeSwitch);
+
+    setStatus("Ready.");
+    highlightActiveModeButton();
+}
+
+/* ================================================================
+   MAIN DRAW LOOP
+   Dispatches to the correct drawing function using a switch,
+   so adding future modes (Harmony, Gross Lines) stays simple.
+   ================================================================ */
+function draw(){
+    background(240);
+
+    if(currentImage == null){
+        fill(100);
+        textSize(20);
+        textAlign(CENTER, CENTER);
+        text("Load an image...", width / 2, height / 2);
+        return;
+    }
+
+    switch(currentMode){
+        case "original":
+            drawOriginal();
+            break;
+        case "stencil":
+            drawStencil();
+            break;
+        case "rgb":
+            drawBasicRGB();
+            break;
+        case "harmony":
+            // reserved for a future iteration
+            break;
+        case "gross":
+            // reserved for a future iteration
+            break;
+    }
+}
+
+/* ================================================================
+   IMAGE LOADING
+   ================================================================ */
+function loadImageLocal(event){
+    let file = event.target.files[0];
+    if(!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e){
+        loadImage(e.target.result, function(newImage){
+            currentImage = newImage;
+            setStatus("Loaded: " + file.name);
+        });
+    };
+    reader.readAsDataURL(file);
+}
+
+/* ================================================================
+   MODE SWITCHING
+   ================================================================ */
+function setMode(newMode){
+    currentMode = newMode;
+    highlightActiveModeButton();
+    setStatus("Converted to " + modeLabel(newMode));
+}
+
+// Returns a friendly display name for a mode, used in status messages.
+function modeLabel(modeName){
+    if(modeName == "original") return "Original";
+    if(modeName == "stencil")  return "Stencil";
+    if(modeName == "rgb")      return "Basic RGB";
+    return modeName;
+}
+
+// Adds the "active" style to whichever mode button is selected.
+function highlightActiveModeButton(){
+    let ids = ["btn-original", "btn-stencil", "btn-rgb"];
+    ids.forEach(function(id){
+        document.getElementById(id).classList.remove("active");
+    });
+    let activeId = "btn-" + (currentMode == "rgb" ? "rgb" : currentMode);
+    let el = document.getElementById(activeId);
+    if(el) el.classList.add("active");
+}
+
+/* ================================================================
+   ACCURACY CONTROL
+   Stores the selected level and highlights the matching circle.
+   Not yet wired into the image algorithms (arrives in v0.3).
+   ================================================================ */
+function setAccuracy(level){
+    accuracy = level;
+
+    for(let i = 1; i <= 5; i++){
+        document.getElementById("acc-" + i).classList.remove("selected");
+    }
+    document.getElementById("acc-" + level).classList.add("selected");
+
+    setStatus("Accuracy set to level " + level +
+        " (value " + accuracyValues[level] + ")");
+}
+
+/* ================================================================
+   DRAWING FUNCTIONS
+   Each mode follows the same pipeline:
+   Original Image -> Copy Image -> Modify Pixels -> Display
+   ================================================================ */
+function drawOriginal(){
+    imageFit(currentImage);
+}
+
+function drawStencil(){
+    let g = currentImage.get(); // work on a copy, never touch the original
+    g.loadPixels();
+
+    for(let i = 0; i < g.pixels.length; i += 4){
+        let r = g.pixels[i];
+        let gr = g.pixels[i + 1];
+        let b = g.pixels[i + 2];
+        let brightness = (r + gr + b) / 3;
+
+        if(brightness > 128){
+            g.pixels[i] = 255; g.pixels[i + 1] = 255; g.pixels[i + 2] = 255;
+        } else {
+            g.pixels[i] = 0; g.pixels[i + 1] = 0; g.pixels[i + 2] = 0;
+        }
+    }
+    g.updatePixels();
+    imageFit(g);
+}
+
+function drawBasicRGB(){
+    let g = currentImage.get();
+    g.loadPixels();
+
+    for(let i = 0; i < g.pixels.length; i += 4){
+        let r = g.pixels[i];
+        let gr = g.pixels[i + 1];
+        let b = g.pixels[i + 2];
+        let brightness = (r + gr + b) / 3;
+
+        if(brightness < 40){
+            g.pixels[i] = 0; g.pixels[i + 1] = 0; g.pixels[i + 2] = 0;
+        } else if(brightness > 220){
+            g.pixels[i] = 255; g.pixels[i + 1] = 255; g.pixels[i + 2] = 255;
+        } else if(r >= gr && r >= b){
+            g.pixels[i] = 255; g.pixels[i + 1] = 0; g.pixels[i + 2] = 0;
+        } else if(gr >= r && gr >= b){
+            g.pixels[i] = 0; g.pixels[i + 1] = 255; g.pixels[i + 2] = 0;
+        } else {
+            g.pixels[i] = 0; g.pixels[i + 1] = 0; g.pixels[i + 2] = 255;
+        }
+    }
+    g.updatePixels();
+    imageFit(g);
+}
+
+// Reserved for a future iteration.
+function drawHarmony(){
+}
+
+// Reserved for a future iteration.
+function drawGrossLines(){
+}
+
+/* ================================================================
+   THEME SWITCHING
+   ================================================================ */
+function handleThemeSwitch(){
+    darkTheme = this.checked;
+    document.body.className = darkTheme ? "dark" : "light";
+    setStatus(darkTheme ? "Dark theme enabled." : "Light theme enabled.");
+}
+
+/* ================================================================
+   STATUS BAR
+   Updates both the bottom status bar and the header status dot.
+   ================================================================ */
+function setStatus(message){
+    statusMessage = message;
+    document.getElementById("statusBar").innerText = "Status: " + message;
+    document.getElementById("headerDotLabel").innerText =
+        message.length > 24 ? message.substring(0, 24) + "..." : message;
+}
+
+/* ================================================================
+   HELPER: fit an image or graphic into the canvas, centered,
+   preserving aspect ratio. Never distorts the image.
+   ================================================================ */
+function imageFit(im){
+    let ratio = min(width / im.width, height / im.height);
+    let w = im.width * ratio;
+    let h = im.height * ratio;
+    let x = (width - w) / 2;
+    let y = (height - h) / 2;
+    image(im, x, y, w, h);
+}
+</script>
+</body>
+</html>
