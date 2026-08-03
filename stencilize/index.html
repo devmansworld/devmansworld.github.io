@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stencilizer v0.6.1</title>
+<title>Stencelizer v0.6.1</title>
 
 <!-- p5.js library. Local processing only, no server or build step needed. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
@@ -24,7 +24,7 @@ body{
 
 /* ================================================================
    THEMES
-   Light = default now. Dark ("Black Terminal") is opt-in.
+   Light = default. Dark ("Black Terminal") is opt-in.
    ================================================================ */
 body.dark{
     background:#000000;
@@ -241,6 +241,20 @@ label{
 }
 
 /* ================================================================
+   COLOR WHEEL
+   Plain vanilla <canvas>, separate from the p5 canvas, so it can
+   redraw independently without touching the main image pipeline.
+   ================================================================ */
+#colorWheelHolder{
+    display:flex;
+    justify-content:center;
+    margin:6px 0;
+}
+#colorWheelCanvas{
+    background:transparent;
+}
+
+/* ================================================================
    CANVAS
    ================================================================ */
 #canvasHolder{
@@ -248,13 +262,13 @@ label{
     justify-content:center;
     width:100%;
 }
-canvas{
+canvas.mainCanvas{
     border:3px solid #0066FF;
     box-shadow:0 0 8px rgba(0,0,0,0.2);
     max-width:100%;
     height:auto;
 }
-body.dark canvas{
+body.dark canvas.mainCanvas{
     border:3px solid #39FF14;
     box-shadow:0 0 12px rgba(57,255,20,0.4);
 }
@@ -330,7 +344,7 @@ body.dark #statusBar{
         <input type="file" id="imageLoader" accept="image/*">
     </div>
 
-    <!-- THEME / DISPLAY PANEL -->
+    <!-- THEME PANEL -->
     <div class="panel">
         <div class="panelLabel">THEME &amp; DISPLAY</div>
         <label>
@@ -361,6 +375,14 @@ body.dark #statusBar{
         <button id="harm-complementary" onclick="setHarmonyType('complementary')">Complementary</button>
         <button id="harm-triadic" onclick="setHarmonyType('triadic')">Triadic</button>
         <button id="harm-tetradic" onclick="setHarmonyType('tetradic')">Tetradic</button>
+
+        <!-- Color wheel: plots the base hue and the harmony
+             palette hues on a ring, with lines connecting them so
+             the geometric relationship (pair / triangle / square)
+             is visible at a glance. -->
+        <div id="colorWheelHolder">
+            <canvas id="colorWheelCanvas" width="160" height="160"></canvas>
+        </div>
     </div>
 
     <!-- ACCURACY PANEL -->
@@ -528,7 +550,7 @@ let currentImage  = null;      // the loaded source image, never modified direct
 let currentMode   = "original";
 let harmonyType   = "complementary";
 let accuracy      = 5;         // 1 (finest) to 10 (coarsest)
-let darkTheme     = false;     // light theme is now the default
+let darkTheme     = false;     // light theme is the default
 let statusMessage = "Ready.";
 let canvas;
 
@@ -538,12 +560,11 @@ const accuracyBlockSizes = {
 };
 
 /* ----------------------------------------------------------------
-   Color adjustment state: hue shift, saturation, and separate
-   R/G/B gain, applied before channel combine / monochrome.
+   Color adjustment state
    ---------------------------------------------------------------- */
-let hueShift          = 0;   // -180 to 180 degrees
-let saturationPercent  = 100; // 0 to 200, 100 = unchanged
-let redGainPercent     = 100; // 0 to 200, 100 = unchanged
+let hueShift          = 0;
+let saturationPercent  = 100;
+let redGainPercent     = 100;
 let greenGainPercent   = 100;
 let blueGainPercent    = 100;
 
@@ -553,7 +574,7 @@ let blueGainPercent    = 100;
 let channelR = true;
 let channelG = true;
 let channelB = true;
-let channelMode = "additive"; // "additive" or "subtractive"
+let channelMode = "additive";
 let monochromeEnabled = false;
 
 /* ----------------------------------------------------------------
@@ -563,6 +584,13 @@ let horizontalMarginPercent = 0;
 let verticalMarginPercent   = 0;
 let horizontalMarginBlack   = false;
 let verticalMarginBlack     = false;
+
+/* ----------------------------------------------------------------
+   Color wheel state
+   The last hue computed from the loaded image, cached so the
+   wheel doesn't need to rescan every pixel on every redraw.
+   ---------------------------------------------------------------- */
+let lastComputedBaseHue = 0;
 
 /* ----------------------------------------------------------------
    Memetizer state
@@ -602,7 +630,8 @@ const memeFontStacks = {
 function setup(){
     canvas = createCanvas(900, 600);
     canvas.parent("canvasHolder");
-    background(220);
+    canvas.class("mainCanvas");
+    background(255);
 
     document
         .getElementById("imageLoader")
@@ -635,6 +664,7 @@ function setup(){
     highlightActiveModeButton();
     highlightActiveHarmonyButton();
     highlightActiveFontButton();
+    drawColorWheel(); // draw the empty ring before any image is loaded
 }
 
 /* ================================================================
@@ -674,6 +704,8 @@ function loadImageLocal(event){
         loadImage(e.target.result, function(newImage){
             currentImage = newImage;
             setStatus("Loaded: " + file.name);
+            lastComputedBaseHue = computeAverageHue(currentImage);
+            drawColorWheel();
         });
     };
     reader.readAsDataURL(file);
@@ -692,6 +724,7 @@ function setHarmonyType(newType){
     harmonyType = newType;
     highlightActiveHarmonyButton();
     setStatus("Harmony type: " + newType);
+    drawColorWheel();
 }
 
 function setAccuracy(level){
@@ -729,32 +762,6 @@ function highlightActiveHarmonyButton(){
 }
 
 /* ================================================================
-   COLOR ADJUST CONTROLS (hue, saturation, per-channel gain)
-   ================================================================ */
-function setupColorAdjustControls(){
-    document.getElementById("hueInput").addEventListener("input", function(){
-        hueShift = parseInt(this.value);
-        document.getElementById("hueDisplay").innerText = hueShift + "\u00B0";
-    });
-    document.getElementById("satInput").addEventListener("input", function(){
-        saturationPercent = parseInt(this.value);
-        document.getElementById("satDisplay").innerText = saturationPercent + "%";
-    });
-    document.getElementById("rGainInput").addEventListener("input", function(){
-        redGainPercent = parseInt(this.value);
-        document.getElementById("rGainDisplay").innerText = redGainPercent + "%";
-    });
-    document.getElementById("gGainInput").addEventListener("input", function(){
-        greenGainPercent = parseInt(this.value);
-        document.getElementById("gGainDisplay").innerText = greenGainPercent + "%";
-    });
-    document.getElementById("bGainInput").addEventListener("input", function(){
-        blueGainPercent = parseInt(this.value);
-        document.getElementById("bGainDisplay").innerText = blueGainPercent + "%";
-    });
-}
-
-/* ================================================================
    CHANNEL COMBINE CONTROLS
    ================================================================ */
 function setupChannelControls(){
@@ -777,6 +784,32 @@ function toggleChannelMode(){
     document.getElementById("channelModeBtn").innerText =
         "Mode: " + (channelMode == "additive" ? "Additive" : "Subtractive");
     setStatus("Channel mode: " + channelMode);
+}
+
+/* ================================================================
+   COLOR ADJUST CONTROLS
+   ================================================================ */
+function setupColorAdjustControls(){
+    document.getElementById("hueInput").addEventListener("input", function(){
+        hueShift = parseInt(this.value);
+        document.getElementById("hueDisplay").innerText = hueShift + "\u00B0";
+    });
+    document.getElementById("satInput").addEventListener("input", function(){
+        saturationPercent = parseInt(this.value);
+        document.getElementById("satDisplay").innerText = saturationPercent + "%";
+    });
+    document.getElementById("rGainInput").addEventListener("input", function(){
+        redGainPercent = parseInt(this.value);
+        document.getElementById("rGainDisplay").innerText = redGainPercent + "%";
+    });
+    document.getElementById("gGainInput").addEventListener("input", function(){
+        greenGainPercent = parseInt(this.value);
+        document.getElementById("gGainDisplay").innerText = greenGainPercent + "%";
+    });
+    document.getElementById("bGainInput").addEventListener("input", function(){
+        blueGainPercent = parseInt(this.value);
+        document.getElementById("bGainDisplay").innerText = blueGainPercent + "%";
+    });
 }
 
 /* ================================================================
@@ -803,18 +836,15 @@ function setupMarginControls(){
    RESET / DEFAULT
    ================================================================ */
 function resetAllParameters(){
-    // Mode
     currentMode = "original";
     highlightActiveModeButton();
 
-    // Harmony
     harmonyType = "complementary";
     highlightActiveHarmonyButton();
+    drawColorWheel();
 
-    // Accuracy
     setAccuracy(5);
 
-    // Margins
     horizontalMarginPercent = 0;
     verticalMarginPercent = 0;
     horizontalMarginBlack = false;
@@ -826,7 +856,6 @@ function resetAllParameters(){
     document.getElementById("hMarginBlackToggle").checked = false;
     document.getElementById("vMarginBlackToggle").checked = false;
 
-    // Color adjustments
     hueShift = 0;
     saturationPercent = 100;
     redGainPercent = 100;
@@ -843,7 +872,6 @@ function resetAllParameters(){
     document.getElementById("gGainDisplay").innerText = "100%";
     document.getElementById("bGainDisplay").innerText = "100%";
 
-    // Output filters
     channelR = true; channelG = true; channelB = true;
     channelMode = "additive";
     document.getElementById("channelRToggle").checked = true;
@@ -853,7 +881,6 @@ function resetAllParameters(){
     monochromeEnabled = false;
     document.getElementById("monochromeToggle").checked = false;
 
-    // Memetizer - top
     topText = "";
     topTextColor = "#ffffff";
     topBorderColor = "#000000";
@@ -871,7 +898,6 @@ function resetAllParameters(){
     updateSizeDisplay("top", topFontScale);
     updateWidthDisplay("top", topFontWidthScale);
 
-    // Memetizer - bottom
     bottomText = "";
     bottomTextColor = "#ffffff";
     bottomBorderColor = "#000000";
@@ -889,7 +915,6 @@ function resetAllParameters(){
     updateSizeDisplay("bottom", bottomFontScale);
     updateWidthDisplay("bottom", bottomFontWidthScale);
 
-    // Memetizer - shared
     memeCapitalize = true;
     document.getElementById("capitalizeToggle").checked = true;
     memeFont = "impact";
@@ -937,10 +962,7 @@ function applyBlockAverage(g, block){
 }
 
 /* ================================================================
-   OUTPUT FILTERS
-   Order: color adjustments (hue/saturation/RGB gain) run first,
-   as a color-grading pass. Channel combine / monochrome run last,
-   since those are more drastic, structural filters.
+   OUTPUT FILTERS: channel combine + monochrome
    ================================================================ */
 function applyOutputFilters(g){
     g = applyColorAdjustments(g);
@@ -953,8 +975,6 @@ function applyOutputFilters(g){
     return g;
 }
 
-// Applies per-channel RGB gain first (simple multiply), then hue
-// shift and saturation scaling via HSB, only when needed.
 function applyColorAdjustments(g){
     let needsGain = (redGainPercent != 100 || greenGainPercent != 100 || blueGainPercent != 100);
     let needsHueSat = (hueShift != 0 || saturationPercent != 100);
@@ -1075,8 +1095,7 @@ function drawHarmony(){
     let g = currentImage.get();
     g = applyBlockAverage(g, accuracyBlockSizes[accuracy]);
 
-    let baseHue = computeAverageHue(g);
-    let paletteColors = buildHarmonyPaletteColors(baseHue, harmonyType);
+    let paletteColors = buildHarmonyPaletteColors(lastComputedBaseHue, harmonyType);
 
     g.loadPixels();
     for(let i = 0; i < g.pixels.length; i += 4){
@@ -1161,7 +1180,10 @@ function hsbToRgb(h, s, v){
     };
 }
 
-function computeAverageHue(g){
+// Computes the average hue of a whole p5.Image (used once when an
+// image is loaded, rather than re-scanning every processed copy).
+function computeAverageHue(im){
+    let g = im.get();
     let rSum = 0, gSum = 0, bSum = 0, count = 0;
     g.loadPixels();
     for(let i = 0; i < g.pixels.length; i += 4){
@@ -1206,6 +1228,71 @@ function nearestPaletteColor(r, g, b, palette){
         }
     });
     return best;
+}
+
+/* ================================================================
+   COLOR WHEEL
+   A plain HTML5 canvas (not the p5 one) that shows a full hue
+   ring plus the current harmony palette plotted on it, connected
+   by lines so the geometric relationship between the colors is
+   visible: a straight line for Complementary, a triangle for
+   Triadic, a square for Tetradic.
+   ================================================================ */
+function drawColorWheel(){
+    let wheelCanvas = document.getElementById("colorWheelCanvas");
+    let ctx = wheelCanvas.getContext("2d");
+    let size = wheelCanvas.width;
+    let center = size / 2;
+    let outerRadius = center - 6;
+    let innerRadius = outerRadius - 16;
+
+    ctx.clearRect(0, 0, size, size);
+
+    // Draw the hue ring, one thin wedge per degree.
+    for(let angle = 0; angle < 360; angle++){
+        let rad = (angle * Math.PI) / 180;
+        ctx.strokeStyle = "hsl(" + angle + ", 85%, 50%)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(center + Math.cos(rad) * innerRadius, center + Math.sin(rad) * innerRadius);
+        ctx.lineTo(center + Math.cos(rad) * outerRadius, center + Math.sin(rad) * outerRadius);
+        ctx.stroke();
+    }
+
+    if(currentImage == null) return; // nothing to plot yet
+
+    let hues = buildHarmonyHues(lastComputedBaseHue, harmonyType);
+    let midRadius = (innerRadius + outerRadius) / 2;
+    let points = hues.map(function(h){
+        let rad = (h * Math.PI) / 180;
+        return {
+            x: center + Math.cos(rad) * midRadius,
+            y: center + Math.sin(rad) * midRadius
+        };
+    });
+
+    // Connect the points so the relationship is visible: a line
+    // for 2 points, a closed triangle for 3, a closed square for 4.
+    ctx.strokeStyle = document.body.classList.contains("dark") ? "#39FF14" : "#000000";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    points.forEach(function(p, i){
+        if(i == 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+    });
+    if(points.length > 2) ctx.closePath();
+    ctx.stroke();
+
+    // Draw a marker dot at each palette color, in that color.
+    points.forEach(function(p, i){
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = "hsl(" + Math.round(hues[i]) + ", 85%, 45%)";
+        ctx.fill();
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    });
 }
 
 /* ================================================================
@@ -1400,6 +1487,7 @@ function handleThemeSwitch(){
         document.body.classList.add("noBorders");
     }
     setStatus(darkTheme ? "Dark theme enabled." : "Light theme enabled.");
+    drawColorWheel(); // wheel outline color depends on theme
 }
 
 /* ================================================================
