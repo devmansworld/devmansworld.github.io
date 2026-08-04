@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stencilizer v0.7.9</title>
+<title>Stencilizer v0.7.8</title>
 
 <!-- p5.js library. Local processing only, no server or build step needed. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
@@ -369,126 +369,6 @@ body.noChromeLines #statusBar{
     }
 }
 
-/* ==========================================================
-   MOBILE FOCUS IMAGE MODE
-   ========================================================== */
-
-#focusImageBtn{
-
-display:none;
-
-}
-
-#exitFocusBtn{
-
-display:none;
-
-}
-
-@media (max-width:780px){
-
-#focusImageBtn{
-
-display:block;
-
-position:fixed;
-
-bottom:18px;
-
-right:18px;
-
-z-index:9999;
-
-}
-
-body.focusImageMode{
-
-overflow:hidden;
-
-}
-
-body.focusImageMode #controlsColumn{
-
-display:none;
-
-}
-
-body.focusImageMode #headerBar{
-
-display:none;
-
-}
-
-body.focusImageMode #statusBar{
-
-display:none;
-
-}
-
-body.focusImageMode #imageColumn{
-
-position:fixed;
-
-left:0;
-
-top:0;
-
-width:100vw;
-
-height:100vh;
-
-padding:0;
-
-display:flex;
-
-justify-content:center;
-
-align-items:center;
-
-background:black;
-
-z-index:9998;
-
-}
-
-body.focusImageMode canvas.mainCanvas{
-
-max-width:100vw;
-
-max-height:100vh;
-
-width:auto;
-
-height:auto;
-
-}
-
-body.focusImageMode #exitFocusBtn{
-
-display:block;
-
-position:fixed;
-
-top:15px;
-
-right:15px;
-
-z-index:10000;
-
-}
-
-body.focusImageMode #focusImageBtn{
-
-display:none;
-
-}
-
-}
-
-
-
-
-     
 /* ================================================================
    PRINT
    Only the canvas is meant to end up on paper -- everything else
@@ -523,7 +403,7 @@ display:none;
      HEADER
      ============================================================ -->
 <div id="headerBar">
-    <div class="title">STENCILIZER v0.7.9</div>
+    <div class="title">STENCILIZER v0.7.8</div>
     <div><span id="headerDot">&#9679;</span><span id="headerDotLabel">Ready</span></div>
 </div>
 
@@ -648,20 +528,29 @@ display:none;
 
     <!-- MARGINS PANEL -->
     <div class="panel">
-        <div class="panelLabel">MARGINS</div>
+        <div class="panelLabel">MARGINS (max 50% = half the image)</div>
         <div class="panelRow">
             <label>Horizontal
                 <input type="range" id="hMarginInput" min="0" max="50" value="0">
             </label>
             <span class="sizeDisplay" id="hMarginDisplay">0%</span>
-            <label><input type="checkbox" id="hMarginBlackToggle"> Black</label>
+            <br>
+            <button id="hmode-overlap" class="active" onclick="setMarginMode('horizontal','overlap')">Overlap</button>
+            <button id="hmode-grow" onclick="setMarginMode('horizontal','grow')">Grow</button>
         </div>
         <div class="panelRow">
             <label>Vertical
                 <input type="range" id="vMarginInput" min="0" max="50" value="0">
             </label>
             <span class="sizeDisplay" id="vMarginDisplay">0%</span>
-            <label><input type="checkbox" id="vMarginBlackToggle"> Black</label>
+            <br>
+            <button id="vmode-overlap" class="active" onclick="setMarginMode('vertical','overlap')">Overlap</button>
+            <button id="vmode-grow" onclick="setMarginMode('vertical','grow')">Grow</button>
+        </div>
+        <div class="panelRow" style="font-size:11px; opacity:0.7;">
+            Overlap covers the edge of the image. Grow adds real canvas
+            space below/right of it instead. Both use the current
+            BACKGROUND color (Transparent, Black, or White).
         </div>
     </div>
 
@@ -851,26 +740,15 @@ display:none;
 
 </div><!-- /controlsColumn -->
 
-
+<!-- ============================================================
+     IMAGE COLUMN (right, floating/sticky, two thirds of width)
+     ============================================================ -->
 <div id="imageColumn">
-
     <div id="canvasHolder"></div>
-
     <div id="qrGenHolder" style="display:none;"></div>
-
-    <button id="focusImageBtn">
-        👁 Focus Image
-    </button>
-
-    <button id="exitFocusBtn">
-        ✕
-    </button>
-
-    <div id="statusBar">
-        Status: Ready.
-    </div>
-
+    <div id="statusBar">Status: Ready.</div>
 </div>
+
 </div><!-- /appBody -->
 
 <script>
@@ -884,7 +762,7 @@ let accuracy      = 5;         // 1 (finest) to 10 (coarsest)
 let currentUiTheme = "light"; // one of: light, dark, kuromi, pastel, monowhite, monogrey
 let statusMessage = "Ready.";
 let canvas;
-let focusImageMode = false;
+
 const accuracyBlockSizes = {
     1:1, 2:1, 3:2, 4:3, 5:4,
     6:5, 7:7, 8:9, 9:12, 10:16
@@ -913,8 +791,17 @@ let monochromeEnabled = false;
    ---------------------------------------------------------------- */
 let horizontalMarginPercent = 0;
 let verticalMarginPercent   = 0;
-let horizontalMarginBlack   = false;
-let verticalMarginBlack     = false;
+let horizontalMarginMode    = "overlap"; // "overlap" or "grow"
+let verticalMarginMode      = "overlap";
+
+// The canvas always starts at this size. Grow-mode margins add
+// real pixels beyond it (via resizeCanvas); Overlap-mode margins
+// never change the canvas size, only what's painted over the image
+// within it. Every fit/position calculation is anchored to these
+// two constants, never to the live (possibly grown) canvas size,
+// so Grow margins can never accidentally rescale the image itself.
+const BASE_CANVAS_WIDTH  = 900;
+const BASE_CANVAS_HEIGHT = 600;
 
 /* ----------------------------------------------------------------
    Color wheel state
@@ -1013,19 +900,11 @@ const memeFontStacks = {
    SETUP
    ================================================================ */
 function setup(){
-    canvas = createCanvas(900, 600);
+    canvas = createCanvas(BASE_CANVAS_WIDTH, BASE_CANVAS_HEIGHT);
     canvas.parent("canvasHolder");
     canvas.class("mainCanvas");
     background(255);
-     canvas.mousePressed(function(){
-        if(window.innerWidth <= 780){
-            toggleFocusImage();
-        }
-    });
 
-    document
-        .getElementById("imageLoader")
-        .addEventListener("change", loadImageLocal);
     document
         .getElementById("imageLoader")
         .addEventListener("change", loadImageLocal);
@@ -1086,13 +965,6 @@ function setup(){
             if(qrSignatureEnabled) regenerateSignatureQr();
             setStatus(qrSignatureEnabled ? "Digital signature QR enabled." : "Digital signature QR disabled.");
         });
-     document
-          .getElementById("focusImageBtn")
-          .addEventListener("click",toggleFocusImage);
-
-     document
-          .getElementById("exitFocusBtn")
-.         .addEventListener("click",toggleFocusImage);
 
     setupBackgroundControls();
     setupImageFitControls();
@@ -1108,19 +980,7 @@ function setup(){
     highlightActiveFontButton();
     drawColorWheel(); // draw the empty ring before any image is loaded
     updateControlAvailability();
-     
 }
-
-function toggleFocusImage(){
-     focusImageMode=!focusImageMode;
-
-     document.body.classList.toggle(
-     "focusImageMode",
-     focusImageMode
-     );
-}
-
-     
 
 /* ================================================================
    MAIN DRAW LOOP
@@ -1369,17 +1229,55 @@ function setupMarginControls(){
     document.getElementById("hMarginInput").addEventListener("input", function(){
         horizontalMarginPercent = parseInt(this.value);
         document.getElementById("hMarginDisplay").innerText = horizontalMarginPercent + "%";
+        updateCanvasSizeForMargins();
     });
     document.getElementById("vMarginInput").addEventListener("input", function(){
         verticalMarginPercent = parseInt(this.value);
         document.getElementById("vMarginDisplay").innerText = verticalMarginPercent + "%";
+        updateCanvasSizeForMargins();
     });
-    document.getElementById("hMarginBlackToggle").addEventListener("change", function(){
-        horizontalMarginBlack = this.checked;
-    });
-    document.getElementById("vMarginBlackToggle").addEventListener("change", function(){
-        verticalMarginBlack = this.checked;
-    });
+}
+
+// Switches one axis between Overlap and Grow. "axis" is "horizontal"
+// or "vertical"; "mode" is "overlap" or "grow".
+function setMarginMode(axis, mode){
+    if(axis == "horizontal"){
+        horizontalMarginMode = mode;
+    } else {
+        verticalMarginMode = mode;
+    }
+    highlightMarginModeButtons(axis == "horizontal" ? "h" : "v");
+    updateCanvasSizeForMargins();
+    setStatus(axis + " margin mode: " + mode);
+}
+
+function highlightMarginModeButtons(prefix){
+    let mode = (prefix == "h") ? horizontalMarginMode : verticalMarginMode;
+    document.getElementById(prefix + "mode-overlap").classList.toggle("active", mode == "overlap");
+    document.getElementById(prefix + "mode-grow").classList.toggle("active", mode == "grow");
+}
+
+// Grow-mode margins are real canvas pixels, added below/right of the
+// base working area -- so the canvas itself has to actually resize.
+// This only runs when a margin setting changes (never every frame),
+// so it's cheap despite resizeCanvas() being a relatively heavy call.
+function updateCanvasSizeForMargins(){
+    let hGrowPx = (horizontalMarginMode == "grow")
+        ? Math.round(BASE_CANVAS_WIDTH * (horizontalMarginPercent / 100)) : 0;
+    let vGrowPx = (verticalMarginMode == "grow")
+        ? Math.round(BASE_CANVAS_HEIGHT * (verticalMarginPercent / 100)) : 0;
+
+    let newWidth = BASE_CANVAS_WIDTH + hGrowPx;
+    let newHeight = BASE_CANVAS_HEIGHT + vGrowPx;
+
+    if(newWidth != width || newHeight != height){
+        resizeCanvas(newWidth, newHeight);
+        // The CSS aspect-ratio is fixed at 900/600 for the mobile
+        // Safari sizing fix; when the canvas actually grows it needs
+        // an inline override so the browser doesn't squash the
+        // display back into the wrong ratio.
+        canvas.elt.style.aspectRatio = newWidth + " / " + newHeight;
+    }
 }
 
 /* ================================================================
@@ -1503,14 +1401,15 @@ function resetAllParameters(){
 
     horizontalMarginPercent = 0;
     verticalMarginPercent = 0;
-    horizontalMarginBlack = false;
-    verticalMarginBlack = false;
+    horizontalMarginMode = "overlap";
+    verticalMarginMode = "overlap";
     document.getElementById("hMarginInput").value = 0;
     document.getElementById("vMarginInput").value = 0;
     document.getElementById("hMarginDisplay").innerText = "0%";
     document.getElementById("vMarginDisplay").innerText = "0%";
-    document.getElementById("hMarginBlackToggle").checked = false;
-    document.getElementById("vMarginBlackToggle").checked = false;
+    highlightMarginModeButtons("h");
+    highlightMarginModeButtons("v");
+    updateCanvasSizeForMargins();
 
     imageFitMode = "contain";
     manualScaleXPercent = 100;
@@ -2443,11 +2342,19 @@ function setStatus(message){
    the thin stray background line at small margin values.
    ================================================================ */
 function imageFit(im){
-    let hMarginPx = Math.round(width * (horizontalMarginPercent / 100));
-    let vMarginPx = Math.round(height * (verticalMarginPercent / 100));
+    // The image is always fit against the fixed BASE canvas size,
+    // never against the live (possibly grown) canvas size -- that's
+    // what keeps Grow-mode margins from ever rescaling the image
+    // itself. Overlap-mode margins are the only thing that reduces
+    // the available fitting area, since they paint over the image
+    // afterward and the image should shrink to make room for that.
+    let hOverlapPx = (horizontalMarginMode == "overlap")
+        ? Math.round(BASE_CANVAS_WIDTH * (horizontalMarginPercent / 100)) : 0;
+    let vOverlapPx = (verticalMarginMode == "overlap")
+        ? Math.round(BASE_CANVAS_HEIGHT * (verticalMarginPercent / 100)) : 0;
 
-    let availW = width - hMarginPx * 2;
-    let availH = height - vMarginPx * 2;
+    let availW = BASE_CANVAS_WIDTH - hOverlapPx * 2;
+    let availH = BASE_CANVAS_HEIGHT - vOverlapPx * 2;
 
     let w, h;
 
@@ -2465,31 +2372,53 @@ function imageFit(im){
         }
     }
 
-    let x = (width - w) / 2;
-    let y = (height - h) / 2;
+    // Centered within the BASE working area, which itself always
+    // sits at the top-left corner of the live canvas -- Grow mode
+    // only ever adds space below and to the right of it.
+    let x = (BASE_CANVAS_WIDTH - w) / 2;
+    let y = (BASE_CANVAS_HEIGHT - h) / 2;
 
     image(im, x, y, w, h);
-    paintMarginBands(hMarginPx, vMarginPx);
+    paintOverlapBands(hOverlapPx, vOverlapPx);
 }
 
-function paintMarginBands(hMarginPx, vMarginPx){
-    push();
-    noStroke();
-    fill(0);
+// Overlap-mode margins are painted directly over the image's own
+// edges, in whichever color/transparency the BACKGROUND panel is
+// currently set to. Grow-mode margins need no painting at all: the
+// extra canvas space they add is already the right color, because
+// paintCanvasBackground() clears the *entire* live canvas -- grown
+// area included -- at the start of every single frame.
+function paintOverlapBands(hPx, vPx){
+    if(hPx <= 0 && vPx <= 0) return;
 
     // Bands are drawn 1px wider than the computed margin so any
     // sub-pixel rounding from the image draw call above is fully
     // covered, instead of leaving a hairline sliver of background.
     let overscan = 1;
 
-    if(horizontalMarginBlack && hMarginPx > 0){
-        rect(0, 0, hMarginPx + overscan, height);
-        rect(width - hMarginPx - overscan, 0, hMarginPx + overscan, height);
+    push();
+    noStroke();
+
+    if(backgroundMode == "transparent"){
+        // erase() punches a real transparent hole through whatever
+        // was just drawn there (including the image itself), which
+        // a normal fill() can't do over already-drawn pixels.
+        erase();
+        fill(255);
+    } else {
+        fill(backgroundMode == "black" ? 0 : 255);
     }
-    if(verticalMarginBlack && vMarginPx > 0){
-        rect(0, 0, width, vMarginPx + overscan);
-        rect(0, height - vMarginPx - overscan, width, vMarginPx + overscan);
+
+    if(hPx > 0){
+        rect(0, 0, hPx + overscan, height);
+        rect(width - hPx - overscan, 0, hPx + overscan, height);
     }
+    if(vPx > 0){
+        rect(0, 0, width, vPx + overscan);
+        rect(0, height - vPx - overscan, width, vPx + overscan);
+    }
+
+    if(backgroundMode == "transparent") noErase();
     pop();
 }
 </script>
