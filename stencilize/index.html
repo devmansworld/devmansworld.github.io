@@ -369,6 +369,126 @@ body.noChromeLines #statusBar{
     }
 }
 
+/* ==========================================================
+   MOBILE FOCUS IMAGE MODE
+   ========================================================== */
+
+#focusImageBtn{
+
+display:none;
+
+}
+
+#exitFocusBtn{
+
+display:none;
+
+}
+
+@media (max-width:780px){
+
+#focusImageBtn{
+
+display:block;
+
+position:fixed;
+
+bottom:18px;
+
+right:18px;
+
+z-index:9999;
+
+}
+
+body.focusImageMode{
+
+overflow:hidden;
+
+}
+
+body.focusImageMode #controlsColumn{
+
+display:none;
+
+}
+
+body.focusImageMode #headerBar{
+
+display:none;
+
+}
+
+body.focusImageMode #statusBar{
+
+display:none;
+
+}
+
+body.focusImageMode #imageColumn{
+
+position:fixed;
+
+left:0;
+
+top:0;
+
+width:100vw;
+
+height:100vh;
+
+padding:0;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+background:black;
+
+z-index:9998;
+
+}
+
+body.focusImageMode canvas.mainCanvas{
+
+max-width:100vw;
+
+max-height:100vh;
+
+width:auto;
+
+height:auto;
+
+}
+
+body.focusImageMode #exitFocusBtn{
+
+display:block;
+
+position:fixed;
+
+top:15px;
+
+right:15px;
+
+z-index:10000;
+
+}
+
+body.focusImageMode #focusImageBtn{
+
+display:none;
+
+}
+
+}
+
+
+
+
+     
 /* ================================================================
    PRINT
    Only the canvas is meant to end up on paper -- everything else
@@ -731,15 +851,26 @@ body.noChromeLines #statusBar{
 
 </div><!-- /controlsColumn -->
 
-<!-- ============================================================
-     IMAGE COLUMN (right, floating/sticky, two thirds of width)
-     ============================================================ -->
-<div id="imageColumn">
-    <div id="canvasHolder"></div>
-    <div id="qrGenHolder" style="display:none;"></div>
-    <div id="statusBar">Status: Ready.</div>
-</div>
 
+<div id="imageColumn">
+
+    <div id="canvasHolder"></div>
+
+    <div id="qrGenHolder" style="display:none;"></div>
+
+    <button id="focusImageBtn">
+        👁 Focus Image
+    </button>
+
+    <button id="exitFocusBtn">
+        ✕
+    </button>
+
+    <div id="statusBar">
+        Status: Ready.
+    </div>
+
+</div>
 </div><!-- /appBody -->
 
 <script>
@@ -753,7 +884,7 @@ let accuracy      = 5;         // 1 (finest) to 10 (coarsest)
 let currentUiTheme = "light"; // one of: light, dark, kuromi, pastel, monowhite, monogrey
 let statusMessage = "Ready.";
 let canvas;
-
+let focusImageMode = false;
 const accuracyBlockSizes = {
     1:1, 2:1, 3:2, 4:3, 5:4,
     6:5, 7:7, 8:9, 9:12, 10:16
@@ -886,7 +1017,15 @@ function setup(){
     canvas.parent("canvasHolder");
     canvas.class("mainCanvas");
     background(255);
+     canvas.mousePressed(function(){
+        if(window.innerWidth <= 780){
+            toggleFocusImage();
+        }
+    });
 
+    document
+        .getElementById("imageLoader")
+        .addEventListener("change", loadImageLocal);
     document
         .getElementById("imageLoader")
         .addEventListener("change", loadImageLocal);
@@ -947,6 +1086,13 @@ function setup(){
             if(qrSignatureEnabled) regenerateSignatureQr();
             setStatus(qrSignatureEnabled ? "Digital signature QR enabled." : "Digital signature QR disabled.");
         });
+     document
+          .getElementById("focusImageBtn")
+          .addEventListener("click",toggleFocusImage);
+
+     document
+          .getElementById("exitFocusBtn")
+.         .addEventListener("click",toggleFocusImage);
 
     setupBackgroundControls();
     setupImageFitControls();
@@ -962,7 +1108,19 @@ function setup(){
     highlightActiveFontButton();
     drawColorWheel(); // draw the empty ring before any image is loaded
     updateControlAvailability();
+     
 }
+
+function toggleFocusImage(){
+     focusImageMode=!focusImageMode;
+
+     document.body.classList.toggle(
+     "focusImageMode",
+     focusImageMode
+     );
+}
+
+     
 
 /* ================================================================
    MAIN DRAW LOOP
