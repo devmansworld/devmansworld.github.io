@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stencilizer v0.6.1</title>
+<title>Stencilizer v0.7.3</title>
 
 <!-- p5.js library. Local processing only, no server or build step needed. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
@@ -239,6 +239,16 @@ label{
     color:#FF8800;
     border:2px solid #FF8800;
 }
+.accuracyOption.disabledOption{
+    opacity:0.3;
+    pointer-events:none;
+    cursor:not-allowed;
+}
+
+input:disabled{
+    opacity:0.4;
+    cursor:not-allowed;
+}
 
 /* ================================================================
    COLOR WHEEL
@@ -263,14 +273,29 @@ label{
     width:100%;
 }
 canvas.mainCanvas{
+    display:block;
     border:3px solid #0066FF;
     box-shadow:0 0 8px rgba(0,0,0,0.2);
     max-width:100%;
+    width:100%;
     height:auto;
+    aspect-ratio:900/600;
+    /* checkerboard so a transparent background is visible on screen */
+    background-image:
+        linear-gradient(45deg, #ccc 25%, transparent 25%),
+        linear-gradient(-45deg, #ccc 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #ccc 75%),
+        linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size:20px 20px;
+    background-position:0 0, 0 10px, 10px -10px, -10px 0px;
 }
 body.dark canvas.mainCanvas{
     border:3px solid #39FF14;
     box-shadow:0 0 12px rgba(57,255,20,0.4);
+}
+canvas.mainCanvas.noBorder{
+    border-color:transparent !important;
+    box-shadow:none !important;
 }
 
 /* ================================================================
@@ -327,7 +352,7 @@ body.dark #statusBar{
      HEADER
      ============================================================ -->
 <div id="headerBar">
-    <div class="title">STENCELIZER v0.6.1</div>
+    <div class="title">STENCILIZER v0.7.3</div>
     <div><span id="headerDot">&#9679;</span><span id="headerDotLabel">Ready</span></div>
 </div>
 
@@ -356,6 +381,11 @@ body.dark #statusBar{
             <input type="checkbox" id="hideBordersToggle">
             Hide panel borders
         </label>
+        <br>
+        <label>
+            <input type="checkbox" id="hideCanvasBorderToggle">
+            Hide canvas border
+        </label>
     </div>
 
     <!-- MODES PANEL -->
@@ -373,6 +403,7 @@ body.dark #statusBar{
     <div class="panel">
         <div class="panelLabel">HARMONY TYPE</div>
         <button id="harm-complementary" onclick="setHarmonyType('complementary')">Complementary</button>
+        <button id="harm-analogous" onclick="setHarmonyType('analogous')">Analogous</button>
         <button id="harm-triadic" onclick="setHarmonyType('triadic')">Triadic</button>
         <button id="harm-tetradic" onclick="setHarmonyType('tetradic')">Tetradic</button>
 
@@ -382,6 +413,32 @@ body.dark #statusBar{
              is visible at a glance. -->
         <div id="colorWheelHolder">
             <canvas id="colorWheelCanvas" width="160" height="160"></canvas>
+        </div>
+
+        <div class="panelLabel">HARMONY CONTROLS</div>
+        <div class="panelRow">
+            <label>Hue Offset
+                <input type="range" id="harmonyHueOffsetInput" min="-180" max="180" value="0">
+            </label>
+            <span class="sizeDisplay" id="harmonyHueOffsetDisplay">0&deg;</span>
+        </div>
+        <div class="panelRow">
+            <label>Analog Distance
+                <input type="range" id="analogDistanceInput" min="10" max="60" value="30">
+            </label>
+            <span class="sizeDisplay" id="analogDistanceDisplay">30&deg;</span>
+        </div>
+        <div class="panelRow">
+            <label>Palette Saturation
+                <input type="range" id="paletteSatInput" min="0" max="100" value="80">
+            </label>
+            <span class="sizeDisplay" id="paletteSatDisplay">80%</span>
+        </div>
+        <div class="panelRow">
+            <label>Palette Brightness
+                <input type="range" id="paletteBrightInput" min="0" max="100" value="90">
+            </label>
+            <span class="sizeDisplay" id="paletteBrightDisplay">90%</span>
         </div>
     </div>
 
@@ -416,6 +473,43 @@ body.dark #statusBar{
             </label>
             <span class="sizeDisplay" id="vMarginDisplay">0%</span>
             <label><input type="checkbox" id="vMarginBlackToggle"> Black</label>
+        </div>
+    </div>
+
+    <!-- IMAGE FIT PANEL -->
+    <div class="panel">
+        <div class="panelLabel">IMAGE FIT</div>
+        <div class="panelRow">
+            <button id="fit-contain" class="active" onclick="setImageFitMode('contain')">Shrink to Viewport</button>
+            <button id="fit-fill" onclick="setImageFitMode('fill')">Fill Background</button>
+        </div>
+        <div class="panelRow">
+            <label>Width
+                <input type="range" id="scaleXInput" min="10" max="200" value="100">
+            </label>
+            <span class="sizeDisplay" id="scaleXDisplay">100%</span>
+        </div>
+        <div class="panelRow">
+            <label>Height
+                <input type="range" id="scaleYInput" min="10" max="200" value="100">
+            </label>
+            <span class="sizeDisplay" id="scaleYDisplay">100%</span>
+        </div>
+        <div class="panelRow">
+            <label>
+                <input type="checkbox" id="keepProportionsToggle" checked>
+                Keep Proportions
+            </label>
+        </div>
+    </div>
+
+    <!-- BACKGROUND PANEL -->
+    <div class="panel">
+        <div class="panelLabel">BACKGROUND</div>
+        <div class="panelRow">
+            <button id="bg-transparent" onclick="setBackgroundMode('transparent')">Transparent</button>
+            <button id="bg-black" onclick="setBackgroundMode('black')">Black</button>
+            <button id="bg-white" class="active" onclick="setBackgroundMode('white')">White</button>
         </div>
     </div>
 
@@ -530,6 +624,16 @@ body.dark #statusBar{
         <button id="btn-download" onclick="downloadResult()">Download PNG</button>
     </div>
 
+    <!-- BACK TO MAIN -->
+    <div class="panel">
+        <a href="../index.html" style="text-decoration:none;">
+            <button type="button">&larr; Back to main</button>
+        </a>
+        <a href="Stencilizer_Manual.pdf" target="_blank" style="text-decoration:none;">
+            <button type="button">User Manual (PDF)</button>
+        </a>
+    </div>
+
 </div><!-- /controlsColumn -->
 
 <!-- ============================================================
@@ -593,6 +697,36 @@ let verticalMarginBlack     = false;
 let lastComputedBaseHue = 0;
 
 /* ----------------------------------------------------------------
+   Harmony control state
+   hueOffset rotates the whole palette away from the auto-detected
+   base hue. analogDistance only applies to Analogous mode. The
+   saturation/brightness pair control how vivid the generated
+   palette colors are (previously fixed at 80/90).
+   ---------------------------------------------------------------- */
+let harmonyHueOffset  = 0;   // -180 to 180
+let analogDistance    = 30;  // 10 to 60, degrees between neighbors
+let paletteSaturation = 80;  // 0 to 100
+let paletteBrightness = 90;  // 0 to 100
+
+/* ----------------------------------------------------------------
+   Background state
+   ---------------------------------------------------------------- */
+let backgroundMode = "white"; // "transparent", "black", "white"
+
+/* ----------------------------------------------------------------
+   Image fit state
+   "contain" = shrink to fit inside the viewport, aspect preserved.
+   "fill"    = stretch to fill the whole available area.
+   "manual"  = the width/height sliders drive the size directly,
+               relative to the normal contain-fit size.
+   ---------------------------------------------------------------- */
+let imageFitMode        = "contain";
+let manualScaleXPercent = 100;
+let manualScaleYPercent = 100;
+let keepProportions     = true;
+let hideCanvasBorder    = false;
+
+/* ----------------------------------------------------------------
    Memetizer state
    ---------------------------------------------------------------- */
 let topText             = "";
@@ -649,12 +783,24 @@ function setup(){
         });
 
     document
+        .getElementById("hideCanvasBorderToggle")
+        .addEventListener("change", function(){
+            hideCanvasBorder = this.checked;
+            document.querySelector("canvas.mainCanvas").classList.toggle("noBorder", hideCanvasBorder);
+            setStatus(hideCanvasBorder ? "Canvas border hidden." : "Canvas border shown.");
+        });
+
+    document
         .getElementById("monochromeToggle")
         .addEventListener("change", function(){
             monochromeEnabled = this.checked;
             setStatus(monochromeEnabled ? "Monochrome enabled." : "Monochrome disabled.");
+            updateControlAvailability();
         });
 
+    setupBackgroundControls();
+    setupImageFitControls();
+    setupHarmonyControls();
     setupColorAdjustControls();
     setupChannelControls();
     setupMarginControls();
@@ -665,13 +811,14 @@ function setup(){
     highlightActiveHarmonyButton();
     highlightActiveFontButton();
     drawColorWheel(); // draw the empty ring before any image is loaded
+    updateControlAvailability();
 }
 
 /* ================================================================
    MAIN DRAW LOOP
    ================================================================ */
 function draw(){
-    background(240);
+    paintCanvasBackground();
 
     if(currentImage == null){
         fill(100);
@@ -690,6 +837,20 @@ function draw(){
     }
 
     drawMemeOverlay();
+}
+
+// Clears or fills the whole canvas each frame according to the
+// selected background mode, before anything else is drawn. This
+// matters because exported PNGs otherwise always get a white
+// background baked in, even if that's not what's wanted.
+function paintCanvasBackground(){
+    if(backgroundMode == "transparent"){
+        clear();
+    } else if(backgroundMode == "black"){
+        background(0);
+    } else {
+        background(255);
+    }
 }
 
 /* ================================================================
@@ -718,6 +879,7 @@ function setMode(newMode){
     currentMode = newMode;
     highlightActiveModeButton();
     setStatus("Converted to " + modeLabel(newMode));
+    updateControlAvailability();
 }
 
 function setHarmonyType(newType){
@@ -725,6 +887,65 @@ function setHarmonyType(newType){
     highlightActiveHarmonyButton();
     setStatus("Harmony type: " + newType);
     drawColorWheel();
+    updateControlAvailability();
+}
+
+// Greys out and disables controls that have no effect in the
+// current mode, so the panel itself teaches which knobs matter.
+// Nothing here changes what any control *does* -- only whether it
+// can be touched right now -- so re-enabling always restores the
+// exact same behavior as before.
+function updateControlAvailability(){
+    let harmonyActive = (currentMode == "harmony");
+
+    ["harm-complementary", "harm-analogous", "harm-triadic", "harm-tetradic"].forEach(function(id){
+        document.getElementById(id).disabled = !harmonyActive;
+    });
+    document.getElementById("harmonyHueOffsetInput").disabled = !harmonyActive;
+    document.getElementById("paletteSatInput").disabled = !harmonyActive;
+    document.getElementById("paletteBrightInput").disabled = !harmonyActive;
+    document.getElementById("analogDistanceInput").disabled = !(harmonyActive && harmonyType == "analogous");
+
+    // Accuracy has no effect on Original (it never runs applyBlockAverage).
+    let accuracyActive = (currentMode != "original");
+    for(let i = 1; i <= 10; i++){
+        document.getElementById("acc-" + i).classList.toggle("disabledOption", !accuracyActive);
+    }
+
+    // Channel Combine is silently overridden whenever Monochrome is
+    // on (see applyOutputFilters), so grey it out rather than leave
+    // controls that visibly do nothing.
+    let channelActive = !monochromeEnabled;
+    document.getElementById("channelRToggle").disabled = !channelActive;
+    document.getElementById("channelGToggle").disabled = !channelActive;
+    document.getElementById("channelBToggle").disabled = !channelActive;
+    document.getElementById("channelModeBtn").disabled = !channelActive;
+}
+
+// Wires up the four harmony sliders. Each one redraws the color
+// wheel preview immediately so the effect is visible before the
+// main image even re-renders.
+function setupHarmonyControls(){
+    document.getElementById("harmonyHueOffsetInput").addEventListener("input", function(){
+        harmonyHueOffset = parseInt(this.value);
+        document.getElementById("harmonyHueOffsetDisplay").innerText = harmonyHueOffset + "\u00B0";
+        drawColorWheel();
+    });
+    document.getElementById("analogDistanceInput").addEventListener("input", function(){
+        analogDistance = parseInt(this.value);
+        document.getElementById("analogDistanceDisplay").innerText = analogDistance + "\u00B0";
+        drawColorWheel();
+    });
+    document.getElementById("paletteSatInput").addEventListener("input", function(){
+        paletteSaturation = parseInt(this.value);
+        document.getElementById("paletteSatDisplay").innerText = paletteSaturation + "%";
+        drawColorWheel();
+    });
+    document.getElementById("paletteBrightInput").addEventListener("input", function(){
+        paletteBrightness = parseInt(this.value);
+        document.getElementById("paletteBrightDisplay").innerText = paletteBrightness + "%";
+        drawColorWheel();
+    });
 }
 
 function setAccuracy(level){
@@ -754,7 +975,7 @@ function highlightActiveModeButton(){
 }
 
 function highlightActiveHarmonyButton(){
-    let ids = ["harm-complementary", "harm-triadic", "harm-tetradic"];
+    let ids = ["harm-complementary", "harm-analogous", "harm-triadic", "harm-tetradic"];
     ids.forEach(function(id){
         document.getElementById(id).classList.remove("active");
     });
@@ -833,6 +1054,88 @@ function setupMarginControls(){
 }
 
 /* ================================================================
+   BACKGROUND CONTROLS
+   ================================================================ */
+function setBackgroundMode(mode){
+    backgroundMode = mode;
+    highlightActiveBackgroundButton();
+    setStatus("Background: " + mode);
+}
+
+function highlightActiveBackgroundButton(){
+    let ids = ["bg-transparent", "bg-black", "bg-white"];
+    ids.forEach(function(id){
+        document.getElementById(id).classList.remove("active");
+    });
+    document.getElementById("bg-" + backgroundMode).classList.add("active");
+}
+
+function setupBackgroundControls(){
+    // Buttons call setBackgroundMode() directly via onclick; nothing
+    // else to wire up here, kept as its own function so Reset can
+    // call the same highlight logic consistently.
+}
+
+/* ================================================================
+   IMAGE FIT CONTROLS
+   ================================================================ */
+function setupImageFitControls(){
+    document.getElementById("scaleXInput").addEventListener("input", function(){
+        manualScaleXPercent = parseInt(this.value);
+        if(keepProportions){
+            manualScaleYPercent = manualScaleXPercent;
+            document.getElementById("scaleYInput").value = manualScaleYPercent;
+            document.getElementById("scaleYDisplay").innerText = manualScaleYPercent + "%";
+        }
+        document.getElementById("scaleXDisplay").innerText = manualScaleXPercent + "%";
+        imageFitMode = "manual";
+        highlightActiveFitButton();
+    });
+
+    document.getElementById("scaleYInput").addEventListener("input", function(){
+        manualScaleYPercent = parseInt(this.value);
+        if(keepProportions){
+            manualScaleXPercent = manualScaleYPercent;
+            document.getElementById("scaleXInput").value = manualScaleXPercent;
+            document.getElementById("scaleXDisplay").innerText = manualScaleXPercent + "%";
+        }
+        document.getElementById("scaleYDisplay").innerText = manualScaleYPercent + "%";
+        imageFitMode = "manual";
+        highlightActiveFitButton();
+    });
+
+    document.getElementById("keepProportionsToggle").addEventListener("change", function(){
+        keepProportions = this.checked;
+        if(keepProportions){
+            manualScaleYPercent = manualScaleXPercent;
+            document.getElementById("scaleYInput").value = manualScaleYPercent;
+            document.getElementById("scaleYDisplay").innerText = manualScaleYPercent + "%";
+        }
+    });
+}
+
+function setImageFitMode(mode){
+    imageFitMode = mode;
+    if(mode != "manual"){
+        manualScaleXPercent = 100;
+        manualScaleYPercent = 100;
+        document.getElementById("scaleXInput").value = 100;
+        document.getElementById("scaleYInput").value = 100;
+        document.getElementById("scaleXDisplay").innerText = "100%";
+        document.getElementById("scaleYDisplay").innerText = "100%";
+    }
+    highlightActiveFitButton();
+    setStatus("Image fit: " + mode);
+}
+
+function highlightActiveFitButton(){
+    document.getElementById("fit-contain").classList.remove("active");
+    document.getElementById("fit-fill").classList.remove("active");
+    if(imageFitMode == "contain") document.getElementById("fit-contain").classList.add("active");
+    if(imageFitMode == "fill") document.getElementById("fit-fill").classList.add("active");
+}
+
+/* ================================================================
    RESET / DEFAULT
    ================================================================ */
 function resetAllParameters(){
@@ -841,6 +1144,19 @@ function resetAllParameters(){
 
     harmonyType = "complementary";
     highlightActiveHarmonyButton();
+
+    harmonyHueOffset = 0;
+    analogDistance = 30;
+    paletteSaturation = 80;
+    paletteBrightness = 90;
+    document.getElementById("harmonyHueOffsetInput").value = 0;
+    document.getElementById("analogDistanceInput").value = 30;
+    document.getElementById("paletteSatInput").value = 80;
+    document.getElementById("paletteBrightInput").value = 90;
+    document.getElementById("harmonyHueOffsetDisplay").innerText = "0\u00B0";
+    document.getElementById("analogDistanceDisplay").innerText = "30\u00B0";
+    document.getElementById("paletteSatDisplay").innerText = "80%";
+    document.getElementById("paletteBrightDisplay").innerText = "90%";
     drawColorWheel();
 
     setAccuracy(5);
@@ -855,6 +1171,20 @@ function resetAllParameters(){
     document.getElementById("vMarginDisplay").innerText = "0%";
     document.getElementById("hMarginBlackToggle").checked = false;
     document.getElementById("vMarginBlackToggle").checked = false;
+
+    imageFitMode = "contain";
+    manualScaleXPercent = 100;
+    manualScaleYPercent = 100;
+    keepProportions = true;
+    document.getElementById("scaleXInput").value = 100;
+    document.getElementById("scaleYInput").value = 100;
+    document.getElementById("scaleXDisplay").innerText = "100%";
+    document.getElementById("scaleYDisplay").innerText = "100%";
+    document.getElementById("keepProportionsToggle").checked = true;
+    highlightActiveFitButton();
+
+    backgroundMode = "white";
+    highlightActiveBackgroundButton();
 
     hueShift = 0;
     saturationPercent = 100;
@@ -920,6 +1250,7 @@ function resetAllParameters(){
     memeFont = "impact";
     highlightActiveFontButton();
 
+    updateControlAvailability();
     setStatus("All parameters reset to default.");
 }
 
@@ -1095,7 +1426,7 @@ function drawHarmony(){
     let g = currentImage.get();
     g = applyBlockAverage(g, accuracyBlockSizes[accuracy]);
 
-    let paletteColors = buildHarmonyPaletteColors(lastComputedBaseHue, harmonyType);
+    let paletteColors = buildHarmonyPaletteColors(effectiveBaseHue(), harmonyType);
 
     g.loadPixels();
     for(let i = 0; i < g.pixels.length; i += 4){
@@ -1119,9 +1450,18 @@ function drawHarmony(){
     imageFit(g);
 }
 
+// Gross Lines uses its own, more gradual block-size table rather
+// than simply multiplying the normal accuracy sizes by 4 -- that
+// old approach jumped too fast (e.g. straight to 64px blocks at
+// the coarsest setting). These steps grow more evenly.
+const grossBlockSizes = {
+    1:2, 2:3, 3:4, 4:6, 5:8,
+    6:10, 7:13, 8:16, 9:20, 10:24
+};
+
 function drawGrossLines(){
     let g = currentImage.get();
-    let block = accuracyBlockSizes[accuracy] * 4;
+    let block = grossBlockSizes[accuracy];
     g = applyBlockAverage(g, block);
 
     g.loadPixels();
@@ -1196,7 +1536,17 @@ function computeAverageHue(im){
     return hsb.h;
 }
 
+// Applies the Hue Offset control to the image's own detected
+// base hue. Used everywhere the harmony palette is generated, so
+// the offset and the color wheel preview always agree.
+function effectiveBaseHue(){
+    return (lastComputedBaseHue + harmonyHueOffset + 360) % 360;
+}
+
 function buildHarmonyHues(baseHue, type){
+    if(type == "analogous"){
+        return [(baseHue + 360 - analogDistance) % 360, baseHue, (baseHue + analogDistance) % 360];
+    }
     if(type == "triadic"){
         return [baseHue, (baseHue + 120) % 360, (baseHue + 240) % 360];
     }
@@ -1209,7 +1559,7 @@ function buildHarmonyHues(baseHue, type){
 function buildHarmonyPaletteColors(baseHue, type){
     let hues = buildHarmonyHues(baseHue, type);
     return hues.map(function(h){
-        return hsbToRgb(h, 80, 90);
+        return hsbToRgb(h, paletteSaturation, paletteBrightness);
     });
 }
 
@@ -1261,7 +1611,7 @@ function drawColorWheel(){
 
     if(currentImage == null) return; // nothing to plot yet
 
-    let hues = buildHarmonyHues(lastComputedBaseHue, harmonyType);
+    let hues = buildHarmonyHues(effectiveBaseHue(), harmonyType);
     let midRadius = (innerRadius + outerRadius) / 2;
     let points = hues.map(function(h){
         let rad = (h * Math.PI) / 180;
@@ -1280,7 +1630,7 @@ function drawColorWheel(){
         if(i == 0) ctx.moveTo(p.x, p.y);
         else ctx.lineTo(p.x, p.y);
     });
-    if(points.length > 2) ctx.closePath();
+    if(harmonyType == "triadic" || harmonyType == "tetradic") ctx.closePath();
     ctx.stroke();
 
     // Draw a marker dot at each palette color, in that color.
@@ -1503,17 +1853,33 @@ function setStatus(message){
 /* ================================================================
    HELPER: fit an image or graphic into the canvas, centered,
    preserving aspect ratio, leaving room for the margins if set.
+   Margin sizes are rounded to whole pixels -- fractional pixel
+   gaps between the image edge and the margin band are what caused
+   the thin stray background line at small margin values.
    ================================================================ */
 function imageFit(im){
-    let hMarginPx = width * (horizontalMarginPercent / 100);
-    let vMarginPx = height * (verticalMarginPercent / 100);
+    let hMarginPx = Math.round(width * (horizontalMarginPercent / 100));
+    let vMarginPx = Math.round(height * (verticalMarginPercent / 100));
 
     let availW = width - hMarginPx * 2;
     let availH = height - vMarginPx * 2;
 
-    let ratio = min(availW / im.width, availH / im.height);
-    let w = im.width * ratio;
-    let h = im.height * ratio;
+    let w, h;
+
+    if(imageFitMode == "fill"){
+        w = availW;
+        h = availH;
+    } else {
+        let ratio = min(availW / im.width, availH / im.height);
+        w = im.width * ratio;
+        h = im.height * ratio;
+
+        if(imageFitMode == "manual"){
+            w = w * (manualScaleXPercent / 100);
+            h = h * (manualScaleYPercent / 100);
+        }
+    }
+
     let x = (width - w) / 2;
     let y = (height - h) / 2;
 
@@ -1526,13 +1892,18 @@ function paintMarginBands(hMarginPx, vMarginPx){
     noStroke();
     fill(0);
 
+    // Bands are drawn 1px wider than the computed margin so any
+    // sub-pixel rounding from the image draw call above is fully
+    // covered, instead of leaving a hairline sliver of background.
+    let overscan = 1;
+
     if(horizontalMarginBlack && hMarginPx > 0){
-        rect(0, 0, hMarginPx, height);
-        rect(width - hMarginPx, 0, hMarginPx, height);
+        rect(0, 0, hMarginPx + overscan, height);
+        rect(width - hMarginPx - overscan, 0, hMarginPx + overscan, height);
     }
     if(verticalMarginBlack && vMarginPx > 0){
-        rect(0, 0, width, vMarginPx);
-        rect(0, height - vMarginPx, width, vMarginPx);
+        rect(0, 0, width, vMarginPx + overscan);
+        rect(0, height - vMarginPx - overscan, width, vMarginPx + overscan);
     }
     pop();
 }
