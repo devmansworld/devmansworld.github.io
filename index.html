@@ -1,2339 +1,481 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="htmlRoot">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stencilizer v0.7.9</title>
 
-<!-- p5.js library. Local processing only, no server or build step needed. -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
-<!-- Small, well-known QR generator (davidshimjs/qrcodejs), used only
-     for the optional "Digital Signature QR" print feature below. -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<title>paintings</title>
 
 <style>
-/* ================================================================
-   RESET
-   ================================================================ */
+
 *{
     box-sizing:border-box;
 }
 
-body{
-    margin:0;
-    font-family:"JetBrains Mono","Fira Code",Consolas,"Courier New",monospace;
-    letter-spacing:0.5px;
-}
-
 /* ================================================================
    THEMES
-   White (light) is the default. Every other theme is opt-in via
-   the THEME & DISPLAY panel. Every color used anywhere below reads
-   from these variables, so adding a theme only ever means adding
-   one more block here -- nothing else in the stylesheet changes.
+   White is the default (page always starts here). Dark and Kuromi
+   are opt-in via the theme buttons. Every color elsewhere in this
+   stylesheet reads from these variables, so switching theme only
+   ever means changing which body class is active.
    ================================================================ */
-body.light{
-    --bg:#F5F5F5; --fg:#000000; --border:#0066FF; --subborder:#99b3ff;
-    --btn-bg:#FF8800; --btn-fg:#000000; --btn-hover-bg:#FF00FF; --btn-hover-fg:#FFFFFF;
-    --selected:#FF8800; --shadow:rgba(0,0,0,0.2);
+body.theme-white{
+    --bg:#ffffff;
+    --fg:#1a1a1a;
+    --accent:#cc3366;
+    --visited:#7a4d99;
+    --border:#dddddd;
+    --border-soft:#eeeeee;
+    --panel-bg:#f7f7f7;
 }
-body.dark{
-    --bg:#000000; --fg:#39FF14; --border:#39FF14; --subborder:#226622;
-    --btn-bg:#FF8800; --btn-fg:#000000; --btn-hover-bg:#FF00FF; --btn-hover-fg:#FFFFFF;
-    --selected:#FF8800; --shadow:rgba(57,255,20,0.4);
+body.theme-dark{
+    --bg:#000000;
+    --fg:#99ff00;
+    --accent:#ffaa00;
+    --visited:#ff00aa;
+    --border:#333333;
+    --border-soft:#222222;
+    --panel-bg:#111111;
 }
-body.kuromi{
-    --bg:#0a0006; --fg:#ff33cc; --border:#ffe100; --subborder:#552244;
-    --btn-bg:#ff2244; --btn-fg:#000000; --btn-hover-bg:#ffe100; --btn-hover-fg:#000000;
-    --selected:#ffe100; --shadow:rgba(255,225,0,0.35);
+body.theme-kuromi{
+    --bg:#0a0006;
+    --fg:#ff33cc;
+    --accent:#ffe100;
+    --visited:#ff2244;
+    --border:#552244;
+    --border-soft:#3a1730;
+    --panel-bg:#170010;
 }
-body.pastel{
-    --bg:#fdf6f0; --fg:#5c4b51; --border:#c9a9d9; --subborder:#e8d5e0;
-    --btn-bg:#ffd6e8; --btn-fg:#5c4b51; --btn-hover-bg:#b8e0d2; --btn-hover-fg:#3a4a45;
-    --selected:#e8a0c0; --shadow:rgba(92,75,81,0.15);
-}
-body.monowhite{
-    --bg:#ffffff; --fg:#000000; --border:#000000; --subborder:#999999;
-    --btn-bg:#e0e0e0; --btn-fg:#000000; --btn-hover-bg:#000000; --btn-hover-fg:#ffffff;
-    --selected:#000000; --shadow:rgba(0,0,0,0.15);
-}
-body.monogrey{
-    --bg:#eeeeee; --fg:#222222; --border:#888888; --subborder:#cccccc;
-    --btn-bg:#cccccc; --btn-fg:#222222; --btn-hover-bg:#888888; --btn-hover-fg:#ffffff;
-    --selected:#555555; --shadow:rgba(0,0,0,0.12);
-}
+
 body{
     background:var(--bg);
     color:var(--fg);
+    font-family:Consolas,"Courier New",monospace;
+    max-width:1200px;
+    margin:auto;
+    padding:40px;
     transition:background 0.2s, color 0.2s;
 }
 
-/* ================================================================
-   HEADER BAR
-   ================================================================ */
-#headerBar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:10px 16px;
-    border-bottom:3px solid var(--border);
-    font-weight:bold;
-    letter-spacing:2px;
+h1{
+    text-align:center;
+    letter-spacing:6px;
+    border-bottom:1px solid var(--border);
+    padding-bottom:20px;
 }
-#headerBar .title{
-    font-size:16px;
-}
-#headerDot{
-    color:var(--border);
-    margin-right:6px;
+
+h2{
+    margin-top:40px;
+    color:var(--accent);
 }
 
 /* ================================================================
-   TWO COLUMN APP LAYOUT
-   On very wide screens the app used to stretch edge to edge, and
-   the canvas was separately re-centered inside its own column --
-   two different kinds of "centered" fighting each other. Now the
-   whole app is centered as one unit (a max-width + auto margins),
-   and the canvas simply sits at the top of its column instead of
-   floating in the middle of extra empty space.
+   GALLERY
+   Same 15 screenshots as before, unchanged selection and order.
+   Only the display is improved: every tile is forced to a 1:1
+   square with object-fit:cover, so square images stay clean and
+   rectangular ones crop in from the center instead of stretching.
    ================================================================ */
-#appBody{
-    display:flex;
-    align-items:flex-start;
-    max-width:1600px;
-    margin:0 auto;
+.gallery{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    margin-top:20px;
 }
-#controlsColumn{
-    width:34%;
-    box-sizing:border-box;
-    max-height:calc(100vh - 50px);
-    overflow-y:auto;
+
+.gallery .tile{
+    aspect-ratio:1/1;
+    overflow:hidden;
+    border:1px solid var(--border);
+    display:block;
 }
-#imageColumn{
-    width:66%;
-    position:sticky;
+
+.gallery .tile:hover{
+    border-color:var(--accent);
+}
+
+.gallery .tile img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+a{
+    color:var(--fg);
+    text-decoration:none;
+}
+
+a:hover{
+    color:var(--accent);
+}
+
+a:visited{
+    color:var(--visited);
+}
+
+ul{
+    line-height:2em;
+}
+
+footer{
+    margin-top:60px;
+    padding-top:20px;
+    border-top:1px solid var(--border);
+    text-align:center;
+}
+
+@media(max-width:800px){
+    .gallery{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:600px){
+    .gallery{
+        grid-template-columns:1fr;
+    }
+}
+
+/* ================================================================
+   HAMBURGER SIDEBAR NAV
+   Same collapsible pattern reused on every page of the site.
+   ================================================================ */
+#hamburgerBtn{
+    position:fixed;
+    top:16px;
+    left:16px;
+    z-index:200;
+    background:var(--panel-bg);
+    color:var(--fg);
+    border:1px solid var(--border);
+    font-family:inherit;
+    font-size:22px;
+    padding:6px 12px;
+    cursor:pointer;
+}
+#hamburgerBtn:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+}
+
+#sidebar{
+    position:fixed;
     top:0;
+    left:0;
+    height:100%;
+    width:240px;
+    background:var(--panel-bg);
+    border-right:1px solid var(--border);
+    transform:translateX(-100%);
+    transition:transform 0.25s ease;
+    z-index:199;
+    padding:70px 20px 20px 20px;
+}
+#sidebar.open{
+    transform:translateX(0);
+}
+#sidebar a{
+    display:block;
+    padding:10px 0;
+    border-bottom:1px solid var(--border-soft);
+    font-size:15px;
+}
+#sidebar a.lastItem{
+    margin-top:20px;
+    color:var(--accent);
+}
+
+#sidebarOverlay{
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.6);
+    z-index:198;
+    display:none;
+}
+#sidebarOverlay.open{
+    display:block;
+}
+
+/* ================================================================
+   THEME SWITCHER + LANGUAGE TOGGLE (index page only)
+   ================================================================ */
+#topRightControls{
+    position:fixed;
+    top:16px;
+    right:16px;
+    z-index:200;
     display:flex;
     flex-direction:column;
-    align-items:flex-start;
-    padding:16px;
-    box-sizing:border-box;
+    align-items:flex-end;
+    gap:8px;
 }
-
-/* ================================================================
-   PANELS
-   ================================================================ */
-.panel{
-    border:2px solid var(--border);
-    margin:10px 16px;
-    padding:8px;
-}
-body.noBorders .panel{
-    border-color:transparent;
-}
-.panelLabel{
-    font-size:11px;
-    font-weight:bold;
-    letter-spacing:2px;
-    margin-bottom:6px;
-    opacity:0.8;
-}
-.panelRow{
-    margin:5px 0;
-    padding:6px 0;
-}
-.subPanel{
-    border:1px solid var(--subborder);
-    padding:6px;
-    margin:6px 0;
-}
-body.noBorders .subPanel{
-    border-color:transparent;
-}
-
-/* ================================================================
-   BUTTONS
-   ================================================================ */
-button{
-    font-family:inherit;
-    font-weight:bold;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    background:var(--btn-bg);
-    color:var(--btn-fg);
-    border:3px solid var(--border);
-    border-radius:0;
-    padding:7px 10px;
-    margin:3px;
-    font-size:12px;
-    cursor:pointer;
-}
-button:hover{
-    background:var(--btn-hover-bg);
-    color:var(--btn-hover-fg);
-}
-button:active,
-button.active{
-    background:var(--fg);
-    color:var(--bg);
-}
-button:disabled{
-    opacity:0.35;
-    cursor:not-allowed;
-}
-button.sizeBtn{
-    padding:5px 9px;
-    margin:2px;
-}
-button.resetBtn{
-    background:var(--bg);
-    color:var(--selected);
-    border:3px solid var(--selected);
-}
-button.resetBtn:hover{
-    background:var(--selected);
-    color:var(--bg);
-}
-
-input[type="file"]{
-    font-family:inherit;
-    color:inherit;
-    max-width:100%;
-}
-
-/* ================================================================
-   FORM CONTROLS
-   ================================================================ */
-input[type="text"]{
-    font-family:inherit;
-    background:transparent;
-    color:inherit;
-    border:2px solid var(--border);
-    border-radius:0;
-    padding:5px 7px;
-    width:100%;
-    max-width:100%;
-    margin-bottom:5px;
-}
-input[type="color"]{
-    width:36px;
-    height:28px;
-    border:2px solid var(--border);
-    border-radius:0;
-    padding:0;
-    background:transparent;
-    cursor:pointer;
-    vertical-align:middle;
-}
-input[type="range"]{
-    vertical-align:middle;
-    width:100px;
-}
-label{
-    display:inline-block;
-    margin:3px 8px 3px 0;
-    font-size:12px;
-}
-.sizeDisplay{
-    display:inline-block;
-    width:40px;
-    text-align:center;
-    font-size:12px;
-}
-
-/* ================================================================
-   ACCURACY CONTROL
-   ================================================================ */
-.accuracyOption{
-    display:inline-block;
-    font-size:18px;
-    padding:4px 6px;
-    margin:2px;
-    border:2px solid transparent;
-    cursor:pointer;
-}
-.accuracyOption:hover{
-    color:var(--btn-hover-bg);
-}
-.accuracyOption.selected{
-    color:var(--selected);
-    border:2px solid var(--selected);
-}
-.accuracyOption.disabledOption{
-    opacity:0.3;
-    pointer-events:none;
-    cursor:not-allowed;
-}
-
-input:disabled{
-    opacity:0.4;
-    cursor:not-allowed;
-}
-
-/* ================================================================
-   COLOR WHEEL
-   Plain vanilla <canvas>, separate from the p5 canvas, so it can
-   redraw independently without touching the main image pipeline.
-   ================================================================ */
-#colorWheelHolder{
+.themeRow{
     display:flex;
-    justify-content:center;
-    margin:6px 0;
+    gap:6px;
 }
-#colorWheelCanvas{
-    background:transparent;
+.themeBtn{
+    background:var(--panel-bg);
+    color:var(--fg);
+    border:1px solid var(--border);
+    font-family:inherit;
+    font-size:12px;
+    padding:6px 10px;
+    cursor:pointer;
 }
-
-/* ================================================================
-   CANVAS
-   ================================================================ */
-#canvasHolder{
-    display:flex;
-    justify-content:flex-start;
-    width:100%;
+.themeBtn:hover{
+    border-color:var(--accent);
+    color:var(--accent);
 }
-canvas.mainCanvas{
-    display:block;
-    border:3px solid var(--border);
-    box-shadow:0 0 10px var(--shadow);
-    max-width:100%;
-    width:100%;
-    height:auto;
-    aspect-ratio:900/600;
-    /* checkerboard so a transparent background is visible on screen */
-    background-image:
-        linear-gradient(45deg, #ccc 25%, transparent 25%),
-        linear-gradient(-45deg, #ccc 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #ccc 75%),
-        linear-gradient(-45deg, transparent 75%, #ccc 75%);
-    background-size:20px 20px;
-    background-position:0 0, 0 10px, 10px -10px, -10px 0px;
+.themeBtn.active{
+    border-color:var(--accent);
+    color:var(--accent);
+    font-weight:bold;
 }
-canvas.mainCanvas.noBorder{
-    border-color:transparent !important;
-    box-shadow:none !important;
-}
-
-/* ================================================================
-   STATUS BAR
-   ================================================================ */
-#statusBar{
+#langToggle{
+    background:var(--panel-bg);
+    color:var(--fg);
+    border:1px solid var(--border);
+    font-family:inherit;
+    font-size:13px;
     padding:8px 12px;
-    border-top:3px solid var(--border);
-    font-size:12px;
-    width:100%;
-    text-align:center;
-    margin-top:10px;
+    cursor:pointer;
+}
+#langToggle:hover{
+    border-color:var(--accent);
+    color:var(--accent);
 }
 
-/* The header and status bar rules (lime/orange lines) are tied to
-   the same "Hide canvas border" checkbox as the canvas frame
-   itself, so unchecking one decorative border removes them all --
-   useful for a fully chrome-less view (e.g. when this app is
-
-   embedded as a panel inside something else). */
-body.noChromeLines #headerBar,
-body.noChromeLines #statusBar{
-    border-color:transparent !important;
-}
-
-/* ================================================================
-   MOBILE / SMALL SCREEN ADJUSTMENTS
-   ================================================================ */
-@media (max-width: 780px){
-    #appBody{
-        flex-direction:column;
-    }
-    #controlsColumn{
-        width:100%;
-        max-height:none;
-        overflow-y:visible;
-    }
-    #imageColumn{
-        width:100%;
-        position:static;
-        padding:10px;
-    }
-    #headerBar{
-        padding:8px 10px;
-    }
-    #headerBar .title{
-        font-size:13px;
-    }
-    .panel{
-        margin:8px 6px;
-        padding:8px;
-    }
-    input[type="range"]{
-        width:90px;
-    }
-}
-
-/* ================================================================
-   PRINT
-   Only the canvas is meant to end up on paper -- everything else
-   (header, controls, status bar, sidebar) is app chrome that has
-   no business being printed.
-   ================================================================ */
-@media print{
-    #headerBar,
-    #controlsColumn,
-    #statusBar{
-        display:none !important;
-    }
-    #appBody{
-        display:block;
-    }
-    #imageColumn{
-        width:100%;
-        position:static;
-        padding:0;
-    }
-    body{
-        background:#ffffff;
-        padding:0;
-        max-width:none;
-    }
-}
 </style>
+
 </head>
-<body class="light">
+
+<body class="theme-white">
 
 <!-- ============================================================
-     HEADER
+     HAMBURGER SIDEBAR (shared pattern across the whole site)
      ============================================================ -->
-<div id="headerBar">
-    <div class="title">STENCILIZER v0.7.9</div>
-    <div><span id="headerDot">&#9679;</span><span id="headerDotLabel">Ready</span></div>
+<button id="hamburgerBtn" onclick="toggleSidebar()">&#9776;</button>
+<div id="sidebarOverlay" onclick="closeSidebar()"></div>
+<nav id="sidebar">
+    <a href="index.html" data-i18n="nav_main">Main page</a>
+    <a href="acquarelles/index.html" data-i18n="nav_acquarelles">Acquarelles</a>
+    <a href="newapps/index.html" data-i18n="nav_newapps">NewApps</a>
+    <a href="cvdemo/index.html" data-i18n="nav_cvdemo">CV demo</a>
+    <a href="archive/index.html" data-i18n="nav_archive">Archive</a>
+    <a class="lastItem" href="https://devmansworld.github.io/stencilize/" data-i18n="nav_stencilize">Try Stencilize app</a>
+</nav>
+
+<div id="topRightControls">
+    <div class="themeRow">
+        <button class="themeBtn active" id="theme-white" onclick="setTheme('white')">White</button>
+        <button class="themeBtn" id="theme-dark" onclick="setTheme('dark')">Dark</button>
+        <button class="themeBtn" id="theme-kuromi" onclick="setTheme('kuromi')">Kuromi</button>
+    </div>
+    <button id="langToggle" onclick="toggleLanguage()">FR</button>
 </div>
 
-<div id="appBody">
+<h1 data-i18n="pageTitle">free courses</h1>
 
-<!-- ============================================================
-     CONTROLS COLUMN (left, one third of the width)
-     ============================================================ -->
-<div id="controlsColumn">
+<p data-i18n="pageIntro">
+color theory and practice
+</p>
 
-    <!-- FILE PANEL -->
-    <div class="panel">
-        <div class="panelLabel">FILE</div>
-        <input type="file" id="imageLoader" accept="image/*">
-    </div>
+<h2 data-i18n="galleryTitle">Gallery</h2>
 
-    <!-- THEME PANEL -->
-    <div class="panel">
-        <div class="panelLabel">THEME &amp; DISPLAY</div>
-        <div class="panelRow">
-            <button class="themeBtn active" id="theme-light" onclick="setUiTheme('light')">White</button>
-            <button class="themeBtn" id="theme-dark" onclick="setUiTheme('dark')">Black Terminal</button>
-            <button class="themeBtn" id="theme-kuromi" onclick="setUiTheme('kuromi')">Kuromi</button>
-            <button class="themeBtn" id="theme-pastel" onclick="setUiTheme('pastel')">Pastel</button>
-            <button class="themeBtn" id="theme-monowhite" onclick="setUiTheme('monowhite')">Mono White</button>
-            <button class="themeBtn" id="theme-monogrey" onclick="setUiTheme('monogrey')">Mono Grey</button>
-        </div>
-        <label>
-            <input type="checkbox" id="hideBordersToggle">
-            Hide panel borders
-        </label>
-        <br>
-        <label>
-            <input type="checkbox" id="hideCanvasBorderToggle">
-            Hide canvas border
-        </label>
-    </div>
+<div class="gallery">
 
-    <!-- MODES PANEL -->
-    <div class="panel">
-        <div class="panelLabel">MODES</div>
-        <button id="btn-original" onclick="setMode('original')">Original</button>
-        <button id="btn-stencil" onclick="setMode('stencil')">Stencil</button>
-        <button id="btn-rgb" onclick="setMode('rgb')">Basic RGB</button>
-        <button id="btn-harmony" onclick="setMode('harmony')">Harmony</button>
-        <button id="btn-gross" onclick="setMode('gross')">Gross Lines</button>
-        <button class="resetBtn" onclick="resetAllParameters()">Reset / Default</button>
-    </div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-01-57.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-02-12.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-02-24.png" alt=""></div>
 
-    <!-- BASIC RGB PALETTE PANEL -->
-    <div class="panel">
-        <div class="panelLabel">BASIC RGB PALETTE</div>
-        <label>
-            <input type="checkbox" id="rgbIncludeBlackToggle" checked>
-            Include Black
-        </label>
-        <br>
-        <label>
-            <input type="checkbox" id="rgbIncludeWhiteToggle" checked>
-            Include White
-        </label>
-    </div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-02-43.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-03-05.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-03-16.png" alt=""></div>
 
-    <!-- HARMONY TYPE PANEL -->
-    <div class="panel">
-        <div class="panelLabel">HARMONY TYPE</div>
-        <button id="harm-complementary" onclick="setHarmonyType('complementary')">Complementary</button>
-        <button id="harm-analogous" onclick="setHarmonyType('analogous')">Analogous</button>
-        <button id="harm-triadic" onclick="setHarmonyType('triadic')">Triadic</button>
-        <button id="harm-tetradic" onclick="setHarmonyType('tetradic')">Tetradic</button>
-        <button id="harm-monochromatic" onclick="setHarmonyType('monochromatic')">Monochromatic</button>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-03-34.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-03-52.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-03.png" alt=""></div>
 
-        <!-- Color wheel: plots the base hue and the harmony
-             palette hues on a ring, with lines connecting them so
-             the geometric relationship (pair / triangle / square)
-             is visible at a glance. -->
-        <div id="colorWheelHolder">
-            <canvas id="colorWheelCanvas" width="160" height="160"></canvas>
-        </div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-12.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-25.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-34.png" alt=""></div>
 
-        <div class="panelLabel">HARMONY CONTROLS</div>
-        <div class="panelRow">
-            <label>Hue Offset
-                <input type="range" id="harmonyHueOffsetInput" min="-180" max="180" value="0">
-            </label>
-            <span class="sizeDisplay" id="harmonyHueOffsetDisplay">0&deg;</span>
-        </div>
-        <div class="panelRow">
-            <label>Analog Distance
-                <input type="range" id="analogDistanceInput" min="10" max="60" value="30">
-            </label>
-            <span class="sizeDisplay" id="analogDistanceDisplay">30&deg;</span>
-        </div>
-        <div class="panelRow">
-            <label>Palette Saturation
-                <input type="range" id="paletteSatInput" min="0" max="100" value="80">
-            </label>
-            <span class="sizeDisplay" id="paletteSatDisplay">80%</span>
-        </div>
-        <div class="panelRow">
-            <label>Palette Brightness
-                <input type="range" id="paletteBrightInput" min="0" max="100" value="90">
-            </label>
-            <span class="sizeDisplay" id="paletteBrightDisplay">90%</span>
-        </div>
-    </div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-43.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-05-08.png" alt=""></div>
 
-    <!-- ACCURACY PANEL -->
-    <div class="panel">
-        <div class="panelLabel">ACCURACY</div>
-        <span class="accuracyOption" id="acc-1" onclick="setAccuracy(1)">&#9312;</span>
-        <span class="accuracyOption" id="acc-2" onclick="setAccuracy(2)">&#9313;</span>
-        <span class="accuracyOption" id="acc-3" onclick="setAccuracy(3)">&#9314;</span>
-        <span class="accuracyOption" id="acc-4" onclick="setAccuracy(4)">&#9315;</span>
-        <span class="accuracyOption selected" id="acc-5" onclick="setAccuracy(5)">&#9316;</span>
-        <span class="accuracyOption" id="acc-6" onclick="setAccuracy(6)">&#9317;</span>
-        <span class="accuracyOption" id="acc-7" onclick="setAccuracy(7)">&#9318;</span>
-        <span class="accuracyOption" id="acc-8" onclick="setAccuracy(8)">&#9319;</span>
-        <span class="accuracyOption" id="acc-9" onclick="setAccuracy(9)">&#9320;</span>
-        <span class="accuracyOption" id="acc-10" onclick="setAccuracy(10)">&#9321;</span>
-    </div>
-
-    <!-- MARGINS PANEL -->
-    <div class="panel">
-        <div class="panelLabel">MARGINS</div>
-        <div class="panelRow">
-            <label>Horizontal
-                <input type="range" id="hMarginInput" min="0" max="50" value="0">
-            </label>
-            <span class="sizeDisplay" id="hMarginDisplay">0%</span>
-            <label><input type="checkbox" id="hMarginBlackToggle"> Black</label>
-        </div>
-        <div class="panelRow">
-            <label>Vertical
-                <input type="range" id="vMarginInput" min="0" max="50" value="0">
-            </label>
-            <span class="sizeDisplay" id="vMarginDisplay">0%</span>
-            <label><input type="checkbox" id="vMarginBlackToggle"> Black</label>
-        </div>
-    </div>
-
-    <!-- IMAGE FIT PANEL -->
-    <div class="panel">
-        <div class="panelLabel">IMAGE FIT</div>
-        <div class="panelRow">
-            <button id="fit-contain" class="active" onclick="setImageFitMode('contain')">Shrink to Viewport</button>
-            <button id="fit-fill" onclick="setImageFitMode('fill')">Fill Background</button>
-        </div>
-        <div class="panelRow">
-            <label>Width
-                <input type="range" id="scaleXInput" min="10" max="200" value="100">
-            </label>
-            <span class="sizeDisplay" id="scaleXDisplay">100%</span>
-        </div>
-        <div class="panelRow">
-            <label>Height
-                <input type="range" id="scaleYInput" min="10" max="200" value="100">
-            </label>
-            <span class="sizeDisplay" id="scaleYDisplay">100%</span>
-        </div>
-        <div class="panelRow">
-            <label>
-                <input type="checkbox" id="keepProportionsToggle" checked>
-                Keep Proportions
-            </label>
-        </div>
-    </div>
-
-    <!-- BACKGROUND PANEL -->
-    <div class="panel">
-        <div class="panelLabel">BACKGROUND</div>
-        <div class="panelRow">
-            <button id="bg-transparent" onclick="setBackgroundMode('transparent')">Transparent</button>
-            <button id="bg-black" onclick="setBackgroundMode('black')">Black</button>
-            <button id="bg-white" class="active" onclick="setBackgroundMode('white')">White</button>
-        </div>
-    </div>
-
-    <!-- OUTPUT FILTERS PANEL -->
-    <div class="panel">
-        <div class="panelLabel">OUTPUT FILTERS</div>
-
-        <div class="panelRow">
-            <div class="panelLabel">COLOR ADJUST</div>
-            <label>Hue <input type="range" id="hueInput" min="-180" max="180" value="0"></label>
-            <span class="sizeDisplay" id="hueDisplay">0&deg;</span>
-            <br>
-            <label>Saturation <input type="range" id="satInput" min="0" max="200" value="100"></label>
-            <span class="sizeDisplay" id="satDisplay">100%</span>
-            <br>
-            <label>R <input type="range" id="rGainInput" min="0" max="200" value="100"></label>
-            <span class="sizeDisplay" id="rGainDisplay">100%</span>
-            <br>
-            <label>G <input type="range" id="gGainInput" min="0" max="200" value="100"></label>
-            <span class="sizeDisplay" id="gGainDisplay">100%</span>
-            <br>
-            <label>B <input type="range" id="bGainInput" min="0" max="200" value="100"></label>
-            <span class="sizeDisplay" id="bGainDisplay">100%</span>
-        </div>
-
-        <div class="panelRow">
-            <div class="panelLabel">CHANNEL COMBINE</div>
-            <label><input type="checkbox" id="channelRToggle" checked> R</label>
-            <label><input type="checkbox" id="channelGToggle" checked> G</label>
-            <label><input type="checkbox" id="channelBToggle" checked> B</label>
-            <button id="channelModeBtn" onclick="toggleChannelMode()">Mode: Additive</button>
-        </div>
-
-        <div class="panelRow">
-            <label>
-                <input type="checkbox" id="monochromeToggle">
-                Monochrome
-            </label>
-        </div>
-    </div>
-
-    <!-- MEMETIZER PANEL -->
-    <div class="panel">
-        <div class="panelLabel">MEMETIZER</div>
-
-        <div class="subPanel">
-            <div class="panelLabel">TOP TEXT</div>
-            <input type="text" id="topTextInput" placeholder="TOP TEXT">
-
-            <label>Text color <input type="color" id="topTextColorInput" value="#ffffff"></label>
-            <label>Border color <input type="color" id="topBorderColorInput" value="#000000"></label>
-            <label><input type="checkbox" id="topBorderToggle" checked> Border</label>
-            <br>
-            <label>Border width <input type="range" id="topBorderWidthInput" min="0" max="10" value="3"></label>
-            <label>Line width <input type="range" id="topLineWidthInput" min="40" max="100" value="90"></label>
-            <br>
-            <label>Height
-                <button type="button" class="sizeBtn" onclick="adjustFontScale('top',-0.1)">-</button>
-                <span class="sizeDisplay" id="topSizeDisplay">100%</span>
-                <button type="button" class="sizeBtn" onclick="adjustFontScale('top',0.1)">+</button>
-            </label>
-            <label>Width
-                <button type="button" class="sizeBtn" onclick="adjustFontWidthScale('top',-0.1)">-</button>
-                <span class="sizeDisplay" id="topWidthDisplay">100%</span>
-                <button type="button" class="sizeBtn" onclick="adjustFontWidthScale('top',0.1)">+</button>
-            </label>
-        </div>
-
-        <div class="subPanel">
-            <div class="panelLabel">BOTTOM TEXT</div>
-            <input type="text" id="bottomTextInput" placeholder="BOTTOM TEXT">
-
-            <label>Text color <input type="color" id="bottomTextColorInput" value="#ffffff"></label>
-            <label>Border color <input type="color" id="bottomBorderColorInput" value="#000000"></label>
-            <label><input type="checkbox" id="bottomBorderToggle" checked> Border</label>
-            <br>
-            <label>Border width <input type="range" id="bottomBorderWidthInput" min="0" max="10" value="3"></label>
-            <label>Line width <input type="range" id="bottomLineWidthInput" min="40" max="100" value="90"></label>
-            <br>
-            <label>Height
-                <button type="button" class="sizeBtn" onclick="adjustFontScale('bottom',-0.1)">-</button>
-                <span class="sizeDisplay" id="bottomSizeDisplay">100%</span>
-                <button type="button" class="sizeBtn" onclick="adjustFontScale('bottom',0.1)">+</button>
-            </label>
-            <label>Width
-                <button type="button" class="sizeBtn" onclick="adjustFontWidthScale('bottom',-0.1)">-</button>
-                <span class="sizeDisplay" id="bottomWidthDisplay">100%</span>
-                <button type="button" class="sizeBtn" onclick="adjustFontWidthScale('bottom',0.1)">+</button>
-            </label>
-        </div>
-
-        <div class="panelRow">
-            <label>
-                <input type="checkbox" id="capitalizeToggle" checked>
-                Capitalize
-            </label>
-        </div>
-
-        <div class="panelRow">
-            <div class="panelLabel">FONT (shared)</div>
-            <button id="font-impact" onclick="setMemeFont('impact')">Impact</button>
-            <button id="font-console" onclick="setMemeFont('console')">Console</button>
-            <button id="font-typewriter" onclick="setMemeFont('typewriter')">Typewriter</button>
-            <button id="font-cursive" onclick="setMemeFont('cursive')">Cursive</button>
-            <button id="font-boldsans" onclick="setMemeFont('boldsans')">Bold Sans</button>
-        </div>
-    </div>
-
-    <!-- WATERMARK PANEL -->
-    <div class="panel">
-        <div class="panelLabel">WATERMARK</div>
-        <input type="file" id="watermarkLoader" accept="image/png">
-        <br>
-        <label>
-            <input type="checkbox" id="watermarkEnabledToggle">
-            Enable Watermark
-        </label>
-        <div class="panelRow" style="font-size:11px; opacity:0.7;">
-            Use a transparent PNG. It's placed in the bottom-right corner,
-            scaled automatically to fit.
-        </div>
-    </div>
-
-    <!-- PRINT & SIGNATURE PANEL -->
-    <div class="panel">
-        <div class="panelLabel">PRINT &amp; SIGNATURE</div>
-        <button type="button" onclick="printResult()">Print</button>
-        <br>
-        <label>
-            <input type="checkbox" id="qrSignatureToggle">
-            Add Digital Signature QR
-        </label>
-    </div>
-
-    <!-- SAVE PANEL -->
-    <div class="panel">
-        <div class="panelLabel">SAVE</div>
-        <button id="btn-download" onclick="downloadResult()">Download PNG</button>
-    </div>
-
-    <!-- BACK TO MAIN -->
-    <div class="panel">
-        <a href="../index.html" style="text-decoration:none;">
-            <button type="button">&larr; Back to main</button>
-        </a>
-        <a href="Stencilizer_Manual.pdf" target="_blank" style="text-decoration:none;">
-            <button type="button">User Manual (PDF)</button>
-        </a>
-    </div>
-
-</div><!-- /controlsColumn -->
-
-<!-- ============================================================
-     IMAGE COLUMN (right, floating/sticky, two thirds of width)
-     ============================================================ -->
-<div id="imageColumn">
-    <div id="canvasHolder"></div>
-    <div id="qrGenHolder" style="display:none;"></div>
-    <div id="statusBar">Status: Ready.</div>
 </div>
 
-</div><!-- /appBody -->
+<h2 data-i18n="libraryTitle">Library</h2>
+
+<ul>
+
+<li>
+<a href="docs/capitulo-1-descubriendo-el-color.pdf">
+Cap&iacute;tulo 1 &ndash; Descubriendo el Color
+</a>
+</li>
+
+<li>
+<a href="docs/capitulo-1-descubriendo-el-color-edicion-ilustrada.pdf">
+Cap&iacute;tulo 1 &ndash; Descubriendo el Color (Edici&oacute;n Ilustrada)
+</a>
+</li>
+
+<li>
+<a href="docs/capitulo-2-armonias-avanzadas-y-vibracion.pdf">
+Cap&iacute;tulo 2 &ndash; Armon&iacute;as Avanzadas y Vibraci&oacute;n
+</a>
+</li>
+
+<li>
+<a href="docs/capitulo-2-addendum-exercises-color-vibrations.pdf">
+Chapter 2 Addendum &ndash; Exercises upon Color Vibrations
+</a>
+</li>
+
+<li>
+<a href="docs/capitulo-3-composicion-bodegones-y-perspectiva.pdf">
+Cap&iacute;tulo 3 &ndash; Composici&oacute;n, Bodegones y Perspectiva
+</a>
+</li>
+
+<li>
+<a href="docs/capitulo-3-addendum-formas-basicas.pdf">
+Cap&iacute;tulo 3 &ndash; Addendum: Las Formas B&aacute;sicas
+</a>
+</li>
+
+<li>
+<a href="docs/capitulo-3-addendums-b-c-d.pdf">
+Cap&iacute;tulo 3 &ndash; Addendums B, C y D
+</a>
+</li>
+
+<li>
+<a href="docs/capitulo-3-borrador.pdf">
+Cap&iacute;tulo 3 &ndash; Borrador (Aprender a Ver el Espacio)
+</a>
+</li>
+
+<li>
+<a href="docs/minilibro-teoria-del-color-y-dripping.pdf">
+Mini Libro &ndash; Teor&iacute;a del Color y Dripping
+</a>
+</li>
+
+<li>
+<a href="docs/minilibro-teoria-del-color-y-dripping-indice.pdf">
+Mini Libro &ndash; Teor&iacute;a del Color y Dripping (&Iacute;ndice Propuesto)
+</a>
+</li>
+
+</ul>
+
+<footer>
+
+<p>
+
+<span data-i18n="questions">Questions?</span>
+
+
+<a href="https://devmansworld.github.io/stencilize/"> <span data-i18n="tryStencilize">Try Stencilize app</span> </a>
+</p>
+
+<p>
+
+<a href="mailto:sakayama666@icloud.com">
+
+owo@email.com
+
+</a>
+
+</p>
+
+</footer>
 
 <script>
 /* ================================================================
-   INTERNAL VARIABLES
+   HAMBURGER SIDEBAR
    ================================================================ */
-let currentImage  = null;      // the loaded source image, never modified directly
-let currentMode   = "original";
-let harmonyType   = "complementary";
-let accuracy      = 5;         // 1 (finest) to 10 (coarsest)
-let currentUiTheme = "light"; // one of: light, dark, kuromi, pastel, monowhite, monogrey
-let statusMessage = "Ready.";
-let canvas;
+function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("sidebarOverlay").classList.toggle("open");
+}
+function closeSidebar(){
+    document.getElementById("sidebar").classList.remove("open");
+    document.getElementById("sidebarOverlay").classList.remove("open");
+}
 
-const accuracyBlockSizes = {
-    1:1, 2:1, 3:2, 4:3, 5:4,
-    6:5, 7:7, 8:9, 9:12, 10:16
+/* ================================================================
+   THEME SWITCHER
+   Page always starts in White; Dark and Kuromi are opt-in and
+   reset back to White on the next full page load (no persistence
+   by design, matching "starts with white mode").
+   ================================================================ */
+function setTheme(name){
+    document.body.className = "theme-" + name;
+    document.querySelectorAll(".themeBtn").forEach(function(btn){
+        btn.classList.remove("active");
+    });
+    document.getElementById("theme-" + name).classList.add("active");
+}
+
+/* ================================================================
+   BILINGUAL (English / French), this page only
+   ================================================================ */
+const translations = {
+    en: {
+        pageTitle: "free courses",
+        pageIntro: "color theory and practice",
+        galleryTitle: "Gallery",
+        libraryTitle: "Library",
+        questions: "Questions?",
+        tryStencilize: "Try Stencilize app",
+        nav_main: "Main page",
+        nav_acquarelles: "Acquarelles",
+        nav_newapps: "NewApps",
+        nav_cvdemo: "CV demo",
+        nav_archive: "Archive",
+        nav_stencilize: "Try Stencilize app"
+    },
+    fr: {
+        pageTitle: "cours gratuits",
+        pageIntro: "th\u00E9orie et pratique de la couleur",
+        galleryTitle: "Galerie",
+        libraryTitle: "Biblioth\u00E8que",
+        questions: "Des questions\u00A0?",
+        tryStencilize: "Essayer l'appli Stencilize",
+        nav_main: "Page principale",
+        nav_acquarelles: "Aquarelles",
+        nav_newapps: "NewApps",
+        nav_cvdemo: "D\u00E9mo CV",
+        nav_archive: "Archives",
+        nav_stencilize: "Essayer l'appli Stencilize"
+    }
 };
 
-/* ----------------------------------------------------------------
-   Color adjustment state
-   ---------------------------------------------------------------- */
-let hueShift          = 0;
-let saturationPercent  = 100;
-let redGainPercent     = 100;
-let greenGainPercent   = 100;
-let blueGainPercent    = 100;
+let currentLang = "en";
 
-/* ----------------------------------------------------------------
-   Output filter state: channel combine + monochrome
-   ---------------------------------------------------------------- */
-let channelR = true;
-let channelG = true;
-let channelB = true;
-let channelMode = "additive";
-let monochromeEnabled = false;
-
-/* ----------------------------------------------------------------
-   Margin state
-   ---------------------------------------------------------------- */
-let horizontalMarginPercent = 0;
-let verticalMarginPercent   = 0;
-let horizontalMarginBlack   = false;
-let verticalMarginBlack     = false;
-
-/* ----------------------------------------------------------------
-   Color wheel state
-   The last hue computed from the loaded image, cached so the
-   wheel doesn't need to rescan every pixel on every redraw.
-   ---------------------------------------------------------------- */
-let lastComputedBaseHue = 0;
-
-/* ----------------------------------------------------------------
-   Harmony control state
-   hueOffset rotates the whole palette away from the auto-detected
-   base hue. analogDistance only applies to Analogous mode. The
-   saturation/brightness pair control how vivid the generated
-   palette colors are (previously fixed at 80/90).
-   ---------------------------------------------------------------- */
-let harmonyHueOffset  = 0;   // -180 to 180
-let analogDistance    = 30;  // 10 to 60, degrees between neighbors
-let paletteSaturation = 80;  // 0 to 100
-let paletteBrightness = 90;  // 0 to 100
-
-/* ----------------------------------------------------------------
-   Background state
-   ---------------------------------------------------------------- */
-let backgroundMode = "white"; // "transparent", "black", "white"
-
-/* ----------------------------------------------------------------
-   Image fit state
-   "contain" = shrink to fit inside the viewport, aspect preserved.
-   "fill"    = stretch to fill the whole available area.
-   "manual"  = the width/height sliders drive the size directly,
-               relative to the normal contain-fit size.
-   ---------------------------------------------------------------- */
-let imageFitMode        = "contain";
-let manualScaleXPercent = 100;
-let manualScaleYPercent = 100;
-let keepProportions     = true;
-let hideCanvasBorder    = false;
-
-/* ----------------------------------------------------------------
-   Basic RGB palette state
-   By default, very dark pixels become black and very light pixels
-   become white, same as before. Either can be switched off, in
-   which case those pixels are classified among R/G/B instead.
-   ---------------------------------------------------------------- */
-let rgbIncludeBlack = true;
-let rgbIncludeWhite = true;
-
-/* ----------------------------------------------------------------
-   Watermark state
-   ---------------------------------------------------------------- */
-let watermarkImage   = null;
-let watermarkEnabled = false;
-
-/* ----------------------------------------------------------------
-   Digital signature QR state
-   The QR is generated once (not every frame -- that would be very
-   expensive) and cached as a plain <canvas> element, which is then
-   drawn onto the main canvas cheaply every frame it's needed.
-   ---------------------------------------------------------------- */
-let qrSignatureEnabled = false;
-let qrCanvasCache      = null;
-
-/* ----------------------------------------------------------------
-   Memetizer state
-   ---------------------------------------------------------------- */
-let topText             = "";
-let topTextColor        = "#ffffff";
-let topBorderColor      = "#000000";
-let topBorderEnabled    = true;
-let topBorderWidth      = 3;
-let topLineWidthPercent = 90;
-let topFontScale        = 1.0;
-let topFontWidthScale   = 1.0;
-
-let bottomText             = "";
-let bottomTextColor        = "#ffffff";
-let bottomBorderColor      = "#000000";
-let bottomBorderEnabled    = true;
-let bottomBorderWidth      = 3;
-let bottomLineWidthPercent = 90;
-let bottomFontScale        = 1.0;
-let bottomFontWidthScale   = 1.0;
-
-let memeCapitalize = true;
-let memeFont        = "impact";
-
-const memeFontStacks = {
-    impact:     "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif",
-    console:    "'Lucida Console', Consolas, Monaco, monospace",
-    typewriter: "'Courier New', 'American Typewriter', Courier, monospace",
-    cursive:    "'Brush Script MT', 'Segoe Script', cursive",
-    boldsans:   "'Arial Black', Arial, sans-serif"
-};
-
-/* ================================================================
-   SETUP
-   ================================================================ */
-function setup(){
-    canvas = createCanvas(900, 600);
-    canvas.parent("canvasHolder");
-    canvas.class("mainCanvas");
-    background(255);
-
-    document
-        .getElementById("imageLoader")
-        .addEventListener("change", loadImageLocal);
-
-    document
-        .getElementById("hideBordersToggle")
-        .addEventListener("change", function(){
-            document.body.classList.toggle("noBorders", this.checked);
-            setStatus(this.checked ? "Panel borders hidden." : "Panel borders shown.");
-        });
-
-    document
-        .getElementById("hideCanvasBorderToggle")
-        .addEventListener("change", function(){
-            hideCanvasBorder = this.checked;
-            document.querySelector("canvas.mainCanvas").classList.toggle("noBorder", hideCanvasBorder);
-            document.body.classList.toggle("noChromeLines", hideCanvasBorder);
-            setStatus(hideCanvasBorder ? "Canvas border hidden." : "Canvas border shown.");
-        });
-
-    document
-        .getElementById("rgbIncludeBlackToggle")
-        .addEventListener("change", function(){
-            rgbIncludeBlack = this.checked;
-            setStatus(rgbIncludeBlack ? "Basic RGB: black included." : "Basic RGB: black excluded.");
-        });
-
-    document
-        .getElementById("rgbIncludeWhiteToggle")
-        .addEventListener("change", function(){
-            rgbIncludeWhite = this.checked;
-            setStatus(rgbIncludeWhite ? "Basic RGB: white included." : "Basic RGB: white excluded.");
-        });
-
-    document
-        .getElementById("monochromeToggle")
-        .addEventListener("change", function(){
-            monochromeEnabled = this.checked;
-            setStatus(monochromeEnabled ? "Monochrome enabled." : "Monochrome disabled.");
-            updateControlAvailability();
-        });
-
-    document
-        .getElementById("watermarkLoader")
-        .addEventListener("change", loadWatermarkLocal);
-
-    document
-        .getElementById("watermarkEnabledToggle")
-        .addEventListener("change", function(){
-            watermarkEnabled = this.checked;
-            setStatus(watermarkEnabled ? "Watermark enabled." : "Watermark disabled.");
-        });
-
-    document
-        .getElementById("qrSignatureToggle")
-        .addEventListener("change", function(){
-            qrSignatureEnabled = this.checked;
-            if(qrSignatureEnabled) regenerateSignatureQr();
-            setStatus(qrSignatureEnabled ? "Digital signature QR enabled." : "Digital signature QR disabled.");
-        });
-
-    setupBackgroundControls();
-    setupImageFitControls();
-    setupHarmonyControls();
-    setupColorAdjustControls();
-    setupChannelControls();
-    setupMarginControls();
-    setupMemetizerControls();
-
-    setStatus("Ready.");
-    highlightActiveModeButton();
-    highlightActiveHarmonyButton();
-    highlightActiveFontButton();
-    drawColorWheel(); // draw the empty ring before any image is loaded
-    updateControlAvailability();
-}
-
-/* ================================================================
-   MAIN DRAW LOOP
-   ================================================================ */
-function draw(){
-    paintCanvasBackground();
-
-    if(currentImage == null){
-        fill(100);
-        textSize(20);
-        textAlign(CENTER, CENTER);
-        text("Load an image...", width / 2, height / 2);
-        return;
-    }
-
-    switch(currentMode){
-        case "original": drawOriginal();   break;
-        case "stencil":  drawStencil();    break;
-        case "rgb":      drawBasicRGB();   break;
-        case "harmony":  drawHarmony();    break;
-        case "gross":    drawGrossLines(); break;
-    }
-
-    drawMemeOverlay();
-    drawWatermark();
-    drawSignatureQr();
-}
-
-// Clears or fills the whole canvas each frame according to the
-// selected background mode, before anything else is drawn. This
-// matters because exported PNGs otherwise always get a white
-// background baked in, even if that's not what's wanted.
-function paintCanvasBackground(){
-    if(backgroundMode == "transparent"){
-        clear();
-    } else if(backgroundMode == "black"){
-        background(0);
-    } else {
-        background(255);
-    }
-}
-
-/* ================================================================
-   IMAGE LOADING
-   ================================================================ */
-function loadImageLocal(event){
-    let file = event.target.files[0];
-    if(!file) return;
-
-    let reader = new FileReader();
-    reader.onload = function(e){
-        loadImage(e.target.result, function(newImage){
-            currentImage = newImage;
-            setStatus("Loaded: " + file.name);
-            lastComputedBaseHue = computeAverageHue(currentImage);
-            drawColorWheel();
-        });
-    };
-    reader.readAsDataURL(file);
-}
-
-// Loads a watermark image the same way the main photo loads. Meant
-// for a transparent PNG, but any image works -- opaque ones will
-// simply cover whatever is behind them instead of blending.
-function loadWatermarkLocal(event){
-    let file = event.target.files[0];
-    if(!file) return;
-
-    let reader = new FileReader();
-    reader.onload = function(e){
-        loadImage(e.target.result, function(newImage){
-            watermarkImage = newImage;
-            setStatus("Watermark loaded: " + file.name);
-        });
-    };
-    reader.readAsDataURL(file);
-}
-
-/* ================================================================
-   MODE / HARMONY TYPE / ACCURACY SWITCHING
-   ================================================================ */
-function setMode(newMode){
-    currentMode = newMode;
-    highlightActiveModeButton();
-    setStatus("Converted to " + modeLabel(newMode));
-    updateControlAvailability();
-}
-
-function setHarmonyType(newType){
-    harmonyType = newType;
-    highlightActiveHarmonyButton();
-    setStatus("Harmony type: " + newType);
-    drawColorWheel();
-    updateControlAvailability();
-}
-
-// Greys out and disables controls that have no effect in the
-// current mode, so the panel itself teaches which knobs matter.
-// Nothing here changes what any control *does* -- only whether it
-// can be touched right now -- so re-enabling always restores the
-// exact same behavior as before.
-function updateControlAvailability(){
-    // Harmony Type buttons and the Hue Offset / Palette Saturation /
-    // Palette Brightness / Analog Distance sliders used to be locked
-    // unless Harmony mode was active. That turned out to be too
-    // strict in practice -- it stopped people from dialing in a
-    // palette before switching modes. They're left freely
-    // adjustable now, regardless of the current mode.
-
-    // Accuracy has no effect on Original (it never runs applyBlockAverage).
-    let accuracyActive = (currentMode != "original");
-    for(let i = 1; i <= 10; i++){
-        document.getElementById("acc-" + i).classList.toggle("disabledOption", !accuracyActive);
-    }
-
-    // Channel Combine is silently overridden whenever Monochrome is
-    // on (see applyOutputFilters), so grey it out rather than leave
-    // controls that visibly do nothing.
-    let channelActive = !monochromeEnabled;
-    document.getElementById("channelRToggle").disabled = !channelActive;
-    document.getElementById("channelGToggle").disabled = !channelActive;
-    document.getElementById("channelBToggle").disabled = !channelActive;
-    document.getElementById("channelModeBtn").disabled = !channelActive;
-
-    // Include Black / Include White only affect Basic RGB.
-    let rgbActive = (currentMode == "rgb");
-    document.getElementById("rgbIncludeBlackToggle").disabled = !rgbActive;
-    document.getElementById("rgbIncludeWhiteToggle").disabled = !rgbActive;
-}
-
-// Wires up the four harmony sliders. Each one redraws the color
-// wheel preview immediately so the effect is visible before the
-// main image even re-renders.
-function setupHarmonyControls(){
-    document.getElementById("harmonyHueOffsetInput").addEventListener("input", function(){
-        harmonyHueOffset = parseInt(this.value);
-        document.getElementById("harmonyHueOffsetDisplay").innerText = harmonyHueOffset + "\u00B0";
-        drawColorWheel();
-    });
-    document.getElementById("analogDistanceInput").addEventListener("input", function(){
-        analogDistance = parseInt(this.value);
-        document.getElementById("analogDistanceDisplay").innerText = analogDistance + "\u00B0";
-        drawColorWheel();
-    });
-    document.getElementById("paletteSatInput").addEventListener("input", function(){
-        paletteSaturation = parseInt(this.value);
-        document.getElementById("paletteSatDisplay").innerText = paletteSaturation + "%";
-        drawColorWheel();
-    });
-    document.getElementById("paletteBrightInput").addEventListener("input", function(){
-        paletteBrightness = parseInt(this.value);
-        document.getElementById("paletteBrightDisplay").innerText = paletteBrightness + "%";
-        drawColorWheel();
-    });
-}
-
-function setAccuracy(level){
-    accuracy = level;
-    for(let i = 1; i <= 10; i++){
-        document.getElementById("acc-" + i).classList.remove("selected");
-    }
-    document.getElementById("acc-" + level).classList.add("selected");
-    setStatus("Accuracy set to level " + level + " of 10");
-}
-
-function modeLabel(modeName){
-    if(modeName == "original") return "Original";
-    if(modeName == "stencil")  return "Stencil";
-    if(modeName == "rgb")      return "Basic RGB";
-    if(modeName == "harmony")  return "Harmony";
-    if(modeName == "gross")    return "Gross Lines";
-    return modeName;
-}
-
-function highlightActiveModeButton(){
-    let ids = ["btn-original", "btn-stencil", "btn-rgb", "btn-harmony", "btn-gross"];
-    ids.forEach(function(id){
-        document.getElementById(id).classList.remove("active");
-    });
-    document.getElementById("btn-" + currentMode).classList.add("active");
-}
-
-function highlightActiveHarmonyButton(){
-    let ids = ["harm-complementary", "harm-analogous", "harm-triadic", "harm-tetradic", "harm-monochromatic"];
-    ids.forEach(function(id){
-        document.getElementById(id).classList.remove("active");
-    });
-    document.getElementById("harm-" + harmonyType).classList.add("active");
-}
-
-/* ================================================================
-   CHANNEL COMBINE CONTROLS
-   ================================================================ */
-function setupChannelControls(){
-    document.getElementById("channelRToggle").addEventListener("change", function(){
-        channelR = this.checked;
-        setStatus("Channel R: " + (channelR ? "on" : "off"));
-    });
-    document.getElementById("channelGToggle").addEventListener("change", function(){
-        channelG = this.checked;
-        setStatus("Channel G: " + (channelG ? "on" : "off"));
-    });
-    document.getElementById("channelBToggle").addEventListener("change", function(){
-        channelB = this.checked;
-        setStatus("Channel B: " + (channelB ? "on" : "off"));
-    });
-}
-
-function toggleChannelMode(){
-    channelMode = (channelMode == "additive") ? "subtractive" : "additive";
-    document.getElementById("channelModeBtn").innerText =
-        "Mode: " + (channelMode == "additive" ? "Additive" : "Subtractive");
-    setStatus("Channel mode: " + channelMode);
-}
-
-/* ================================================================
-   COLOR ADJUST CONTROLS
-   ================================================================ */
-function setupColorAdjustControls(){
-    document.getElementById("hueInput").addEventListener("input", function(){
-        hueShift = parseInt(this.value);
-        document.getElementById("hueDisplay").innerText = hueShift + "\u00B0";
-    });
-    document.getElementById("satInput").addEventListener("input", function(){
-        saturationPercent = parseInt(this.value);
-        document.getElementById("satDisplay").innerText = saturationPercent + "%";
-    });
-    document.getElementById("rGainInput").addEventListener("input", function(){
-        redGainPercent = parseInt(this.value);
-        document.getElementById("rGainDisplay").innerText = redGainPercent + "%";
-    });
-    document.getElementById("gGainInput").addEventListener("input", function(){
-        greenGainPercent = parseInt(this.value);
-        document.getElementById("gGainDisplay").innerText = greenGainPercent + "%";
-    });
-    document.getElementById("bGainInput").addEventListener("input", function(){
-        blueGainPercent = parseInt(this.value);
-        document.getElementById("bGainDisplay").innerText = blueGainPercent + "%";
-    });
-}
-
-/* ================================================================
-   MARGIN CONTROLS
-   ================================================================ */
-function setupMarginControls(){
-    document.getElementById("hMarginInput").addEventListener("input", function(){
-        horizontalMarginPercent = parseInt(this.value);
-        document.getElementById("hMarginDisplay").innerText = horizontalMarginPercent + "%";
-    });
-    document.getElementById("vMarginInput").addEventListener("input", function(){
-        verticalMarginPercent = parseInt(this.value);
-        document.getElementById("vMarginDisplay").innerText = verticalMarginPercent + "%";
-    });
-    document.getElementById("hMarginBlackToggle").addEventListener("change", function(){
-        horizontalMarginBlack = this.checked;
-    });
-    document.getElementById("vMarginBlackToggle").addEventListener("change", function(){
-        verticalMarginBlack = this.checked;
-    });
-}
-
-/* ================================================================
-   BACKGROUND CONTROLS
-   ================================================================ */
-function setBackgroundMode(mode){
-    backgroundMode = mode;
-    highlightActiveBackgroundButton();
-    setStatus("Background: " + mode);
-}
-
-function highlightActiveBackgroundButton(){
-    let ids = ["bg-transparent", "bg-black", "bg-white"];
-    ids.forEach(function(id){
-        document.getElementById(id).classList.remove("active");
-    });
-    document.getElementById("bg-" + backgroundMode).classList.add("active");
-}
-
-function setupBackgroundControls(){
-    // Buttons call setBackgroundMode() directly via onclick; nothing
-    // else to wire up here, kept as its own function so Reset can
-    // call the same highlight logic consistently.
-}
-
-/* ================================================================
-   IMAGE FIT CONTROLS
-   ================================================================ */
-function setupImageFitControls(){
-    document.getElementById("scaleXInput").addEventListener("input", function(){
-        manualScaleXPercent = parseInt(this.value);
-        if(keepProportions){
-            manualScaleYPercent = manualScaleXPercent;
-            document.getElementById("scaleYInput").value = manualScaleYPercent;
-            document.getElementById("scaleYDisplay").innerText = manualScaleYPercent + "%";
-        }
-        document.getElementById("scaleXDisplay").innerText = manualScaleXPercent + "%";
-        imageFitMode = "manual";
-        highlightActiveFitButton();
-    });
-
-    document.getElementById("scaleYInput").addEventListener("input", function(){
-        manualScaleYPercent = parseInt(this.value);
-        if(keepProportions){
-            manualScaleXPercent = manualScaleYPercent;
-            document.getElementById("scaleXInput").value = manualScaleXPercent;
-            document.getElementById("scaleXDisplay").innerText = manualScaleXPercent + "%";
-        }
-        document.getElementById("scaleYDisplay").innerText = manualScaleYPercent + "%";
-        imageFitMode = "manual";
-        highlightActiveFitButton();
-    });
-
-    document.getElementById("keepProportionsToggle").addEventListener("change", function(){
-        keepProportions = this.checked;
-        if(keepProportions){
-            manualScaleYPercent = manualScaleXPercent;
-            document.getElementById("scaleYInput").value = manualScaleYPercent;
-            document.getElementById("scaleYDisplay").innerText = manualScaleYPercent + "%";
+function applyLanguage(lang){
+    currentLang = lang;
+    document.querySelectorAll("[data-i18n]").forEach(function(el){
+        let key = el.getAttribute("data-i18n");
+        if(translations[lang][key]){
+            el.textContent = translations[lang][key];
         }
     });
+    document.getElementById("htmlRoot").setAttribute("lang", lang);
+    document.getElementById("langToggle").innerText = lang == "en" ? "FR" : "EN";
 }
 
-function setImageFitMode(mode){
-    imageFitMode = mode;
-    if(mode != "manual"){
-        manualScaleXPercent = 100;
-        manualScaleYPercent = 100;
-        document.getElementById("scaleXInput").value = 100;
-        document.getElementById("scaleYInput").value = 100;
-        document.getElementById("scaleXDisplay").innerText = "100%";
-        document.getElementById("scaleYDisplay").innerText = "100%";
-    }
-    highlightActiveFitButton();
-    setStatus("Image fit: " + mode);
-}
-
-function highlightActiveFitButton(){
-    document.getElementById("fit-contain").classList.remove("active");
-    document.getElementById("fit-fill").classList.remove("active");
-    if(imageFitMode == "contain") document.getElementById("fit-contain").classList.add("active");
-    if(imageFitMode == "fill") document.getElementById("fit-fill").classList.add("active");
-}
-
-/* ================================================================
-   RESET / DEFAULT
-   ================================================================ */
-function resetAllParameters(){
-    currentMode = "original";
-    highlightActiveModeButton();
-
-    watermarkEnabled = false;
-    document.getElementById("watermarkEnabledToggle").checked = false;
-
-    qrSignatureEnabled = false;
-    document.getElementById("qrSignatureToggle").checked = false;
-
-    rgbIncludeBlack = true;
-    rgbIncludeWhite = true;
-    document.getElementById("rgbIncludeBlackToggle").checked = true;
-    document.getElementById("rgbIncludeWhiteToggle").checked = true;
-
-    harmonyType = "complementary";
-    highlightActiveHarmonyButton();
-
-    harmonyHueOffset = 0;
-    analogDistance = 30;
-    paletteSaturation = 80;
-    paletteBrightness = 90;
-    document.getElementById("harmonyHueOffsetInput").value = 0;
-    document.getElementById("analogDistanceInput").value = 30;
-    document.getElementById("paletteSatInput").value = 80;
-    document.getElementById("paletteBrightInput").value = 90;
-    document.getElementById("harmonyHueOffsetDisplay").innerText = "0\u00B0";
-    document.getElementById("analogDistanceDisplay").innerText = "30\u00B0";
-    document.getElementById("paletteSatDisplay").innerText = "80%";
-    document.getElementById("paletteBrightDisplay").innerText = "90%";
-    drawColorWheel();
-
-    setAccuracy(5);
-
-    horizontalMarginPercent = 0;
-    verticalMarginPercent = 0;
-    horizontalMarginBlack = false;
-    verticalMarginBlack = false;
-    document.getElementById("hMarginInput").value = 0;
-    document.getElementById("vMarginInput").value = 0;
-    document.getElementById("hMarginDisplay").innerText = "0%";
-    document.getElementById("vMarginDisplay").innerText = "0%";
-    document.getElementById("hMarginBlackToggle").checked = false;
-    document.getElementById("vMarginBlackToggle").checked = false;
-
-    imageFitMode = "contain";
-    manualScaleXPercent = 100;
-    manualScaleYPercent = 100;
-    keepProportions = true;
-    document.getElementById("scaleXInput").value = 100;
-    document.getElementById("scaleYInput").value = 100;
-    document.getElementById("scaleXDisplay").innerText = "100%";
-    document.getElementById("scaleYDisplay").innerText = "100%";
-    document.getElementById("keepProportionsToggle").checked = true;
-    highlightActiveFitButton();
-
-    backgroundMode = "white";
-    highlightActiveBackgroundButton();
-
-    hueShift = 0;
-    saturationPercent = 100;
-    redGainPercent = 100;
-    greenGainPercent = 100;
-    blueGainPercent = 100;
-    document.getElementById("hueInput").value = 0;
-    document.getElementById("satInput").value = 100;
-    document.getElementById("rGainInput").value = 100;
-    document.getElementById("gGainInput").value = 100;
-    document.getElementById("bGainInput").value = 100;
-    document.getElementById("hueDisplay").innerText = "0\u00B0";
-    document.getElementById("satDisplay").innerText = "100%";
-    document.getElementById("rGainDisplay").innerText = "100%";
-    document.getElementById("gGainDisplay").innerText = "100%";
-    document.getElementById("bGainDisplay").innerText = "100%";
-
-    channelR = true; channelG = true; channelB = true;
-    channelMode = "additive";
-    document.getElementById("channelRToggle").checked = true;
-    document.getElementById("channelGToggle").checked = true;
-    document.getElementById("channelBToggle").checked = true;
-    document.getElementById("channelModeBtn").innerText = "Mode: Additive";
-    monochromeEnabled = false;
-    document.getElementById("monochromeToggle").checked = false;
-
-    topText = "";
-    topTextColor = "#ffffff";
-    topBorderColor = "#000000";
-    topBorderEnabled = true;
-    topBorderWidth = 3;
-    topLineWidthPercent = 90;
-    topFontScale = 1.0;
-    topFontWidthScale = 1.0;
-    document.getElementById("topTextInput").value = "";
-    document.getElementById("topTextColorInput").value = "#ffffff";
-    document.getElementById("topBorderColorInput").value = "#000000";
-    document.getElementById("topBorderToggle").checked = true;
-    document.getElementById("topBorderWidthInput").value = 3;
-    document.getElementById("topLineWidthInput").value = 90;
-    updateSizeDisplay("top", topFontScale);
-    updateWidthDisplay("top", topFontWidthScale);
-
-    bottomText = "";
-    bottomTextColor = "#ffffff";
-    bottomBorderColor = "#000000";
-    bottomBorderEnabled = true;
-    bottomBorderWidth = 3;
-    bottomLineWidthPercent = 90;
-    bottomFontScale = 1.0;
-    bottomFontWidthScale = 1.0;
-    document.getElementById("bottomTextInput").value = "";
-    document.getElementById("bottomTextColorInput").value = "#ffffff";
-    document.getElementById("bottomBorderColorInput").value = "#000000";
-    document.getElementById("bottomBorderToggle").checked = true;
-    document.getElementById("bottomBorderWidthInput").value = 3;
-    document.getElementById("bottomLineWidthInput").value = 90;
-    updateSizeDisplay("bottom", bottomFontScale);
-    updateWidthDisplay("bottom", bottomFontWidthScale);
-
-    memeCapitalize = true;
-    document.getElementById("capitalizeToggle").checked = true;
-    memeFont = "impact";
-    highlightActiveFontButton();
-
-    updateControlAvailability();
-    setStatus("All parameters reset to default.");
-}
-
-/* ================================================================
-   ACCURACY / SIMPLIFICATION HELPER
-   ================================================================ */
-function applyBlockAverage(g, block){
-    if(block <= 1) return g;
-
-    g.loadPixels();
-    for(let y = 0; y < g.height; y += block){
-        for(let x = 0; x < g.width; x += block){
-            let rSum = 0, gSum = 0, bSum = 0, count = 0;
-
-            for(let by = y; by < y + block && by < g.height; by++){
-                for(let bx = x; bx < x + block && bx < g.width; bx++){
-                    let i = (by * g.width + bx) * 4;
-                    rSum += g.pixels[i];
-                    gSum += g.pixels[i + 1];
-                    bSum += g.pixels[i + 2];
-                    count++;
-                }
-            }
-            let rAvg = rSum / count;
-            let gAvg = gSum / count;
-            let bAvg = bSum / count;
-
-            for(let by = y; by < y + block && by < g.height; by++){
-                for(let bx = x; bx < x + block && bx < g.width; bx++){
-                    let i = (by * g.width + bx) * 4;
-                    g.pixels[i] = rAvg;
-                    g.pixels[i + 1] = gAvg;
-                    g.pixels[i + 2] = bAvg;
-                }
-            }
-        }
-    }
-    g.updatePixels();
-    return g;
-}
-
-/* ================================================================
-   OUTPUT FILTERS: channel combine + monochrome
-   ================================================================ */
-function applyOutputFilters(g){
-    g = applyColorAdjustments(g);
-
-    if(monochromeEnabled){
-        applyMonochromeFilter(g);
-    } else {
-        applyChannelCombine(g);
-    }
-    return g;
-}
-
-function applyColorAdjustments(g){
-    let needsGain = (redGainPercent != 100 || greenGainPercent != 100 || blueGainPercent != 100);
-    let needsHueSat = (hueShift != 0 || saturationPercent != 100);
-    if(!needsGain && !needsHueSat) return g;
-
-    g.loadPixels();
-    for(let i = 0; i < g.pixels.length; i += 4){
-        let r = g.pixels[i];
-        let gr = g.pixels[i + 1];
-        let b = g.pixels[i + 2];
-
-        if(needsGain){
-            r = constrain(r * (redGainPercent / 100), 0, 255);
-            gr = constrain(gr * (greenGainPercent / 100), 0, 255);
-            b = constrain(b * (blueGainPercent / 100), 0, 255);
-        }
-
-        if(needsHueSat){
-            let hsb = rgbToHsb(r, gr, b);
-            hsb.h = (hsb.h + hueShift + 360) % 360;
-            hsb.s = constrain(hsb.s * (saturationPercent / 100), 0, 100);
-            let rgb = hsbToRgb(hsb.h, hsb.s, hsb.v);
-            r = rgb.r; gr = rgb.g; b = rgb.b;
-        }
-
-        g.pixels[i] = r; g.pixels[i + 1] = gr; g.pixels[i + 2] = b;
-    }
-    g.updatePixels();
-    return g;
-}
-
-function applyMonochromeFilter(g){
-    g.loadPixels();
-    for(let i = 0; i < g.pixels.length; i += 4){
-        let brightness = (g.pixels[i] + g.pixels[i + 1] + g.pixels[i + 2]) / 3;
-        g.pixels[i] = brightness;
-        g.pixels[i + 1] = brightness;
-        g.pixels[i + 2] = brightness;
-    }
-    g.updatePixels();
-}
-
-function applyChannelCombine(g){
-    let keepR, keepG, keepB;
-
-    if(channelMode == "additive"){
-        keepR = channelR; keepG = channelG; keepB = channelB;
-    } else {
-        keepR = !channelR; keepG = !channelG; keepB = !channelB;
-    }
-
-    if(keepR && keepG && keepB) return;
-
-    g.loadPixels();
-    for(let i = 0; i < g.pixels.length; i += 4){
-        if(!keepR) g.pixels[i] = 0;
-        if(!keepG) g.pixels[i + 1] = 0;
-        if(!keepB) g.pixels[i + 2] = 0;
-    }
-    g.updatePixels();
-}
-
-/* ================================================================
-   DRAWING FUNCTIONS
-   ================================================================ */
-function drawOriginal(){
-    let g = currentImage.get();
-    g = applyOutputFilters(g);
-    imageFit(g);
-}
-
-function drawStencil(){
-    let g = currentImage.get();
-    g = applyBlockAverage(g, accuracyBlockSizes[accuracy]);
-
-    g.loadPixels();
-    for(let i = 0; i < g.pixels.length; i += 4){
-        let brightness = (g.pixels[i] + g.pixels[i + 1] + g.pixels[i + 2]) / 3;
-        let value = brightness > 128 ? 255 : 0;
-        g.pixels[i] = value; g.pixels[i + 1] = value; g.pixels[i + 2] = value;
-    }
-    g.updatePixels();
-
-    g = applyOutputFilters(g);
-    imageFit(g);
-}
-
-function drawBasicRGB(){
-    let g = currentImage.get();
-    g = applyBlockAverage(g, accuracyBlockSizes[accuracy]);
-
-    g.loadPixels();
-    for(let i = 0; i < g.pixels.length; i += 4){
-        let r = g.pixels[i];
-        let gr = g.pixels[i + 1];
-        let b = g.pixels[i + 2];
-        let brightness = (r + gr + b) / 3;
-
-        if(rgbIncludeBlack && brightness < 40){
-            g.pixels[i] = 0; g.pixels[i + 1] = 0; g.pixels[i + 2] = 0;
-        } else if(rgbIncludeWhite && brightness > 220){
-            g.pixels[i] = 255; g.pixels[i + 1] = 255; g.pixels[i + 2] = 255;
-        } else if(r >= gr && r >= b){
-            g.pixels[i] = 255; g.pixels[i + 1] = 0; g.pixels[i + 2] = 0;
-        } else if(gr >= r && gr >= b){
-            g.pixels[i] = 0; g.pixels[i + 1] = 255; g.pixels[i + 2] = 0;
-        } else {
-            g.pixels[i] = 0; g.pixels[i + 1] = 0; g.pixels[i + 2] = 255;
-        }
-    }
-    g.updatePixels();
-
-    g = applyOutputFilters(g);
-    imageFit(g);
-}
-
-function drawHarmony(){
-    let g = currentImage.get();
-    g = applyBlockAverage(g, accuracyBlockSizes[accuracy]);
-
-    let paletteColors = buildHarmonyPaletteColors(effectiveBaseHue(), harmonyType);
-
-    g.loadPixels();
-    for(let i = 0; i < g.pixels.length; i += 4){
-        let r = g.pixels[i];
-        let gr = g.pixels[i + 1];
-        let b = g.pixels[i + 2];
-        let brightness = (r + gr + b) / 3;
-
-        if(brightness < 40){
-            g.pixels[i] = 0; g.pixels[i + 1] = 0; g.pixels[i + 2] = 0;
-        } else if(brightness > 220){
-            g.pixels[i] = 255; g.pixels[i + 1] = 255; g.pixels[i + 2] = 255;
-        } else {
-            let nearest = nearestPaletteColor(r, gr, b, paletteColors);
-            g.pixels[i] = nearest.r; g.pixels[i + 1] = nearest.g; g.pixels[i + 2] = nearest.b;
-        }
-    }
-    g.updatePixels();
-
-    g = applyOutputFilters(g);
-    imageFit(g);
-}
-
-// Gross Lines uses its own, more gradual block-size table rather
-// than simply multiplying the normal accuracy sizes by 4 -- that
-// old approach jumped too fast (e.g. straight to 64px blocks at
-// the coarsest setting). These steps grow more evenly.
-const grossBlockSizes = {
-    1:2, 2:3, 3:4, 4:6, 5:8,
-    6:10, 7:13, 8:16, 9:20, 10:24
-};
-
-function drawGrossLines(){
-    let g = currentImage.get();
-    let block = grossBlockSizes[accuracy];
-    g = applyBlockAverage(g, block);
-
-    g.loadPixels();
-    for(let i = 0; i < g.pixels.length; i += 4){
-        let brightness = (g.pixels[i] + g.pixels[i + 1] + g.pixels[i + 2]) / 3;
-        let value = brightness > 128 ? 255 : 0;
-        g.pixels[i] = value; g.pixels[i + 1] = value; g.pixels[i + 2] = value;
-    }
-    g.updatePixels();
-
-    g = applyOutputFilters(g);
-    imageFit(g);
-}
-
-/* ================================================================
-   HARMONY / COLOR HELPERS
-   ================================================================ */
-function rgbToHsb(r, g, b){
-    r /= 255; g /= 255; b /= 255;
-    let max = Math.max(r, g, b);
-    let min = Math.min(r, g, b);
-    let delta = max - min;
-    let h = 0;
-
-    if(delta != 0){
-        if(max == r) h = 60 * (((g - b) / delta) % 6);
-        else if(max == g) h = 60 * (((b - r) / delta) + 2);
-        else h = 60 * (((r - g) / delta) + 4);
-    }
-    if(h < 0) h += 360;
-
-    let s = max == 0 ? 0 : delta / max;
-    let v = max;
-
-    return { h: h, s: s * 100, v: v * 100 };
-}
-
-function hsbToRgb(h, s, v){
-    s /= 100; v /= 100;
-    let c = v * s;
-    let x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-    let m = v - c;
-    let r = 0, g = 0, b = 0;
-
-    if(h < 60)       { r = c; g = x; b = 0; }
-    else if(h < 120) { r = x; g = c; b = 0; }
-    else if(h < 180) { r = 0; g = c; b = x; }
-    else if(h < 240) { r = 0; g = x; b = c; }
-    else if(h < 300) { r = x; g = 0; b = c; }
-    else             { r = c; g = 0; b = x; }
-
-    return {
-        r: Math.round((r + m) * 255),
-        g: Math.round((g + m) * 255),
-        b: Math.round((b + m) * 255)
-    };
-}
-
-// Computes the average hue of a whole p5.Image (used once when an
-// image is loaded, rather than re-scanning every processed copy).
-function computeAverageHue(im){
-    let g = im.get();
-    let rSum = 0, gSum = 0, bSum = 0, count = 0;
-    g.loadPixels();
-    for(let i = 0; i < g.pixels.length; i += 4){
-        rSum += g.pixels[i];
-        gSum += g.pixels[i + 1];
-        bSum += g.pixels[i + 2];
-        count++;
-    }
-    let hsb = rgbToHsb(rSum / count, gSum / count, bSum / count);
-    return hsb.h;
-}
-
-// Applies the Hue Offset control to the image's own detected
-// base hue. Used everywhere the harmony palette is generated, so
-// the offset and the color wheel preview always agree.
-function effectiveBaseHue(){
-    return (lastComputedBaseHue + harmonyHueOffset + 360) % 360;
-}
-
-function buildHarmonyHues(baseHue, type){
-    if(type == "monochromatic"){
-        // Same hue three times -- the variation for this scheme lives
-        // in saturation and brightness, not in hue. Kept here mainly
-        // so any generic code that expects an array of hues still
-        // gets something sensible.
-        return [baseHue, baseHue, baseHue];
-    }
-    if(type == "analogous"){
-        return [(baseHue + 360 - analogDistance) % 360, baseHue, (baseHue + analogDistance) % 360];
-    }
-    if(type == "triadic"){
-        return [baseHue, (baseHue + 120) % 360, (baseHue + 240) % 360];
-    }
-    if(type == "tetradic"){
-        return [baseHue, (baseHue + 90) % 360, (baseHue + 180) % 360, (baseHue + 270) % 360];
-    }
-    return [baseHue, (baseHue + 180) % 360];
-}
-
-function buildHarmonyPaletteColors(baseHue, type){
-    if(type == "monochromatic"){
-        // This is the one harmony scheme that isn't about hue at all --
-        // one hue held constant, three steps of tint/shade built by
-        // moving saturation and brightness away from the values set on
-        // the Palette Saturation / Palette Brightness sliders: a
-        // lighter, less saturated tint; the base tone itself; and a
-        // darker, slightly more saturated shade.
-        let s = paletteSaturation;
-        let vMid = paletteBrightness;
-        let vLight = Math.min(100, vMid + 25);
-        let vDark = Math.max(0, vMid - 35);
-        let sLight = Math.max(0, s - 20);
-        let sDark = Math.min(100, s + 10);
-
-        return [
-            hsbToRgb(baseHue, sLight, vLight),
-            hsbToRgb(baseHue, s, vMid),
-            hsbToRgb(baseHue, sDark, vDark)
-        ];
-    }
-
-    let hues = buildHarmonyHues(baseHue, type);
-    return hues.map(function(h){
-        return hsbToRgb(h, paletteSaturation, paletteBrightness);
-    });
-}
-
-function nearestPaletteColor(r, g, b, palette){
-    let best = palette[0];
-    let bestDistance = Infinity;
-
-    palette.forEach(function(color){
-        let dr = r - color.r;
-        let dg = g - color.g;
-        let db = b - color.b;
-        let distance = dr * dr + dg * dg + db * db;
-        if(distance < bestDistance){
-            bestDistance = distance;
-            best = color;
-        }
-    });
-    return best;
-}
-
-/* ================================================================
-   COLOR WHEEL
-   A plain HTML5 canvas (not the p5 one) that shows a full hue
-   ring plus the current harmony palette plotted on it, connected
-   by lines so the geometric relationship between the colors is
-   visible: a straight line for Complementary, a triangle for
-   Triadic, a square for Tetradic.
-   ================================================================ */
-function drawColorWheel(){
-    let wheelCanvas = document.getElementById("colorWheelCanvas");
-    let ctx = wheelCanvas.getContext("2d");
-    let size = wheelCanvas.width;
-    let center = size / 2;
-    let outerRadius = center - 6;
-    let innerRadius = outerRadius - 16;
-
-    ctx.clearRect(0, 0, size, size);
-
-    // Draw the hue ring, one thin wedge per degree.
-    for(let angle = 0; angle < 360; angle++){
-        let rad = (angle * Math.PI) / 180;
-        ctx.strokeStyle = "hsl(" + angle + ", 85%, 50%)";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(center + Math.cos(rad) * innerRadius, center + Math.sin(rad) * innerRadius);
-        ctx.lineTo(center + Math.cos(rad) * outerRadius, center + Math.sin(rad) * outerRadius);
-        ctx.stroke();
-    }
-
-    if(currentImage == null) return; // nothing to plot yet
-
-    if(harmonyType == "monochromatic"){
-        drawMonochromaticWheelPoints(ctx, center, innerRadius, outerRadius);
-        return;
-    }
-
-    let hues = buildHarmonyHues(effectiveBaseHue(), harmonyType);
-    let midRadius = (innerRadius + outerRadius) / 2;
-    let points = hues.map(function(h){
-        let rad = (h * Math.PI) / 180;
-        return {
-            x: center + Math.cos(rad) * midRadius,
-            y: center + Math.sin(rad) * midRadius
-        };
-    });
-
-    // Connect the points so the relationship is visible: a line
-    // for 2 points, a closed triangle for 3, a closed square for 4.
-    ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue("--fg").trim() || "#000000";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    points.forEach(function(p, i){
-        if(i == 0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
-    });
-    if(harmonyType == "triadic" || harmonyType == "tetradic") ctx.closePath();
-    ctx.stroke();
-
-    // Draw a marker dot at each palette color, in that color.
-    points.forEach(function(p, i){
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
-        ctx.fillStyle = "hsl(" + Math.round(hues[i]) + ", 85%, 45%)";
-        ctx.fill();
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-    });
-}
-
-// Monochromatic has only one hue, so plotting it on the ring like
-// the other schemes would just stack three dots on top of each
-// other. Instead this draws a single spoke from the center hue
-// outward, with a dot at three radii, each filled with its actual
-// tint/mid/shade color -- the variation that actually defines this
-// scheme is visible along the spoke instead of around the ring.
-function drawMonochromaticWheelPoints(ctx, center, innerRadius, outerRadius){
-    let hue = effectiveBaseHue();
-    let paletteColors = buildHarmonyPaletteColors(hue, "monochromatic");
-    let rad = (hue * Math.PI) / 180;
-    let radii = [innerRadius + 6, (innerRadius + outerRadius) / 2, outerRadius - 6];
-
-    let points = radii.map(function(r){
-        return { x: center + Math.cos(rad) * r, y: center + Math.sin(rad) * r };
-    });
-
-    ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue("--fg").trim() || "#000000";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    points.forEach(function(p, i){
-        if(i == 0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
-    });
-    ctx.stroke();
-
-    points.forEach(function(p, i){
-        let c = paletteColors[i];
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
-        ctx.fillStyle = "rgb(" + c.r + "," + c.g + "," + c.b + ")";
-        ctx.fill();
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-    });
-}
-
-/* ================================================================
-   MEMETIZER
-   ================================================================ */
-function setupMemetizerControls(){
-    document.getElementById("topTextInput").addEventListener("input", function(){
-        topText = this.value;
-    });
-    document.getElementById("topTextColorInput").addEventListener("input", function(){
-        topTextColor = this.value;
-    });
-    document.getElementById("topBorderColorInput").addEventListener("input", function(){
-        topBorderColor = this.value;
-    });
-    document.getElementById("topBorderToggle").addEventListener("change", function(){
-        topBorderEnabled = this.checked;
-    });
-    document.getElementById("topBorderWidthInput").addEventListener("input", function(){
-        topBorderWidth = parseInt(this.value);
-    });
-    document.getElementById("topLineWidthInput").addEventListener("input", function(){
-        topLineWidthPercent = parseInt(this.value);
-    });
-
-    document.getElementById("bottomTextInput").addEventListener("input", function(){
-        bottomText = this.value;
-    });
-    document.getElementById("bottomTextColorInput").addEventListener("input", function(){
-        bottomTextColor = this.value;
-    });
-    document.getElementById("bottomBorderColorInput").addEventListener("input", function(){
-        bottomBorderColor = this.value;
-    });
-    document.getElementById("bottomBorderToggle").addEventListener("change", function(){
-        bottomBorderEnabled = this.checked;
-    });
-    document.getElementById("bottomBorderWidthInput").addEventListener("input", function(){
-        bottomBorderWidth = parseInt(this.value);
-    });
-    document.getElementById("bottomLineWidthInput").addEventListener("input", function(){
-        bottomLineWidthPercent = parseInt(this.value);
-    });
-
-    document.getElementById("capitalizeToggle").addEventListener("change", function(){
-        memeCapitalize = this.checked;
-    });
-}
-
-function adjustFontScale(line, delta){
-    if(line == "top"){
-        topFontScale = clampScale(topFontScale + delta);
-        updateSizeDisplay("top", topFontScale);
-    } else {
-        bottomFontScale = clampScale(bottomFontScale + delta);
-        updateSizeDisplay("bottom", bottomFontScale);
-    }
-}
-
-function adjustFontWidthScale(line, delta){
-    if(line == "top"){
-        topFontWidthScale = clampScale(topFontWidthScale + delta);
-        updateWidthDisplay("top", topFontWidthScale);
-    } else {
-        bottomFontWidthScale = clampScale(bottomFontWidthScale + delta);
-        updateWidthDisplay("bottom", bottomFontWidthScale);
-    }
-}
-
-function clampScale(scale){
-    let rounded = Math.round(scale * 100) / 100;
-    return Math.min(3, Math.max(0.3, rounded));
-}
-
-function updateSizeDisplay(line, scale){
-    document.getElementById(line + "SizeDisplay").innerText = Math.round(scale * 100) + "%";
-}
-
-function updateWidthDisplay(line, scale){
-    document.getElementById(line + "WidthDisplay").innerText = Math.round(scale * 100) + "%";
-}
-
-function setMemeFont(fontName){
-    memeFont = fontName;
-    highlightActiveFontButton();
-    setStatus("Meme font: " + fontName);
-}
-
-function highlightActiveFontButton(){
-    let ids = ["font-impact", "font-console", "font-typewriter", "font-cursive", "font-boldsans"];
-    ids.forEach(function(id){
-        document.getElementById(id).classList.remove("active");
-    });
-    document.getElementById("font-" + memeFont).classList.add("active");
-}
-
-/* ================================================================
-   WATERMARK
-   Drawn every frame like the Memetizer caption, so it's visible in
-   the live preview and gets captured automatically by Download PNG
-   -- no separate export-time compositing needed.
-   ================================================================ */
-function drawWatermark(){
-    if(!watermarkEnabled || watermarkImage == null) return;
-
-    let margin = 14;
-    let wmWidth = width * 0.18;
-    let ratio = wmWidth / watermarkImage.width;
-    let wmHeight = watermarkImage.height * ratio;
-
-    image(watermarkImage, width - wmWidth - margin, height - wmHeight - margin, wmWidth, wmHeight);
-}
-
-/* ================================================================
-   DIGITAL SIGNATURE QR
-   The QR code itself is only regenerated when the feature is
-   turned on (not every frame -- that would mean rebuilding it 60
-   times a second for no reason). The cached <canvas> it produces
-   is then just drawn onto the main canvas cheaply each frame.
-   ================================================================ */
-function regenerateSignatureQr(){
-    let holder = document.getElementById("qrGenHolder");
-    holder.innerHTML = "";
-    let signatureText = "made with stencilizer by devman | " + getUtcTimestamp();
-    new QRCode(holder, {
-        text: signatureText,
-        width: 120,
-        height: 120,
-        correctLevel: QRCode.CorrectLevel.M
-    });
-    qrCanvasCache = holder.querySelector("canvas");
-}
-
-function drawSignatureQr(){
-    if(!qrSignatureEnabled || qrCanvasCache == null) return;
-
-    let margin = 14;
-    let qrSize = width * 0.12;
-
-    // Drawn via the raw 2D context (drawingContext) rather than p5's
-    // image(), since the QR is a plain HTML canvas element, not a
-    // p5.Image -- drawImage() accepts a canvas element directly.
-    drawingContext.drawImage(qrCanvasCache, margin, height - qrSize - margin, qrSize, qrSize);
-}
-
-/* ================================================================
-   PRINT
-   Prints exactly the canvas, via a dedicated @media print rule
-   that hides every other panel and lets the browser's own print
-   dialog handle paper size, margins, and orientation.
-   ================================================================ */
-function printResult(){
-    window.print();
-}
-
-function drawMemeOverlay(){
-    if(topText.trim() === "" && bottomText.trim() === "") return;
-
-    push();
-    textFont(memeFontStacks[memeFont]);
-
-    let baseFontSize = max(16, floor(width / 16));
-    let margin = 14;
-
-    let topFontSize = baseFontSize * topFontScale;
-    let topDisplay = memeCapitalize ? topText.toUpperCase() : topText;
-    textSize(topFontSize);
-    textAlign(CENTER, TOP);
-    let topMaxWidth = width * (topLineWidthPercent / 100);
-    let topLines = wrapMemeText(topDisplay, topMaxWidth);
-    let topLineHeight = topFontSize * 1.15;
-
-    drawMemeTextBlock(
-        topLines, width / 2, margin, topLineHeight,
-        topBorderEnabled, topBorderColor, topBorderWidth, topTextColor, topFontWidthScale
-    );
-
-    let bottomFontSize = baseFontSize * bottomFontScale;
-    let bottomDisplay = memeCapitalize ? bottomText.toUpperCase() : bottomText;
-    textSize(bottomFontSize);
-    let bottomMaxWidth = width * (bottomLineWidthPercent / 100);
-    let bottomLines = wrapMemeText(bottomDisplay, bottomMaxWidth);
-    let bottomLineHeight = bottomFontSize * 1.15;
-    let bottomBlockHeight = bottomLines.length * bottomLineHeight;
-    let bottomStartY = height - margin - bottomBlockHeight;
-
-    drawMemeTextBlock(
-        bottomLines, width / 2, bottomStartY, bottomLineHeight,
-        bottomBorderEnabled, bottomBorderColor, bottomBorderWidth, bottomTextColor, bottomFontWidthScale
-    );
-
-    pop();
-}
-
-function wrapMemeText(str, maxWidth){
-    if(str === "") return [];
-
-    let words = str.split(" ");
-    let lines = [];
-    let current = "";
-
-    words.forEach(function(word){
-        let test = current === "" ? word : current + " " + word;
-        if(textWidth(test) > maxWidth && current !== ""){
-            lines.push(current);
-            current = word;
-        } else {
-            current = test;
-        }
-    });
-    if(current !== "") lines.push(current);
-    return lines;
-}
-
-function drawMemeTextBlock(lines, centerX, startY, lineHeight, borderEnabled, borderColor, borderWidth, textColor, widthScale){
-    lines.forEach(function(line, index){
-        let y = startY + index * lineHeight;
-
-        push();
-        translate(centerX, y);
-        scale(widthScale, 1);
-
-        if(borderEnabled && borderWidth > 0){
-            stroke(borderColor);
-            strokeWeight(borderWidth);
-        } else {
-            noStroke();
-        }
-        fill(textColor);
-        text(line, 0, 0);
-        pop();
-    });
-}
-
-/* ================================================================
-   SAVE / DOWNLOAD
-   ================================================================ */
-function downloadResult(){
-    let filename = "stencilizer-" + currentMode + "-" + getUtcTimestamp();
-    let rawDataUrl = canvas.elt.toDataURL("image/png");
-    let dataUrlWithMetadata = insertPngTextChunk(rawDataUrl, "Comment", "made with stencilizer by devman");
-    triggerDownload(dataUrlWithMetadata, filename + ".png");
-    setStatus("Downloaded: " + filename + ".png");
-}
-
-// Compact UTC timestamp, e.g. 20260804T013245Z -- used in exported
-// filenames so repeated downloads never overwrite each other.
-function getUtcTimestamp(){
-    let d = new Date();
-    let pad = function(n){ return String(n).padStart(2, "0"); };
-    return d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate()) +
-        "T" + pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + pad(d.getUTCSeconds()) + "Z";
-}
-
-function triggerDownload(dataUrl, filename){
-    let a = document.createElement("a");
-    a.href = dataUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
-
-/* ================================================================
-   PNG METADATA
-   Embeds a small, honest text credit directly into the exported
-   PNG's own tEXt chunk (the standard, official way PNGs carry
-   textual metadata -- the same mechanism image editors use for
-   "Author" or "Comment" fields). This is plain, visible-on-request
-   text, not tracking of any kind, and doesn't change a single
-   pixel of the image itself.
-   ================================================================ */
-function insertPngTextChunk(dataUrl, keyword, text){
-    let base64 = dataUrl.split(",")[1];
-    let binary = atob(base64);
-    let bytes = new Uint8Array(binary.length);
-    for(let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-
-    // The PNG signature is 8 bytes; the very next chunk is always
-    // IHDR, whose data is always exactly 13 bytes, so the whole
-    // IHDR chunk (length+type+data+crc) is always 25 bytes. The new
-    // chunk is inserted right after it.
-    let insertPos = 8 + 25;
-
-    let keywordBytes = latin1Bytes(keyword);
-    let textBytes = latin1Bytes(text);
-    let chunkData = new Uint8Array(keywordBytes.length + 1 + textBytes.length);
-    chunkData.set(keywordBytes, 0);
-    chunkData[keywordBytes.length] = 0; // null separator required by the tEXt format
-    chunkData.set(textBytes, keywordBytes.length + 1);
-
-    let typeBytes = latin1Bytes("tEXt");
-    let crcInput = new Uint8Array(typeBytes.length + chunkData.length);
-    crcInput.set(typeBytes, 0);
-    crcInput.set(chunkData, typeBytes.length);
-
-    let newChunk = new Uint8Array(4 + 4 + chunkData.length + 4);
-    newChunk.set(uint32ToBytes(chunkData.length), 0);
-    newChunk.set(typeBytes, 4);
-    newChunk.set(chunkData, 8);
-    newChunk.set(uint32ToBytes(crc32(crcInput)), 8 + chunkData.length);
-
-    let result = new Uint8Array(bytes.length + newChunk.length);
-    result.set(bytes.subarray(0, insertPos), 0);
-    result.set(newChunk, insertPos);
-    result.set(bytes.subarray(insertPos), insertPos + newChunk.length);
-
-    let binaryResult = "";
-    for(let i = 0; i < result.length; i++) binaryResult += String.fromCharCode(result[i]);
-    return "data:image/png;base64," + btoa(binaryResult);
-}
-
-function latin1Bytes(str){
-    let bytes = new Uint8Array(str.length);
-    for(let i = 0; i < str.length; i++) bytes[i] = str.charCodeAt(i) & 0xFF;
-    return bytes;
-}
-
-function uint32ToBytes(num){
-    return new Uint8Array([(num >>> 24) & 0xFF, (num >>> 16) & 0xFF, (num >>> 8) & 0xFF, num & 0xFF]);
-}
-
-// Standard PNG/zlib CRC-32, computed once and cached.
-let crc32Table = null;
-function buildCrc32Table(){
-    let table = new Uint32Array(256);
-    for(let n = 0; n < 256; n++){
-        let c = n;
-        for(let k = 0; k < 8; k++){
-            c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
-        }
-        table[n] = c >>> 0;
-    }
-    return table;
-}
-function crc32(bytes){
-    if(!crc32Table) crc32Table = buildCrc32Table();
-    let crc = 0xFFFFFFFF;
-    for(let i = 0; i < bytes.length; i++){
-        crc = crc32Table[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
-    }
-    return (crc ^ 0xFFFFFFFF) >>> 0;
-}
-
-/* ================================================================
-   THEME SWITCHING
-   ================================================================ */
-// Switches the app's UI theme. This only ever affects the app's
-// own chrome (panels, buttons, text) -- it has no effect on the
-// image processing itself, same as the old Black Terminal checkbox.
-function setUiTheme(themeName){
-    currentUiTheme = themeName;
-
-    // The className is rebuilt from scratch each time rather than
-    // toggled, since exactly one of these classes should ever be
-    // present, plus whichever of noBorders / noChromeLines happen
-    // to also be checked right now.
-    let classes = [themeName];
-    if(document.getElementById("hideBordersToggle").checked) classes.push("noBorders");
-    if(document.getElementById("hideCanvasBorderToggle").checked) classes.push("noChromeLines");
-    document.body.className = classes.join(" ");
-
-    let themeIds = ["theme-light", "theme-dark", "theme-kuromi", "theme-pastel", "theme-monowhite", "theme-monogrey"];
-    themeIds.forEach(function(id){
-        document.getElementById(id).classList.remove("active");
-    });
-    document.getElementById("theme-" + themeName).classList.add("active");
-
-    setStatus("Theme: " + themeName);
-    drawColorWheel(); // the wheel's line color reads the theme's --fg variable
-}
-
-/* ================================================================
-   STATUS BAR
-   ================================================================ */
-function setStatus(message){
-    statusMessage = message;
-    document.getElementById("statusBar").innerText = "Status: " + message;
-    document.getElementById("headerDotLabel").innerText =
-        message.length > 24 ? message.substring(0, 24) + "..." : message;
-}
-
-/* ================================================================
-   HELPER: fit an image or graphic into the canvas, centered,
-   preserving aspect ratio, leaving room for the margins if set.
-   Margin sizes are rounded to whole pixels -- fractional pixel
-   gaps between the image edge and the margin band are what caused
-   the thin stray background line at small margin values.
-   ================================================================ */
-function imageFit(im){
-    let hMarginPx = Math.round(width * (horizontalMarginPercent / 100));
-    let vMarginPx = Math.round(height * (verticalMarginPercent / 100));
-
-    let availW = width - hMarginPx * 2;
-    let availH = height - vMarginPx * 2;
-
-    let w, h;
-
-    if(imageFitMode == "fill"){
-        w = availW;
-        h = availH;
-    } else {
-        let ratio = min(availW / im.width, availH / im.height);
-        w = im.width * ratio;
-        h = im.height * ratio;
-
-        if(imageFitMode == "manual"){
-            w = w * (manualScaleXPercent / 100);
-            h = h * (manualScaleYPercent / 100);
-        }
-    }
-
-    let x = (width - w) / 2;
-    let y = (height - h) / 2;
-
-    image(im, x, y, w, h);
-    paintMarginBands(hMarginPx, vMarginPx);
-}
-
-function paintMarginBands(hMarginPx, vMarginPx){
-    push();
-    noStroke();
-    fill(0);
-
-    // Bands are drawn 1px wider than the computed margin so any
-    // sub-pixel rounding from the image draw call above is fully
-    // covered, instead of leaving a hairline sliver of background.
-    let overscan = 1;
-
-    if(horizontalMarginBlack && hMarginPx > 0){
-        rect(0, 0, hMarginPx + overscan, height);
-        rect(width - hMarginPx - overscan, 0, hMarginPx + overscan, height);
-    }
-    if(verticalMarginBlack && vMarginPx > 0){
-        rect(0, 0, width, vMarginPx + overscan);
-        rect(0, height - vMarginPx - overscan, width, vMarginPx + overscan);
-    }
-    pop();
+function toggleLanguage(){
+    applyLanguage(currentLang == "en" ? "fr" : "en");
 }
 </script>
+
 </body>
+
 </html>
