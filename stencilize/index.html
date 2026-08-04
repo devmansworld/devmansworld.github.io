@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stencilizer v0.7.3</title>
+<title>Stencilizer v0.7.5</title>
 
 <!-- p5.js library. Local processing only, no server or build step needed. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
@@ -352,7 +352,7 @@ body.dark #statusBar{
      HEADER
      ============================================================ -->
 <div id="headerBar">
-    <div class="title">STENCILIZER v0.7.3</div>
+    <div class="title">STENCILIZER v0.7.5</div>
     <div><span id="headerDot">&#9679;</span><span id="headerDotLabel">Ready</span></div>
 </div>
 
@@ -399,6 +399,20 @@ body.dark #statusBar{
         <button class="resetBtn" onclick="resetAllParameters()">Reset / Default</button>
     </div>
 
+    <!-- BASIC RGB PALETTE PANEL -->
+    <div class="panel">
+        <div class="panelLabel">BASIC RGB PALETTE</div>
+        <label>
+            <input type="checkbox" id="rgbIncludeBlackToggle" checked>
+            Include Black
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" id="rgbIncludeWhiteToggle" checked>
+            Include White
+        </label>
+    </div>
+
     <!-- HARMONY TYPE PANEL -->
     <div class="panel">
         <div class="panelLabel">HARMONY TYPE</div>
@@ -406,6 +420,7 @@ body.dark #statusBar{
         <button id="harm-analogous" onclick="setHarmonyType('analogous')">Analogous</button>
         <button id="harm-triadic" onclick="setHarmonyType('triadic')">Triadic</button>
         <button id="harm-tetradic" onclick="setHarmonyType('tetradic')">Tetradic</button>
+        <button id="harm-monochromatic" onclick="setHarmonyType('monochromatic')">Monochromatic</button>
 
         <!-- Color wheel: plots the base hue and the harmony
              palette hues on a ring, with lines connecting them so
@@ -727,6 +742,15 @@ let keepProportions     = true;
 let hideCanvasBorder    = false;
 
 /* ----------------------------------------------------------------
+   Basic RGB palette state
+   By default, very dark pixels become black and very light pixels
+   become white, same as before. Either can be switched off, in
+   which case those pixels are classified among R/G/B instead.
+   ---------------------------------------------------------------- */
+let rgbIncludeBlack = true;
+let rgbIncludeWhite = true;
+
+/* ----------------------------------------------------------------
    Memetizer state
    ---------------------------------------------------------------- */
 let topText             = "";
@@ -788,6 +812,20 @@ function setup(){
             hideCanvasBorder = this.checked;
             document.querySelector("canvas.mainCanvas").classList.toggle("noBorder", hideCanvasBorder);
             setStatus(hideCanvasBorder ? "Canvas border hidden." : "Canvas border shown.");
+        });
+
+    document
+        .getElementById("rgbIncludeBlackToggle")
+        .addEventListener("change", function(){
+            rgbIncludeBlack = this.checked;
+            setStatus(rgbIncludeBlack ? "Basic RGB: black included." : "Basic RGB: black excluded.");
+        });
+
+    document
+        .getElementById("rgbIncludeWhiteToggle")
+        .addEventListener("change", function(){
+            rgbIncludeWhite = this.checked;
+            setStatus(rgbIncludeWhite ? "Basic RGB: white included." : "Basic RGB: white excluded.");
         });
 
     document
@@ -898,7 +936,7 @@ function setHarmonyType(newType){
 function updateControlAvailability(){
     let harmonyActive = (currentMode == "harmony");
 
-    ["harm-complementary", "harm-analogous", "harm-triadic", "harm-tetradic"].forEach(function(id){
+    ["harm-complementary", "harm-analogous", "harm-triadic", "harm-tetradic", "harm-monochromatic"].forEach(function(id){
         document.getElementById(id).disabled = !harmonyActive;
     });
     document.getElementById("harmonyHueOffsetInput").disabled = !harmonyActive;
@@ -920,6 +958,11 @@ function updateControlAvailability(){
     document.getElementById("channelGToggle").disabled = !channelActive;
     document.getElementById("channelBToggle").disabled = !channelActive;
     document.getElementById("channelModeBtn").disabled = !channelActive;
+
+    // Include Black / Include White only affect Basic RGB.
+    let rgbActive = (currentMode == "rgb");
+    document.getElementById("rgbIncludeBlackToggle").disabled = !rgbActive;
+    document.getElementById("rgbIncludeWhiteToggle").disabled = !rgbActive;
 }
 
 // Wires up the four harmony sliders. Each one redraws the color
@@ -975,7 +1018,7 @@ function highlightActiveModeButton(){
 }
 
 function highlightActiveHarmonyButton(){
-    let ids = ["harm-complementary", "harm-analogous", "harm-triadic", "harm-tetradic"];
+    let ids = ["harm-complementary", "harm-analogous", "harm-triadic", "harm-tetradic", "harm-monochromatic"];
     ids.forEach(function(id){
         document.getElementById(id).classList.remove("active");
     });
@@ -1141,6 +1184,11 @@ function highlightActiveFitButton(){
 function resetAllParameters(){
     currentMode = "original";
     highlightActiveModeButton();
+
+    rgbIncludeBlack = true;
+    rgbIncludeWhite = true;
+    document.getElementById("rgbIncludeBlackToggle").checked = true;
+    document.getElementById("rgbIncludeWhiteToggle").checked = true;
 
     harmonyType = "complementary";
     highlightActiveHarmonyButton();
@@ -1404,9 +1452,9 @@ function drawBasicRGB(){
         let b = g.pixels[i + 2];
         let brightness = (r + gr + b) / 3;
 
-        if(brightness < 40){
+        if(rgbIncludeBlack && brightness < 40){
             g.pixels[i] = 0; g.pixels[i + 1] = 0; g.pixels[i + 2] = 0;
-        } else if(brightness > 220){
+        } else if(rgbIncludeWhite && brightness > 220){
             g.pixels[i] = 255; g.pixels[i + 1] = 255; g.pixels[i + 2] = 255;
         } else if(r >= gr && r >= b){
             g.pixels[i] = 255; g.pixels[i + 1] = 0; g.pixels[i + 2] = 0;
@@ -1544,6 +1592,13 @@ function effectiveBaseHue(){
 }
 
 function buildHarmonyHues(baseHue, type){
+    if(type == "monochromatic"){
+        // Same hue three times -- the variation for this scheme lives
+        // in saturation and brightness, not in hue. Kept here mainly
+        // so any generic code that expects an array of hues still
+        // gets something sensible.
+        return [baseHue, baseHue, baseHue];
+    }
     if(type == "analogous"){
         return [(baseHue + 360 - analogDistance) % 360, baseHue, (baseHue + analogDistance) % 360];
     }
@@ -1557,6 +1612,27 @@ function buildHarmonyHues(baseHue, type){
 }
 
 function buildHarmonyPaletteColors(baseHue, type){
+    if(type == "monochromatic"){
+        // This is the one harmony scheme that isn't about hue at all --
+        // one hue held constant, three steps of tint/shade built by
+        // moving saturation and brightness away from the values set on
+        // the Palette Saturation / Palette Brightness sliders: a
+        // lighter, less saturated tint; the base tone itself; and a
+        // darker, slightly more saturated shade.
+        let s = paletteSaturation;
+        let vMid = paletteBrightness;
+        let vLight = Math.min(100, vMid + 25);
+        let vDark = Math.max(0, vMid - 35);
+        let sLight = Math.max(0, s - 20);
+        let sDark = Math.min(100, s + 10);
+
+        return [
+            hsbToRgb(baseHue, sLight, vLight),
+            hsbToRgb(baseHue, s, vMid),
+            hsbToRgb(baseHue, sDark, vDark)
+        ];
+    }
+
     let hues = buildHarmonyHues(baseHue, type);
     return hues.map(function(h){
         return hsbToRgb(h, paletteSaturation, paletteBrightness);
@@ -1611,6 +1687,11 @@ function drawColorWheel(){
 
     if(currentImage == null) return; // nothing to plot yet
 
+    if(harmonyType == "monochromatic"){
+        drawMonochromaticWheelPoints(ctx, center, innerRadius, outerRadius);
+        return;
+    }
+
     let hues = buildHarmonyHues(effectiveBaseHue(), harmonyType);
     let midRadius = (innerRadius + outerRadius) / 2;
     let points = hues.map(function(h){
@@ -1638,6 +1719,43 @@ function drawColorWheel(){
         ctx.beginPath();
         ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
         ctx.fillStyle = "hsl(" + Math.round(hues[i]) + ", 85%, 45%)";
+        ctx.fill();
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    });
+}
+
+// Monochromatic has only one hue, so plotting it on the ring like
+// the other schemes would just stack three dots on top of each
+// other. Instead this draws a single spoke from the center hue
+// outward, with a dot at three radii, each filled with its actual
+// tint/mid/shade color -- the variation that actually defines this
+// scheme is visible along the spoke instead of around the ring.
+function drawMonochromaticWheelPoints(ctx, center, innerRadius, outerRadius){
+    let hue = effectiveBaseHue();
+    let paletteColors = buildHarmonyPaletteColors(hue, "monochromatic");
+    let rad = (hue * Math.PI) / 180;
+    let radii = [innerRadius + 6, (innerRadius + outerRadius) / 2, outerRadius - 6];
+
+    let points = radii.map(function(r){
+        return { x: center + Math.cos(rad) * r, y: center + Math.sin(rad) * r };
+    });
+
+    ctx.strokeStyle = document.body.classList.contains("dark") ? "#39FF14" : "#000000";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    points.forEach(function(p, i){
+        if(i == 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+    });
+    ctx.stroke();
+
+    points.forEach(function(p, i){
+        let c = paletteColors[i];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = "rgb(" + c.r + "," + c.g + "," + c.b + ")";
         ctx.fill();
         ctx.strokeStyle = "#000000";
         ctx.lineWidth = 1;
