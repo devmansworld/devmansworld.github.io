@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="htmlRoot">
 
 <head>
 
@@ -10,190 +10,378 @@
 
 <style>
 
+*{
+    box-sizing:border-box;
+}
+
+/* ================================================================
+   THEMES
+   White is the default (page always starts here). Dark and Kuromi
+   are opt-in via the theme buttons. Every color elsewhere in this
+   stylesheet reads from these variables, so switching theme only
+   ever means changing which body class is active.
+   ================================================================ */
+body.theme-white{
+    --bg:#ffffff;
+    --fg:#1a1a1a;
+    --accent:#cc3366;
+    --visited:#7a4d99;
+    --border:#dddddd;
+    --border-soft:#eeeeee;
+    --panel-bg:#f7f7f7;
+}
+body.theme-dark{
+    --bg:#000000;
+    --fg:#99ff00;
+    --accent:#ffaa00;
+    --visited:#ff00aa;
+    --border:#333333;
+    --border-soft:#222222;
+    --panel-bg:#111111;
+}
+body.theme-kuromi{
+    --bg:#0a0006;
+    --fg:#ff33cc;
+    --accent:#ffe100;
+    --visited:#ff2244;
+    --border:#552244;
+    --border-soft:#3a1730;
+    --panel-bg:#170010;
+}
+
 body{
-    background:#000;
-    color:#99ff00;
+    background:var(--bg);
+    color:var(--fg);
     font-family:Consolas,"Courier New",monospace;
     max-width:1200px;
     margin:auto;
     padding:40px;
+    transition:background 0.2s, color 0.2s;
 }
 
 h1{
     text-align:center;
     letter-spacing:6px;
-    border-bottom:1px solid #333;
+    border-bottom:1px solid var(--border);
     padding-bottom:20px;
 }
 
 h2{
     margin-top:40px;
-    color:#ffaa00;
+    color:var(--accent);
 }
 
+/* ================================================================
+   GALLERY
+   Same 15 screenshots as before, unchanged selection and order.
+   Only the display is improved: every tile is forced to a 1:1
+   square with object-fit:cover, so square images stay clean and
+   rectangular ones crop in from the center instead of stretching.
+   ================================================================ */
 .gallery{
-
     display:grid;
-
-    grid-template-columns:
-    repeat(3,1fr);
-
+    grid-template-columns:repeat(3,1fr);
     gap:20px;
-
     margin-top:20px;
-
 }
 
-.gallery img{
-
-    width:100%;
-
+.gallery .tile{
+    aspect-ratio:1/1;
+    overflow:hidden;
+    border:1px solid var(--border);
     display:block;
-
-    border:1px solid #333;
-
 }
 
-.gallery img:hover{
+.gallery .tile:hover{
+    border-color:var(--accent);
+}
 
-    border-color:#ffaa00;
-
+.gallery .tile img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
 }
 
 a{
-
-    color:#99ff00;
-
+    color:var(--fg);
     text-decoration:none;
-
 }
 
 a:hover{
-
-    color:#ffaa00;
-
+    color:var(--accent);
 }
 
 a:visited{
-
-    color:#ff00aa;
-
+    color:var(--visited);
 }
 
 ul{
-
     line-height:2em;
-
 }
 
 footer{
-
     margin-top:60px;
-
     padding-top:20px;
-
-    border-top:1px solid #333;
-
+    border-top:1px solid var(--border);
     text-align:center;
-
 }
 
 @media(max-width:800px){
-
-.gallery{
-
-grid-template-columns:repeat(2,1fr);
-
-}
-
+    .gallery{
+        grid-template-columns:repeat(2,1fr);
+    }
 }
 
 @media(max-width:600px){
-
-.gallery{
-
-grid-template-columns:1fr;
-
+    .gallery{
+        grid-template-columns:1fr;
+    }
 }
 
+/* ================================================================
+   HAMBURGER SIDEBAR NAV
+   Same collapsible pattern reused on every page of the site.
+   ================================================================ */
+#hamburgerBtn{
+    position:fixed;
+    top:16px;
+    left:16px;
+    z-index:200;
+    background:var(--panel-bg);
+    color:var(--fg);
+    border:1px solid var(--border);
+    font-family:inherit;
+    font-size:22px;
+    padding:6px 12px;
+    cursor:pointer;
+}
+#hamburgerBtn:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+}
+
+#sidebar{
+    position:fixed;
+    top:0;
+    left:0;
+    height:100%;
+    width:240px;
+    background:var(--panel-bg);
+    border-right:1px solid var(--border);
+    transform:translateX(-100%);
+    transition:transform 0.25s ease;
+    z-index:199;
+    padding:70px 20px 20px 20px;
+}
+#sidebar.open{
+    transform:translateX(0);
+}
+#sidebar a{
+    display:block;
+    padding:10px 0;
+    border-bottom:1px solid var(--border-soft);
+    font-size:15px;
+}
+#sidebar a.lastItem{
+    margin-top:20px;
+    color:var(--accent);
+}
+
+#sidebarOverlay{
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.6);
+    z-index:198;
+    display:none;
+}
+#sidebarOverlay.open{
+    display:block;
+}
+
+/* ================================================================
+   THEME SWITCHER + LANGUAGE TOGGLE (index page only)
+   ================================================================ */
+#topRightControls{
+    position:fixed;
+    top:16px;
+    right:16px;
+    z-index:200;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:8px;
+}
+.themeRow{
+    display:flex;
+    gap:6px;
+}
+.themeBtn{
+    background:var(--panel-bg);
+    color:var(--fg);
+    border:1px solid var(--border);
+    font-family:inherit;
+    font-size:12px;
+    padding:6px 10px;
+    cursor:pointer;
+}
+.themeBtn:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+}
+.themeBtn.active{
+    border-color:var(--accent);
+    color:var(--accent);
+    font-weight:bold;
+}
+#langToggle{
+    background:var(--panel-bg);
+    color:var(--fg);
+    border:1px solid var(--border);
+    font-family:inherit;
+    font-size:13px;
+    padding:8px 12px;
+    cursor:pointer;
+}
+#langToggle:hover{
+    border-color:var(--accent);
+    color:var(--accent);
 }
 
 </style>
 
 </head>
 
-<body>
+<body class="theme-white">
 
-<h1>free courses</h1>
+<!-- ============================================================
+     HAMBURGER SIDEBAR (shared pattern across the whole site)
+     ============================================================ -->
+<button id="hamburgerBtn" onclick="toggleSidebar()">&#9776;</button>
+<div id="sidebarOverlay" onclick="closeSidebar()"></div>
+<nav id="sidebar">
+    <a href="index.html" data-i18n="nav_main">Main page</a>
+    <a href="acquarelles/index.html" data-i18n="nav_acquarelles">Acquarelles</a>
+    <a href="newapps/index.html" data-i18n="nav_newapps">NewApps</a>
+    <a href="cvdemo/index.html" data-i18n="nav_cvdemo">CV demo</a>
+    <a href="archive/index.html" data-i18n="nav_archive">Archive</a>
+    <a class="lastItem" href="https://devmansworld.github.io/stencilize/" data-i18n="nav_stencilize">Try Stencilize app</a>
+</nav>
 
-<p>
+<div id="topRightControls">
+    <div class="themeRow">
+        <button class="themeBtn active" id="theme-white" onclick="setTheme('white')">White</button>
+        <button class="themeBtn" id="theme-dark" onclick="setTheme('dark')">Dark</button>
+        <button class="themeBtn" id="theme-kuromi" onclick="setTheme('kuromi')">Kuromi</button>
+    </div>
+    <button id="langToggle" onclick="toggleLanguage()">FR</button>
+</div>
+
+<h1 data-i18n="pageTitle">free courses</h1>
+
+<p data-i18n="pageIntro">
 color theory and practice
 </p>
 
-<h2>Library</h2>
+<h2 data-i18n="galleryTitle">Gallery</h2>
+
+<div class="gallery">
+
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-01-57.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-02-12.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-02-24.png" alt=""></div>
+
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-02-43.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-03-05.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-03-16.png" alt=""></div>
+
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-03-34.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-03-52.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-03.png" alt=""></div>
+
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-12.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-25.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-34.png" alt=""></div>
+
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-43.png" alt=""></div>
+<div class="tile"><img src="images/Screenshot from 2026-07-26 04-05-08.png" alt=""></div>
+
+</div>
+
+<h2 data-i18n="libraryTitle">Library</h2>
 
 <ul>
 
 <li>
-<a href="docs/Capitulo_1_Descubriendo_el_Color.pdf">
-Capitulo_1_Descubriendo_el_Color.pdf
+<a href="docs/capitulo-1-descubriendo-el-color.pdf">
+Cap&iacute;tulo 1 &ndash; Descubriendo el Color
 </a>
 </li>
 
 <li>
-<a href="docs/Capitulo_2_Armonias_Avanzadas_y_Vibracion.pdf">
-Capitulo_2_Armonias_Avanzadas_y_Vibracion.pdf
+<a href="docs/capitulo-1-descubriendo-el-color-edicion-ilustrada.pdf">
+Cap&iacute;tulo 1 &ndash; Descubriendo el Color (Edici&oacute;n Ilustrada)
 </a>
 </li>
 
 <li>
-<a href="docs/Capitulo_3_Composicion_Bodegones_y_Perspectiva.pdf">
-Capitulo_3_Composicion_Bodegones_y_Perspectiva.pdf
+<a href="docs/capitulo-2-armonias-avanzadas-y-vibracion.pdf">
+Cap&iacute;tulo 2 &ndash; Armon&iacute;as Avanzadas y Vibraci&oacute;n
 </a>
 </li>
 
 <li>
-<a href="docs/Manual_Bellas_Artes_Capitulo_3_Addendums.pdf">
-Manual_Bellas_Artes_Capitulo_3_Addendums.pdf
+<a href="docs/capitulo-2-addendum-exercises-color-vibrations.pdf">
+Chapter 2 Addendum &ndash; Exercises upon Color Vibrations
+</a>
+</li>
+
+<li>
+<a href="docs/capitulo-3-composicion-bodegones-y-perspectiva.pdf">
+Cap&iacute;tulo 3 &ndash; Composici&oacute;n, Bodegones y Perspectiva
+</a>
+</li>
+
+<li>
+<a href="docs/capitulo-3-addendum-formas-basicas.pdf">
+Cap&iacute;tulo 3 &ndash; Addendum: Las Formas B&aacute;sicas
+</a>
+</li>
+
+<li>
+<a href="docs/capitulo-3-addendums-b-c-d.pdf">
+Cap&iacute;tulo 3 &ndash; Addendums B, C y D
+</a>
+</li>
+
+<li>
+<a href="docs/capitulo-3-borrador.pdf">
+Cap&iacute;tulo 3 &ndash; Borrador (Aprender a Ver el Espacio)
+</a>
+</li>
+
+<li>
+<a href="docs/minilibro-teoria-del-color-y-dripping.pdf">
+Mini Libro &ndash; Teor&iacute;a del Color y Dripping
+</a>
+</li>
+
+<li>
+<a href="docs/minilibro-teoria-del-color-y-dripping-indice.pdf">
+Mini Libro &ndash; Teor&iacute;a del Color y Dripping (&Iacute;ndice Propuesto)
 </a>
 </li>
 
 </ul>
 
-<h2>Gallery</h2>
-
-<div class="gallery">
-
-<img src="images/Screenshot from 2026-07-26 04-01-57.png" alt="">
-<img src="images/Screenshot from 2026-07-26 04-02-12.png" alt="">
-<img src="images/Screenshot from 2026-07-26 04-02-24.png" alt="">
-
-<img src="images/Screenshot from 2026-07-26 04-02-43.png" alt="">
-<img src="images/Screenshot from 2026-07-26 04-03-05.png" alt="">
-<img src="images/Screenshot from 2026-07-26 04-03-16.png" alt="">
-
-<img src="images/Screenshot from 2026-07-26 04-03-34.png" alt="">
-<img src="images/Screenshot from 2026-07-26 04-03-52.png" alt="">
-<img src="images/Screenshot from 2026-07-26 04-04-03.png" alt="">
-
-<img src="images/Screenshot from 2026-07-26 04-04-12.png" alt="">
-<img src="images/Screenshot from 2026-07-26 04-04-25.png" alt="">
-<img src="images/Screenshot from 2026-07-26 04-04-34.png" alt="">
-
-<img src="images/Screenshot from 2026-07-26 04-04-43.png" alt="">
-<img src="images/Screenshot from 2026-07-26 04-05-08.png" alt="">
-
-
-</div>
-
 <footer>
 
 <p>
 
-Questions?
+<span data-i18n="questions">Questions?</span>
 
 
-<a href="https://devmansworld.github.io/stencilize/">   Try Stencilize app </a>
+<a href="https://devmansworld.github.io/stencilize/"> <span data-i18n="tryStencilize">Try Stencilize app</span> </a>
 </p>
 
 <p>
@@ -207,6 +395,86 @@ owo@email.com
 </p>
 
 </footer>
+
+<script>
+/* ================================================================
+   HAMBURGER SIDEBAR
+   ================================================================ */
+function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("sidebarOverlay").classList.toggle("open");
+}
+function closeSidebar(){
+    document.getElementById("sidebar").classList.remove("open");
+    document.getElementById("sidebarOverlay").classList.remove("open");
+}
+
+/* ================================================================
+   THEME SWITCHER
+   Page always starts in White; Dark and Kuromi are opt-in and
+   reset back to White on the next full page load (no persistence
+   by design, matching "starts with white mode").
+   ================================================================ */
+function setTheme(name){
+    document.body.className = "theme-" + name;
+    document.querySelectorAll(".themeBtn").forEach(function(btn){
+        btn.classList.remove("active");
+    });
+    document.getElementById("theme-" + name).classList.add("active");
+}
+
+/* ================================================================
+   BILINGUAL (English / French), this page only
+   ================================================================ */
+const translations = {
+    en: {
+        pageTitle: "free courses",
+        pageIntro: "color theory and practice",
+        galleryTitle: "Gallery",
+        libraryTitle: "Library",
+        questions: "Questions?",
+        tryStencilize: "Try Stencilize app",
+        nav_main: "Main page",
+        nav_acquarelles: "Acquarelles",
+        nav_newapps: "NewApps",
+        nav_cvdemo: "CV demo",
+        nav_archive: "Archive",
+        nav_stencilize: "Try Stencilize app"
+    },
+    fr: {
+        pageTitle: "cours gratuits",
+        pageIntro: "th\u00E9orie et pratique de la couleur",
+        galleryTitle: "Galerie",
+        libraryTitle: "Biblioth\u00E8que",
+        questions: "Des questions\u00A0?",
+        tryStencilize: "Essayer l'appli Stencilize",
+        nav_main: "Page principale",
+        nav_acquarelles: "Aquarelles",
+        nav_newapps: "NewApps",
+        nav_cvdemo: "D\u00E9mo CV",
+        nav_archive: "Archives",
+        nav_stencilize: "Essayer l'appli Stencilize"
+    }
+};
+
+let currentLang = "en";
+
+function applyLanguage(lang){
+    currentLang = lang;
+    document.querySelectorAll("[data-i18n]").forEach(function(el){
+        let key = el.getAttribute("data-i18n");
+        if(translations[lang][key]){
+            el.textContent = translations[lang][key];
+        }
+    });
+    document.getElementById("htmlRoot").setAttribute("lang", lang);
+    document.getElementById("langToggle").innerText = lang == "en" ? "FR" : "EN";
+}
+
+function toggleLanguage(){
+    applyLanguage(currentLang == "en" ? "fr" : "en");
+}
+</script>
 
 </body>
 
