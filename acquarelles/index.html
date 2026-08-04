@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acquarelles</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    background:#000;
+    color:#99ff00;
+    font-family:Consolas,"Courier New",monospace;
+    max-width:1200px;
+    margin:auto;
+    padding:40px;
+    /* Basic friction against casual saving. Not real protection --
+       a determined visitor can always screenshot a page -- but it
+       discourages the easy right-click-save / drag-out path. */
+    -webkit-user-select:none;
+    user-select:none;
+    -webkit-touch-callout:none;
+}
+
+h1{
+    text-align:center;
+    letter-spacing:6px;
+    border-bottom:1px solid #333;
+    padding-bottom:20px;
+}
+
+a{
+    color:#99ff00;
+    text-decoration:none;
+}
+a:hover{
+    color:#ffaa00;
+}
+
+/* ================================================================
+   PASSWORD LOCK SCREEN
+   Client-side only (this is a static site with no backend), so
+   this is an obscurity gate, not real security -- the password is
+   sitting in the page source. It's meant to keep this page out of
+   search engines and casual visitors, nothing stronger.
+   ================================================================ */
+#lockScreen{
+    max-width:400px;
+    margin:120px auto;
+    text-align:center;
+}
+#lockScreen input{
+    background:#111;
+    color:#99ff00;
+    border:1px solid #333;
+    font-family:inherit;
+    padding:10px;
+    font-size:15px;
+    width:200px;
+    text-align:center;
+}
+#lockScreen button{
+    background:#111;
+    color:#99ff00;
+    border:1px solid #333;
+    font-family:inherit;
+    padding:10px 16px;
+    font-size:15px;
+    cursor:pointer;
+    margin-left:8px;
+}
+#lockScreen button:hover{
+    border-color:#ffaa00;
+    color:#ffaa00;
+}
+#lockError{
+    color:#ff5555;
+    margin-top:14px;
+    min-height:1.2em;
+}
+
+#pageContent{
+    display:none;
+}
+
+/* ================================================================
+   SQUARE GALLERY + LIGHTBOX
+   ================================================================ */
+.gallery{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    margin-top:20px;
+}
+.gallery .tile{
+    aspect-ratio:1/1;
+    overflow:hidden;
+    border:1px solid #333;
+    cursor:pointer;
+}
+.gallery .tile:hover{
+    border-color:#ffaa00;
+}
+.gallery .tile img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    pointer-events:none; /* blocks the image's own right-click/drag target */
+}
+
+@media(max-width:800px){
+    .gallery{ grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:600px){
+    .gallery{ grid-template-columns:1fr; }
+}
+
+#lightbox{
+    display:none;
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.92);
+    z-index:300;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+}
+#lightbox.open{
+    display:flex;
+}
+#lightbox img{
+    max-width:90vw;
+    max-height:80vh;
+    border:1px solid #333;
+    pointer-events:none;
+}
+#lightboxBack{
+    margin-top:20px;
+    background:#111;
+    color:#99ff00;
+    border:1px solid #333;
+    font-family:inherit;
+    padding:10px 18px;
+    font-size:15px;
+    cursor:pointer;
+}
+#lightboxBack:hover{
+    border-color:#ffaa00;
+    color:#ffaa00;
+}
+
+/* ================================================================
+   HAMBURGER SIDEBAR NAV (same pattern as every page)
+   ================================================================ */
+#hamburgerBtn{
+    position:fixed;
+    top:16px;
+    left:16px;
+    z-index:200;
+    background:#111;
+    color:#99ff00;
+    border:1px solid #333;
+    font-family:inherit;
+    font-size:22px;
+    padding:6px 12px;
+    cursor:pointer;
+}
+#hamburgerBtn:hover{
+    border-color:#ffaa00;
+    color:#ffaa00;
+}
+#sidebar{
+    position:fixed;
+    top:0; left:0;
+    height:100%;
+    width:240px;
+    background:#0a0a0a;
+    border-right:1px solid #333;
+    transform:translateX(-100%);
+    transition:transform 0.25s ease;
+    z-index:199;
+    padding:70px 20px 20px 20px;
+}
+#sidebar.open{
+    transform:translateX(0);
+}
+#sidebar a{
+    display:block;
+    padding:10px 0;
+    border-bottom:1px solid #222;
+    font-size:15px;
+}
+#sidebar a.lastItem{
+    margin-top:20px;
+    color:#ffaa00;
+}
+#sidebarOverlay{
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.6);
+    z-index:198;
+    display:none;
+}
+#sidebarOverlay.open{
+    display:block;
+}
+
+.backToMain{
+    display:inline-block;
+    margin-top:30px;
+}
+
+</style>
+
+</head>
+
+<body oncontextmenu="return false;">
+
+<!-- ============================================================
+     LOCK SCREEN
+     ============================================================ -->
+<div id="lockScreen">
+    <h1>Acquarelles</h1>
+    <p>This page is password protected.</p>
+    <div>
+        <input type="password" id="passwordInput" placeholder="password" autocomplete="off">
+        <button onclick="checkPassword()">Enter</button>
+    </div>
+    <div id="lockError"></div>
+    <a class="backToMain" href="../index.html">&larr; Back to main</a>
+</div>
+
+<!-- ============================================================
+     PROTECTED CONTENT
+     ============================================================ -->
+<div id="pageContent">
+
+    <button id="hamburgerBtn" onclick="toggleSidebar()">&#9776;</button>
+    <div id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <nav id="sidebar">
+        <a href="../index.html">Main page</a>
+        <a href="../acquarelles/index.html">Acquarelles</a>
+        <a href="../newapps/index.html">NewApps</a>
+        <a href="../cvdemo/index.html">CV demo</a>
+        <a href="../archive/index.html">Archive</a>
+        <a class="lastItem" href="https://devmansworld.github.io/stencilize/">Try Stencilize app</a>
+    </nav>
+
+    <h1>Acquarelles</h1>
+
+    <div class="gallery" id="galleryGrid"></div>
+
+    <a class="backToMain" href="../index.html">&larr; Back to main</a>
+
+</div>
+
+<!-- ============================================================
+     LIGHTBOX (click a tile to pop up, Back closes it)
+     ============================================================ -->
+<div id="lightbox">
+    <img id="lightboxImg" src="" alt="">
+    <button id="lightboxBack" onclick="closeLightbox()">&larr; Back</button>
+</div>
+
+<script>
+/* ================================================================
+   PASSWORD GATE
+   Hardcoded for now, per your instructions -- swap this pattern
+   onto newapps/index.html and cvdemo/index.html with their own
+   passwords; the mechanism is identical, just the string differs.
+   ================================================================ */
+const correctPassword = "arigato";
+
+function checkPassword(){
+    let entered = document.getElementById("passwordInput").value;
+    if(entered === correctPassword){
+        document.getElementById("lockScreen").style.display = "none";
+        document.getElementById("pageContent").style.display = "block";
+    } else {
+        document.getElementById("lockError").innerText = "Incorrect password.";
+    }
+}
+
+document.getElementById("passwordInput").addEventListener("keydown", function(e){
+    if(e.key === "Enter") checkPassword();
+});
+
+/* ================================================================
+   HAMBURGER SIDEBAR
+   ================================================================ */
+function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("sidebarOverlay").classList.toggle("open");
+}
+function closeSidebar(){
+    document.getElementById("sidebar").classList.remove("open");
+    document.getElementById("sidebarOverlay").classList.remove("open");
+}
+
+/* ================================================================
+   GALLERY + LIGHTBOX
+   Every painting in the collection, always square, click any tile
+   to see it larger; Back returns to the grid.
+   ================================================================ */
+const paintings = [
+    "../paintings/IMG_7777.JPEG",
+    "../paintings/IMG_7779.JPEG",
+    "../paintings/IMG_7781.JPEG",
+    "../paintings/IMG_7895.JPEG",
+    "../paintings/IMG_7896.JPEG",
+    "../paintings/IMG_7906.JPEG",
+    "../paintings/IMG_8068.JPEG",
+    "../paintings/IMG_8080.JPEG",
+    "../paintings/IMG_8070.JPEG",
+    "../paintings/IMG_7591.JPEG",
+    "../paintings/IMG_7366.JPEG",
+    "../paintings/IMG_7164.JPEG",
+    "../paintings/IMG_6756.JPEG",
+    "../paintings/IMG_6754.JPEG",
+    "../paintings/IMG_6755.JPEG",
+    "../paintings/IMG_7204.JPEG",
+    "../paintings/IMG_7206.JPEG",
+    "../paintings/IMG_6757.JPEG"
+];
+
+function renderGallery(){
+    let grid = document.getElementById("galleryGrid");
+    grid.innerHTML = "";
+    paintings.forEach(function(src){
+        let tile = document.createElement("div");
+        tile.className = "tile";
+        tile.onclick = function(){ openLightbox(src); };
+        let img = document.createElement("img");
+        img.src = src;
+        img.alt = "";
+        img.draggable = false;
+        tile.appendChild(img);
+        grid.appendChild(tile);
+    });
+}
+renderGallery();
+
+function openLightbox(src){
+    document.getElementById("lightboxImg").src = src;
+    document.getElementById("lightbox").classList.add("open");
+}
+function closeLightbox(){
+    document.getElementById("lightbox").classList.remove("open");
+    document.getElementById("lightboxImg").src = "";
+}
+</script>
+
+</body>
+</html>
