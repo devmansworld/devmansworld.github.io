@@ -102,6 +102,42 @@ h2{
     object-fit:cover;
     display:block;
 }
+.gallery .tile{
+    cursor:pointer;
+}
+
+#lightbox{
+    display:none;
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.92);
+    z-index:300;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+}
+#lightbox.open{
+    display:flex;
+}
+#lightbox img{
+    max-width:90vw;
+    max-height:80vh;
+    border:1px solid var(--border);
+}
+#lightboxBack{
+    margin-top:20px;
+    background:var(--bg);
+    color:var(--fg);
+    border:1px solid var(--border);
+    font-family:inherit;
+    padding:10px 18px;
+    font-size:15px;
+    cursor:pointer;
+}
+#lightboxBack:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+}
 
 a{
     color:var(--fg);
@@ -262,6 +298,7 @@ footer{
 <nav id="sidebar">
     <a href="index.html" data-i18n="nav_main">Main page</a>
     <a href="acquarelles/index.html" data-i18n="nav_acquarelles">Acquarelles</a>
+    <a href="prints/index.html" data-i18n="nav_prints">Prints</a>
     <a href="newapps/index.html" data-i18n="nav_newapps">NewApps</a>
     <a href="cvdemo/index.html" data-i18n="nav_cvdemo">CV demo</a>
     <a href="archive/index.html" data-i18n="nav_archive">Archive</a>
@@ -287,25 +324,30 @@ color theory and practice
 
 <div class="gallery">
 
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-01-57.png" alt=""></div>
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-02-12.png" alt=""></div>
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-02-24.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-01-57.png')"><img src="images/Screenshot from 2026-07-26 04-01-57.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-02-12.png')"><img src="images/Screenshot from 2026-07-26 04-02-12.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-02-24.png')"><img src="images/Screenshot from 2026-07-26 04-02-24.png" alt=""></div>
 
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-02-43.png" alt=""></div>
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-03-05.png" alt=""></div>
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-03-16.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-02-43.png')"><img src="images/Screenshot from 2026-07-26 04-02-43.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-03-05.png')"><img src="images/Screenshot from 2026-07-26 04-03-05.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-03-16.png')"><img src="images/Screenshot from 2026-07-26 04-03-16.png" alt=""></div>
 
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-03-34.png" alt=""></div>
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-03-52.png" alt=""></div>
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-03.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-03-34.png')"><img src="images/Screenshot from 2026-07-26 04-03-34.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-03-52.png')"><img src="images/Screenshot from 2026-07-26 04-03-52.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-04-03.png')"><img src="images/Screenshot from 2026-07-26 04-04-03.png" alt=""></div>
 
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-12.png" alt=""></div>
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-25.png" alt=""></div>
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-34.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-04-12.png')"><img src="images/Screenshot from 2026-07-26 04-04-12.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-04-25.png')"><img src="images/Screenshot from 2026-07-26 04-04-25.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-04-34.png')"><img src="images/Screenshot from 2026-07-26 04-04-34.png" alt=""></div>
 
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-04-43.png" alt=""></div>
-<div class="tile"><img src="images/Screenshot from 2026-07-26 04-05-08.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-04-43.png')"><img src="images/Screenshot from 2026-07-26 04-04-43.png" alt=""></div>
+<div class="tile" onclick="openLightbox('images/Screenshot from 2026-07-26 04-05-08.png')"><img src="images/Screenshot from 2026-07-26 04-05-08.png" alt=""></div>
 
+</div>
+
+<div id="lightbox">
+    <img id="lightboxImg" src="" alt="">
+    <button id="lightboxBack" onclick="closeLightbox()">&larr; Back</button>
 </div>
 
 <h2 data-i18n="libraryTitle">Library</h2>
@@ -410,6 +452,18 @@ function closeSidebar(){
 }
 
 /* ================================================================
+   GALLERY LIGHTBOX
+   ================================================================ */
+function openLightbox(src){
+    document.getElementById("lightboxImg").src = src;
+    document.getElementById("lightbox").classList.add("open");
+}
+function closeLightbox(){
+    document.getElementById("lightbox").classList.remove("open");
+    document.getElementById("lightboxImg").src = "";
+}
+
+/* ================================================================
    THEME SWITCHER
    Page always starts in White; Dark and Kuromi are opt-in and
    reset back to White on the next full page load (no persistence
@@ -436,6 +490,7 @@ const translations = {
         tryStencilize: "Try Stencilize app",
         nav_main: "Main page",
         nav_acquarelles: "Acquarelles",
+        nav_prints: "Prints",
         nav_newapps: "NewApps",
         nav_cvdemo: "CV demo",
         nav_archive: "Archive",
@@ -450,6 +505,7 @@ const translations = {
         tryStencilize: "Essayer l'appli Stencilize",
         nav_main: "Page principale",
         nav_acquarelles: "Aquarelles",
+        nav_prints: "Tirages",
         nav_newapps: "NewApps",
         nav_cvdemo: "D\u00E9mo CV",
         nav_archive: "Archives",
