@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stencilizer v0.7.5</title>
+<title>Stencilizer v0.7.7</title>
 
 <!-- p5.js library. Local processing only, no server or build step needed. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<!-- Small, well-known QR generator (davidshimjs/qrcodejs), used only
+     for the optional "Digital Signature QR" print feature below. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
 /* ================================================================
@@ -63,10 +66,18 @@ body.dark #headerDot{
 
 /* ================================================================
    TWO COLUMN APP LAYOUT
+   On very wide screens the app used to stretch edge to edge, and
+   the canvas was separately re-centered inside its own column --
+   two different kinds of "centered" fighting each other. Now the
+   whole app is centered as one unit (a max-width + auto margins),
+   and the canvas simply sits at the top of its column instead of
+   floating in the middle of extra empty space.
    ================================================================ */
 #appBody{
     display:flex;
     align-items:flex-start;
+    max-width:1600px;
+    margin:0 auto;
 }
 #controlsColumn{
     width:34%;
@@ -80,7 +91,7 @@ body.dark #headerDot{
     top:0;
     display:flex;
     flex-direction:column;
-    align-items:center;
+    align-items:flex-start;
     padding:16px;
     box-sizing:border-box;
 }
@@ -269,7 +280,7 @@ input:disabled{
    ================================================================ */
 #canvasHolder{
     display:flex;
-    justify-content:center;
+    justify-content:flex-start;
     width:100%;
 }
 canvas.mainCanvas{
@@ -313,6 +324,16 @@ body.dark #statusBar{
     border-top:3px solid #39FF14;
 }
 
+/* The header and status bar rules (lime/orange lines) are tied to
+   the same "Hide canvas border" checkbox as the canvas frame
+   itself, so unchecking one decorative border removes them all --
+   useful for a fully chrome-less view (e.g. when this app is
+   embedded as a panel inside something else). */
+body.noChromeLines #headerBar,
+body.noChromeLines #statusBar{
+    border-color:transparent !important;
+}
+
 /* ================================================================
    MOBILE / SMALL SCREEN ADJUSTMENTS
    ================================================================ */
@@ -344,6 +365,33 @@ body.dark #statusBar{
         width:90px;
     }
 }
+
+/* ================================================================
+   PRINT
+   Only the canvas is meant to end up on paper -- everything else
+   (header, controls, status bar, sidebar) is app chrome that has
+   no business being printed.
+   ================================================================ */
+@media print{
+    #headerBar,
+    #controlsColumn,
+    #statusBar{
+        display:none !important;
+    }
+    #appBody{
+        display:block;
+    }
+    #imageColumn{
+        width:100%;
+        position:static;
+        padding:0;
+    }
+    body{
+        background:#ffffff;
+        padding:0;
+        max-width:none;
+    }
+}
 </style>
 </head>
 <body class="light">
@@ -352,7 +400,7 @@ body.dark #statusBar{
      HEADER
      ============================================================ -->
 <div id="headerBar">
-    <div class="title">STENCILIZER v0.7.5</div>
+    <div class="title">STENCILIZER v0.7.7</div>
     <div><span id="headerDot">&#9679;</span><span id="headerDotLabel">Ready</span></div>
 </div>
 
@@ -633,6 +681,32 @@ body.dark #statusBar{
         </div>
     </div>
 
+    <!-- WATERMARK PANEL -->
+    <div class="panel">
+        <div class="panelLabel">WATERMARK</div>
+        <input type="file" id="watermarkLoader" accept="image/png">
+        <br>
+        <label>
+            <input type="checkbox" id="watermarkEnabledToggle">
+            Enable Watermark
+        </label>
+        <div class="panelRow" style="font-size:11px; opacity:0.7;">
+            Use a transparent PNG. It's placed in the bottom-right corner,
+            scaled automatically to fit.
+        </div>
+    </div>
+
+    <!-- PRINT & SIGNATURE PANEL -->
+    <div class="panel">
+        <div class="panelLabel">PRINT &amp; SIGNATURE</div>
+        <button type="button" onclick="printResult()">Print</button>
+        <br>
+        <label>
+            <input type="checkbox" id="qrSignatureToggle">
+            Add Digital Signature QR
+        </label>
+    </div>
+
     <!-- SAVE PANEL -->
     <div class="panel">
         <div class="panelLabel">SAVE</div>
@@ -656,6 +730,7 @@ body.dark #statusBar{
      ============================================================ -->
 <div id="imageColumn">
     <div id="canvasHolder"></div>
+    <div id="qrGenHolder" style="display:none;"></div>
     <div id="statusBar">Status: Ready.</div>
 </div>
 
@@ -751,6 +826,21 @@ let rgbIncludeBlack = true;
 let rgbIncludeWhite = true;
 
 /* ----------------------------------------------------------------
+   Watermark state
+   ---------------------------------------------------------------- */
+let watermarkImage   = null;
+let watermarkEnabled = false;
+
+/* ----------------------------------------------------------------
+   Digital signature QR state
+   The QR is generated once (not every frame -- that would be very
+   expensive) and cached as a plain <canvas> element, which is then
+   drawn onto the main canvas cheaply every frame it's needed.
+   ---------------------------------------------------------------- */
+let qrSignatureEnabled = false;
+let qrCanvasCache      = null;
+
+/* ----------------------------------------------------------------
    Memetizer state
    ---------------------------------------------------------------- */
 let topText             = "";
@@ -811,6 +901,7 @@ function setup(){
         .addEventListener("change", function(){
             hideCanvasBorder = this.checked;
             document.querySelector("canvas.mainCanvas").classList.toggle("noBorder", hideCanvasBorder);
+            document.body.classList.toggle("noChromeLines", hideCanvasBorder);
             setStatus(hideCanvasBorder ? "Canvas border hidden." : "Canvas border shown.");
         });
 
@@ -834,6 +925,25 @@ function setup(){
             monochromeEnabled = this.checked;
             setStatus(monochromeEnabled ? "Monochrome enabled." : "Monochrome disabled.");
             updateControlAvailability();
+        });
+
+    document
+        .getElementById("watermarkLoader")
+        .addEventListener("change", loadWatermarkLocal);
+
+    document
+        .getElementById("watermarkEnabledToggle")
+        .addEventListener("change", function(){
+            watermarkEnabled = this.checked;
+            setStatus(watermarkEnabled ? "Watermark enabled." : "Watermark disabled.");
+        });
+
+    document
+        .getElementById("qrSignatureToggle")
+        .addEventListener("change", function(){
+            qrSignatureEnabled = this.checked;
+            if(qrSignatureEnabled) regenerateSignatureQr();
+            setStatus(qrSignatureEnabled ? "Digital signature QR enabled." : "Digital signature QR disabled.");
         });
 
     setupBackgroundControls();
@@ -875,6 +985,8 @@ function draw(){
     }
 
     drawMemeOverlay();
+    drawWatermark();
+    drawSignatureQr();
 }
 
 // Clears or fills the whole canvas each frame according to the
@@ -910,6 +1022,23 @@ function loadImageLocal(event){
     reader.readAsDataURL(file);
 }
 
+// Loads a watermark image the same way the main photo loads. Meant
+// for a transparent PNG, but any image works -- opaque ones will
+// simply cover whatever is behind them instead of blending.
+function loadWatermarkLocal(event){
+    let file = event.target.files[0];
+    if(!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e){
+        loadImage(e.target.result, function(newImage){
+            watermarkImage = newImage;
+            setStatus("Watermark loaded: " + file.name);
+        });
+    };
+    reader.readAsDataURL(file);
+}
+
 /* ================================================================
    MODE / HARMONY TYPE / ACCURACY SWITCHING
    ================================================================ */
@@ -934,15 +1063,12 @@ function setHarmonyType(newType){
 // can be touched right now -- so re-enabling always restores the
 // exact same behavior as before.
 function updateControlAvailability(){
-    let harmonyActive = (currentMode == "harmony");
-
-    ["harm-complementary", "harm-analogous", "harm-triadic", "harm-tetradic", "harm-monochromatic"].forEach(function(id){
-        document.getElementById(id).disabled = !harmonyActive;
-    });
-    document.getElementById("harmonyHueOffsetInput").disabled = !harmonyActive;
-    document.getElementById("paletteSatInput").disabled = !harmonyActive;
-    document.getElementById("paletteBrightInput").disabled = !harmonyActive;
-    document.getElementById("analogDistanceInput").disabled = !(harmonyActive && harmonyType == "analogous");
+    // Harmony Type buttons and the Hue Offset / Palette Saturation /
+    // Palette Brightness / Analog Distance sliders used to be locked
+    // unless Harmony mode was active. That turned out to be too
+    // strict in practice -- it stopped people from dialing in a
+    // palette before switching modes. They're left freely
+    // adjustable now, regardless of the current mode.
 
     // Accuracy has no effect on Original (it never runs applyBlockAverage).
     let accuracyActive = (currentMode != "original");
@@ -1184,6 +1310,12 @@ function highlightActiveFitButton(){
 function resetAllParameters(){
     currentMode = "original";
     highlightActiveModeButton();
+
+    watermarkEnabled = false;
+    document.getElementById("watermarkEnabledToggle").checked = false;
+
+    qrSignatureEnabled = false;
+    document.getElementById("qrSignatureToggle").checked = false;
 
     rgbIncludeBlack = true;
     rgbIncludeWhite = true;
@@ -1857,6 +1989,65 @@ function highlightActiveFontButton(){
     document.getElementById("font-" + memeFont).classList.add("active");
 }
 
+/* ================================================================
+   WATERMARK
+   Drawn every frame like the Memetizer caption, so it's visible in
+   the live preview and gets captured automatically by Download PNG
+   -- no separate export-time compositing needed.
+   ================================================================ */
+function drawWatermark(){
+    if(!watermarkEnabled || watermarkImage == null) return;
+
+    let margin = 14;
+    let wmWidth = width * 0.18;
+    let ratio = wmWidth / watermarkImage.width;
+    let wmHeight = watermarkImage.height * ratio;
+
+    image(watermarkImage, width - wmWidth - margin, height - wmHeight - margin, wmWidth, wmHeight);
+}
+
+/* ================================================================
+   DIGITAL SIGNATURE QR
+   The QR code itself is only regenerated when the feature is
+   turned on (not every frame -- that would mean rebuilding it 60
+   times a second for no reason). The cached <canvas> it produces
+   is then just drawn onto the main canvas cheaply each frame.
+   ================================================================ */
+function regenerateSignatureQr(){
+    let holder = document.getElementById("qrGenHolder");
+    holder.innerHTML = "";
+    let signatureText = "made with stencilizer by devman | " + getUtcTimestamp();
+    new QRCode(holder, {
+        text: signatureText,
+        width: 120,
+        height: 120,
+        correctLevel: QRCode.CorrectLevel.M
+    });
+    qrCanvasCache = holder.querySelector("canvas");
+}
+
+function drawSignatureQr(){
+    if(!qrSignatureEnabled || qrCanvasCache == null) return;
+
+    let margin = 14;
+    let qrSize = width * 0.12;
+
+    // Drawn via the raw 2D context (drawingContext) rather than p5's
+    // image(), since the QR is a plain HTML canvas element, not a
+    // p5.Image -- drawImage() accepts a canvas element directly.
+    drawingContext.drawImage(qrCanvasCache, margin, height - qrSize - margin, qrSize, qrSize);
+}
+
+/* ================================================================
+   PRINT
+   Prints exactly the canvas, via a dedicated @media print rule
+   that hides every other panel and lets the browser's own print
+   dialog handle paper size, margins, and orientation.
+   ================================================================ */
+function printResult(){
+    window.print();
+}
+
 function drawMemeOverlay(){
     if(topText.trim() === "" && bottomText.trim() === "") return;
 
@@ -1940,9 +2131,110 @@ function drawMemeTextBlock(lines, centerX, startY, lineHeight, borderEnabled, bo
    SAVE / DOWNLOAD
    ================================================================ */
 function downloadResult(){
-    let filename = "stencelizer-" + currentMode;
-    saveCanvas(canvas, filename, "png");
+    let filename = "stencilizer-" + currentMode + "-" + getUtcTimestamp();
+    let rawDataUrl = canvas.elt.toDataURL("image/png");
+    let dataUrlWithMetadata = insertPngTextChunk(rawDataUrl, "Comment", "made with stencilizer by devman");
+    triggerDownload(dataUrlWithMetadata, filename + ".png");
     setStatus("Downloaded: " + filename + ".png");
+}
+
+// Compact UTC timestamp, e.g. 20260804T013245Z -- used in exported
+// filenames so repeated downloads never overwrite each other.
+function getUtcTimestamp(){
+    let d = new Date();
+    let pad = function(n){ return String(n).padStart(2, "0"); };
+    return d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate()) +
+        "T" + pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + pad(d.getUTCSeconds()) + "Z";
+}
+
+function triggerDownload(dataUrl, filename){
+    let a = document.createElement("a");
+    a.href = dataUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+/* ================================================================
+   PNG METADATA
+   Embeds a small, honest text credit directly into the exported
+   PNG's own tEXt chunk (the standard, official way PNGs carry
+   textual metadata -- the same mechanism image editors use for
+   "Author" or "Comment" fields). This is plain, visible-on-request
+   text, not tracking of any kind, and doesn't change a single
+   pixel of the image itself.
+   ================================================================ */
+function insertPngTextChunk(dataUrl, keyword, text){
+    let base64 = dataUrl.split(",")[1];
+    let binary = atob(base64);
+    let bytes = new Uint8Array(binary.length);
+    for(let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+    // The PNG signature is 8 bytes; the very next chunk is always
+    // IHDR, whose data is always exactly 13 bytes, so the whole
+    // IHDR chunk (length+type+data+crc) is always 25 bytes. The new
+    // chunk is inserted right after it.
+    let insertPos = 8 + 25;
+
+    let keywordBytes = latin1Bytes(keyword);
+    let textBytes = latin1Bytes(text);
+    let chunkData = new Uint8Array(keywordBytes.length + 1 + textBytes.length);
+    chunkData.set(keywordBytes, 0);
+    chunkData[keywordBytes.length] = 0; // null separator required by the tEXt format
+    chunkData.set(textBytes, keywordBytes.length + 1);
+
+    let typeBytes = latin1Bytes("tEXt");
+    let crcInput = new Uint8Array(typeBytes.length + chunkData.length);
+    crcInput.set(typeBytes, 0);
+    crcInput.set(chunkData, typeBytes.length);
+
+    let newChunk = new Uint8Array(4 + 4 + chunkData.length + 4);
+    newChunk.set(uint32ToBytes(chunkData.length), 0);
+    newChunk.set(typeBytes, 4);
+    newChunk.set(chunkData, 8);
+    newChunk.set(uint32ToBytes(crc32(crcInput)), 8 + chunkData.length);
+
+    let result = new Uint8Array(bytes.length + newChunk.length);
+    result.set(bytes.subarray(0, insertPos), 0);
+    result.set(newChunk, insertPos);
+    result.set(bytes.subarray(insertPos), insertPos + newChunk.length);
+
+    let binaryResult = "";
+    for(let i = 0; i < result.length; i++) binaryResult += String.fromCharCode(result[i]);
+    return "data:image/png;base64," + btoa(binaryResult);
+}
+
+function latin1Bytes(str){
+    let bytes = new Uint8Array(str.length);
+    for(let i = 0; i < str.length; i++) bytes[i] = str.charCodeAt(i) & 0xFF;
+    return bytes;
+}
+
+function uint32ToBytes(num){
+    return new Uint8Array([(num >>> 24) & 0xFF, (num >>> 16) & 0xFF, (num >>> 8) & 0xFF, num & 0xFF]);
+}
+
+// Standard PNG/zlib CRC-32, computed once and cached.
+let crc32Table = null;
+function buildCrc32Table(){
+    let table = new Uint32Array(256);
+    for(let n = 0; n < 256; n++){
+        let c = n;
+        for(let k = 0; k < 8; k++){
+            c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+        }
+        table[n] = c >>> 0;
+    }
+    return table;
+}
+function crc32(bytes){
+    if(!crc32Table) crc32Table = buildCrc32Table();
+    let crc = 0xFFFFFFFF;
+    for(let i = 0; i < bytes.length; i++){
+        crc = crc32Table[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+    }
+    return (crc ^ 0xFFFFFFFF) >>> 0;
 }
 
 /* ================================================================
