@@ -13,13 +13,32 @@
     box-sizing:border-box;
 }
 
+/* ================================================================
+   THEMES
+   Same White / Dark / Kuromi system as the main page, so switching
+   theme anywhere on the site feels consistent. White is default.
+   ================================================================ */
+body.theme-white{
+    --bg:#ffffff; --fg:#1a1a1a; --accent:#cc3366; --visited:#7a4d99;
+    --border:#dddddd; --border-soft:#eeeeee; --panel-bg:#f7f7f7;
+}
+body.theme-dark{
+    --bg:#000000; --fg:#99ff00; --accent:#ffaa00; --visited:#ff00aa;
+    --border:#333333; --border-soft:#222222; --panel-bg:#111111;
+}
+body.theme-kuromi{
+    --bg:#0a0006; --fg:#ff33cc; --accent:#ffe100; --visited:#ff2244;
+    --border:#552244; --border-soft:#3a1730; --panel-bg:#170010;
+}
+
 body{
-    background:#000;
-    color:#99ff00;
+    background:var(--bg);
+    color:var(--fg);
     font-family:Consolas,"Courier New",monospace;
     max-width:1200px;
     margin:auto;
     padding:40px;
+    transition:background 0.2s, color 0.2s;
     /* Basic friction against casual saving. Not real protection --
        a determined visitor can always screenshot a page -- but it
        discourages the easy right-click-save / drag-out path. */
@@ -31,16 +50,16 @@ body{
 h1{
     text-align:center;
     letter-spacing:6px;
-    border-bottom:1px solid #333;
+    border-bottom:1px solid var(--border);
     padding-bottom:20px;
 }
 
 a{
-    color:#99ff00;
+    color:var(--fg);
     text-decoration:none;
 }
 a:hover{
-    color:#ffaa00;
+    color:var(--accent);
 }
 
 /* ================================================================
@@ -56,9 +75,9 @@ a:hover{
     text-align:center;
 }
 #lockScreen input{
-    background:#111;
-    color:#99ff00;
-    border:1px solid #333;
+    background:var(--panel-bg);
+    color:var(--fg);
+    border:1px solid var(--border);
     font-family:inherit;
     padding:10px;
     font-size:15px;
@@ -66,9 +85,9 @@ a:hover{
     text-align:center;
 }
 #lockScreen button{
-    background:#111;
-    color:#99ff00;
-    border:1px solid #333;
+    background:var(--panel-bg);
+    color:var(--fg);
+    border:1px solid var(--border);
     font-family:inherit;
     padding:10px 16px;
     font-size:15px;
@@ -76,8 +95,8 @@ a:hover{
     margin-left:8px;
 }
 #lockScreen button:hover{
-    border-color:#ffaa00;
-    color:#ffaa00;
+    border-color:var(--accent);
+    color:var(--accent);
 }
 #lockError{
     color:#ff5555;
@@ -101,11 +120,11 @@ a:hover{
 .gallery .tile{
     aspect-ratio:1/1;
     overflow:hidden;
-    border:1px solid #333;
+    border:1px solid var(--border);
     cursor:pointer;
 }
 .gallery .tile:hover{
-    border-color:#ffaa00;
+    border-color:var(--accent);
 }
 .gallery .tile img{
     width:100%;
@@ -138,22 +157,22 @@ a:hover{
 #lightbox img{
     max-width:90vw;
     max-height:80vh;
-    border:1px solid #333;
+    border:1px solid var(--border);
     pointer-events:none;
 }
 #lightboxBack{
     margin-top:20px;
-    background:#111;
-    color:#99ff00;
-    border:1px solid #333;
+    background:var(--panel-bg);
+    color:var(--fg);
+    border:1px solid var(--border);
     font-family:inherit;
     padding:10px 18px;
     font-size:15px;
     cursor:pointer;
 }
 #lightboxBack:hover{
-    border-color:#ffaa00;
-    color:#ffaa00;
+    border-color:var(--accent);
+    color:var(--accent);
 }
 
 /* ================================================================
@@ -164,25 +183,25 @@ a:hover{
     top:16px;
     left:16px;
     z-index:200;
-    background:#111;
-    color:#99ff00;
-    border:1px solid #333;
+    background:var(--panel-bg);
+    color:var(--fg);
+    border:1px solid var(--border);
     font-family:inherit;
     font-size:22px;
     padding:6px 12px;
     cursor:pointer;
 }
 #hamburgerBtn:hover{
-    border-color:#ffaa00;
-    color:#ffaa00;
+    border-color:var(--accent);
+    color:var(--accent);
 }
 #sidebar{
     position:fixed;
     top:0; left:0;
     height:100%;
     width:240px;
-    background:#0a0a0a;
-    border-right:1px solid #333;
+    background:var(--panel-bg);
+    border-right:1px solid var(--border);
     transform:translateX(-100%);
     transition:transform 0.25s ease;
     z-index:199;
@@ -194,12 +213,12 @@ a:hover{
 #sidebar a{
     display:block;
     padding:10px 0;
-    border-bottom:1px solid #222;
+    border-bottom:1px solid var(--border-soft);
     font-size:15px;
 }
 #sidebar a.lastItem{
     margin-top:20px;
-    color:#ffaa00;
+    color:var(--accent);
 }
 #sidebarOverlay{
     position:fixed;
@@ -217,11 +236,41 @@ a:hover{
     margin-top:30px;
 }
 
+/* ================================================================
+   THEME SWITCHER
+   ================================================================ */
+#topRightControls{
+    position:fixed;
+    top:16px;
+    right:16px;
+    z-index:200;
+    display:flex;
+    gap:6px;
+}
+.themeBtn{
+    background:var(--panel-bg);
+    color:var(--fg);
+    border:1px solid var(--border);
+    font-family:inherit;
+    font-size:12px;
+    padding:6px 10px;
+    cursor:pointer;
+}
+.themeBtn:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+}
+.themeBtn.active{
+    border-color:var(--accent);
+    color:var(--accent);
+    font-weight:bold;
+}
+
 </style>
 
 </head>
 
-<body oncontextmenu="return false;">
+<body class="theme-white" oncontextmenu="return false;">
 
 <!-- ============================================================
      LOCK SCREEN
@@ -247,11 +296,18 @@ a:hover{
     <nav id="sidebar">
         <a href="../index.html">Main page</a>
         <a href="../acquarelles/index.html">Acquarelles</a>
+        <a href="../prints/index.html">Prints</a>
         <a href="../newapps/index.html">NewApps</a>
         <a href="../cvdemo/index.html">CV demo</a>
         <a href="../archive/index.html">Archive</a>
         <a class="lastItem" href="https://devmansworld.github.io/stencilize/">Try Stencilize app</a>
     </nav>
+
+    <div id="topRightControls">
+        <button class="themeBtn active" id="theme-white" onclick="setTheme('white')">White</button>
+        <button class="themeBtn" id="theme-dark" onclick="setTheme('dark')">Dark</button>
+        <button class="themeBtn" id="theme-kuromi" onclick="setTheme('kuromi')">Kuromi</button>
+    </div>
 
     <h1>Acquarelles</h1>
 
@@ -293,6 +349,17 @@ document.getElementById("passwordInput").addEventListener("keydown", function(e)
 });
 
 /* ================================================================
+   THEME SWITCHER
+   ================================================================ */
+function setTheme(name){
+    document.body.className = "theme-" + name;
+    document.querySelectorAll(".themeBtn").forEach(function(btn){
+        btn.classList.remove("active");
+    });
+    document.getElementById("theme-" + name).classList.add("active");
+}
+
+/* ================================================================
    HAMBURGER SIDEBAR
    ================================================================ */
 function toggleSidebar(){
@@ -327,7 +394,17 @@ const paintings = [
     "../paintings/IMG_6755.JPEG",
     "../paintings/IMG_7204.JPEG",
     "../paintings/IMG_7206.JPEG",
-    "../paintings/IMG_6757.JPEG"
+    "../paintings/IMG_6757.JPEG",
+    "../paintings/IMG_7208.JPEG",
+    "../paintings/IMG_6597.JPEG",
+    "../paintings/IMG_7203.JPEG",
+    "../paintings/IMG_7684.JPEG",
+    "../paintings/IMG_7692.JPEG",
+    "../paintings/IMG_8072.JPEG",
+    "../paintings/IMG_7512.JPEG",
+    "../paintings/IMG_6598.JPEG",
+    "../paintings/IMG_5165.JPEG",
+    "../paintings/IMG_5247.JPEG"
 ];
 
 function renderGallery(){
