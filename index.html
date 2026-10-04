@@ -284,6 +284,61 @@ footer{
     color:var(--accent);
 }
 
+
+/* ================================================================
+   PASSWORD PROMPT (for the locked sidebar links)
+   Client-side only: keeps casual visitors out, not real security.
+   ================================================================ */
+#pwModal{
+    display:none;
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.85);
+    z-index:400;
+    align-items:center;
+    justify-content:center;
+}
+#pwModal.open{
+    display:flex;
+}
+#pwModal .pwBox{
+    background:var(--panel-bg);
+    color:var(--fg);
+    border:1px solid var(--border);
+    padding:30px;
+    text-align:center;
+    max-width:90vw;
+}
+#pwModal input{
+    background:var(--bg);
+    color:var(--fg);
+    border:1px solid var(--border);
+    font-family:inherit;
+    padding:10px;
+    font-size:15px;
+    width:200px;
+    text-align:center;
+}
+#pwModal button{
+    background:var(--bg);
+    color:var(--fg);
+    border:1px solid var(--border);
+    font-family:inherit;
+    padding:10px 16px;
+    font-size:15px;
+    cursor:pointer;
+    margin:8px 4px 0 4px;
+}
+#pwModal button:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+}
+#pwError{
+    color:#ff5555;
+    min-height:1.2em;
+    margin-top:12px;
+}
+
 </style>
 
 </head>
@@ -297,10 +352,10 @@ footer{
 <div id="sidebarOverlay" onclick="closeSidebar()"></div>
 <nav id="sidebar">
     <a href="index.html" data-i18n="nav_main">Main page</a>
-    <a href="acquarelles/index.html" data-i18n="nav_acquarelles">Acquarelles</a>
+    <a href="acquarelles/index.html" data-lock="arigato" data-i18n="nav_acquarelles">Acquarelles</a>
     <a href="prints/index.html" data-i18n="nav_prints">Prints</a>
-    <a href="newapps/index.html" data-i18n="nav_newapps">NewApps</a>
-    <a href="cvdemo/index.html" data-i18n="nav_cvdemo">CV demo</a>
+    <a href="newapps/index.html" data-lock="dankeschon" data-i18n="nav_newapps">NewApps</a>
+    <a href="cvdemo/index.html" data-lock="thankyou" data-i18n="nav_cvdemo">CV demo</a>
     <a href="archive/index.html" data-i18n="nav_archive">Archive</a>
     <a class="lastItem" href="https://devmansworld.github.io/stencilize/" data-i18n="nav_stencilize">Try Stencilize app</a>
 </nav>
@@ -348,6 +403,18 @@ color theory and practice
 <div id="lightbox">
     <img id="lightboxImg" src="" alt="">
     <button id="lightboxBack" onclick="closeLightbox()">&larr; Back</button>
+</div>
+
+<div id="pwModal">
+    <div class="pwBox">
+        <p id="pwTitle" data-i18n="lockPrompt">This page is password protected.</p>
+        <input type="password" id="pwInput" autocomplete="off">
+        <div id="pwError"></div>
+        <div>
+            <button id="pwEnter" onclick="submitPassword()" data-i18n="lockEnter">Enter</button>
+            <button id="pwCancel" onclick="closePasswordPrompt()" data-i18n="lockCancel">Cancel</button>
+        </div>
+    </div>
 </div>
 
 <h2 data-i18n="libraryTitle">Library</h2>
@@ -494,7 +561,11 @@ const translations = {
         nav_newapps: "NewApps",
         nav_cvdemo: "CV demo",
         nav_archive: "Archive",
-        nav_stencilize: "Try Stencilize app"
+        nav_stencilize: "Try Stencilize app",
+        lockPrompt: "This page is password protected.",
+        lockEnter: "Enter",
+        lockCancel: "Cancel",
+        lockWrong: "Incorrect password."
     },
     fr: {
         pageTitle: "cours gratuits",
@@ -509,7 +580,11 @@ const translations = {
         nav_newapps: "NewApps",
         nav_cvdemo: "D\u00E9mo CV",
         nav_archive: "Archives",
-        nav_stencilize: "Essayer l'appli Stencilize"
+        nav_stencilize: "Essayer l'appli Stencilize",
+        lockPrompt: "Cette page est prot\u00E9g\u00E9e par mot de passe.",
+        lockEnter: "Entrer",
+        lockCancel: "Annuler",
+        lockWrong: "Mot de passe incorrect."
     }
 };
 
@@ -530,6 +605,42 @@ function applyLanguage(lang){
 function toggleLanguage(){
     applyLanguage(currentLang == "en" ? "fr" : "en");
 }
+
+/* ================================================================
+   PASSWORD PROMPT FOR LOCKED SIDEBAR LINKS
+   Each locked link carries its password in data-lock.
+   ================================================================ */
+let pendingHref = null;
+let pendingPass = null;
+
+document.querySelectorAll("#sidebar a[data-lock]").forEach(function(link){
+    link.addEventListener("click", function(e){
+        e.preventDefault();
+        pendingHref = link.getAttribute("href");
+        pendingPass = link.getAttribute("data-lock");
+        document.getElementById("pwInput").value = "";
+        document.getElementById("pwError").innerText = "";
+        document.getElementById("pwModal").classList.add("open");
+        document.getElementById("pwInput").focus();
+    });
+});
+
+function submitPassword(){
+    if(document.getElementById("pwInput").value === pendingPass){
+        window.location.href = pendingHref;
+    } else {
+        document.getElementById("pwError").innerText = translations[currentLang].lockWrong;
+    }
+}
+function closePasswordPrompt(){
+    document.getElementById("pwModal").classList.remove("open");
+    pendingHref = null;
+    pendingPass = null;
+}
+document.getElementById("pwInput").addEventListener("keydown", function(e){
+    if(e.key === "Enter") submitPassword();
+    if(e.key === "Escape") closePasswordPrompt();
+});
 </script>
 
 </body>
