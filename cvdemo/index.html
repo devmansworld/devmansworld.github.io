@@ -779,68 +779,6 @@ header select[id*="theme" i]{
 }
 </style>
 
-
-<style id="true-region-tags">
-#movementRegions{
-  position:absolute;
-  inset:0;
-  z-index:39;
-  pointer-events:none;
-}
-.movement-region{
-  position:absolute;
-  box-sizing:border-box;
-  border:2px solid #18bfff !important;
-  background:rgba(24,191,255,.025) !important;
-  color:#18bfff !important;
-  box-shadow:0 0 0 1px rgba(24,191,255,.22);
-  pointer-events:none;
-}
-.movement-region-label{
-  position:absolute;
-  left:3px;
-  top:-22px;
-  white-space:nowrap;
-  padding:2px 5px;
-  background:rgba(0,0,0,.68);
-  color:#18bfff;
-  font:700 10px/1.1 Consolas,"Courier New",monospace;
-}
-#faceTag,
-#textTag{
-  overflow:visible !important;
-}
-#faceTag{
-  background:rgba(0,0,0,.025) !important;
-}
-#faceTag .face-label{
-  position:absolute;
-  left:4px;
-  top:-28px;
-  white-space:nowrap;
-  padding:3px 6px;
-  background:rgba(0,0,0,.72);
-  color:inherit;
-  border:1px solid currentColor;
-  font:700 11px/1.15 Consolas,"Courier New",monospace;
-}
-#textTag{
-  background:rgba(185,255,36,.025) !important;
-}
-#textTag .text-label{
-  position:absolute;
-  left:0;
-  top:100%;
-  margin-top:4px;
-  white-space:nowrap;
-  padding:3px 6px;
-  background:rgba(0,0,0,.72);
-  color:inherit;
-  border:1px solid currentColor;
-  font:700 11px/1.15 Consolas,"Courier New",monospace;
-}
-</style>
-
 </head>
 <body>
       <div class="memory-controls" aria-label="session memory controls">
@@ -928,7 +866,6 @@ header select[id*="theme" i]{
 [system] processors idle</div>
     <div id="faceTag" class="tag face bracket">FACE · —</div>
     <div id="motionTag" class="tag motion bracket">MOVEMENT · —</div>
-    <div id="movementRegions" aria-hidden="true"></div>
     <div id="textTag" class="tag text bracket">TEXT · —</div>
    </div>
    <div class="status" id="cameraStatus">camera stopped</div>
@@ -1142,10 +1079,9 @@ const Camera={
  processFace(t){
   if(!this.face||this.video.currentTime===this.lastVideoTime)return;
   const r=this.face.detectForVideo(this.video,t);
-
   if(!r.faceLandmarks.length){
    $("#face-reading").textContent="NO FACE";
-   $("#faceTag").innerHTML='<span class="face-label">FACE · NO FACE</span>';
+   $("#faceTag").textContent="FACE · —";
    $("#faceState").textContent="NO FACE";
    $("#faceBlend").textContent="";
    this.lastEmotion="NO FACE";this.lastEmotionScore=0;
@@ -1155,6 +1091,9 @@ const Camera={
   const d={};(r.faceBlendshapes[0]?.categories||[]).forEach(x=>d[x.categoryName]=x.score);
   const v=n=>d[n]||0, avg=(a,b)=>(v(a)+v(b))/2;
 
+  /* Raw MediaPipe signals. Derived states below are intentionally simple
+     mathematical combinations, so this remains an experiment rather than
+     pretending to be a trained psychological classifier. */
   const smile=avg("mouthSmileLeft","mouthSmileRight");
   const frown=avg("mouthFrownLeft","mouthFrownRight");
   const browDown=avg("browDownLeft","browDownRight");
@@ -1199,242 +1138,73 @@ const Camera={
   $("#faceSadness").textContent="sad        "+(derived.SAD*100).toFixed(1)+"%";
   $("#faceAnger").textContent="anger      "+(derived.ANGRY*100).toFixed(1)+"%";
 
-  const colors={
-   HAPPY:"#72e66f", SAD:"#55a8ff", ANGRY:"#ff3b30",
-   SURPRISED:"#ffd43b", FEARFUL:"#ff7b45", DISDAIN:"#b66cff"
-  };
-  this.setTagColor("#faceTag",colors[primary[0]]||"#ffffff");
-
-  // The rectangle hugs the face geometry. The label lives OUTSIDE the box.
+  $("#faceTag").textContent="FACE · "+state+(UI.percent.checked?" · "+score.toFixed(0)+"%":"");
+  const colors={HAPPY:"#72e66f",SAD:"#55a8ff",ANGRY:"#ff5252",SURPRISED:"#ff9d00",FEARFUL:"#c98cff",DISDAIN:"#ff4fb3"};
+  this.setTagColor("#faceTag",colors[primary[0]]||"#ff4fb3");
   const pts=r.faceLandmarks[0]||[];
   if(pts.length){
-   const W=this.canvas.clientWidth,H=this.canvas.clientHeight;
-   const xs=pts.map(p=>p.x*W),ys=pts.map(p=>p.y*H);
-   const x=Math.max(2,Math.min(W-2,Math.min(...xs)));
-   const y=Math.max(2,Math.min(H-2,Math.min(...ys)));
-   const w=Math.max(20,Math.min(W-x,Math.max(...xs)-Math.min(...xs)));
-   const h=Math.max(20,Math.min(H-y,Math.max(...ys)-Math.min(...ys)));
-
+   const xs=pts.map(p=>p.x*this.canvas.clientWidth),ys=pts.map(p=>p.y*this.canvas.clientHeight);
    const tag=$("#faceTag");
-   tag.style.left=x+"px";
-   tag.style.top=y+"px";
-   tag.style.width=w+"px";
-   tag.style.height=h+"px";
-   tag.style.minHeight="0";
-   tag.innerHTML='<span class="face-label">FACE · '+state+
-     (UI.percent.checked?" · "+score.toFixed(0)+"%":"")+"</span>";
+   tag.style.left=Math.max(4,Math.min(this.canvas.clientWidth-60,Math.min(...xs)))+"px";
+   tag.style.top=Math.max(4,Math.min(this.canvas.clientHeight-30,Math.min(...ys)))+"px";
+   tag.style.width=Math.max(60,Math.max(...xs)-Math.min(...xs))+"px";
+   tag.style.minHeight=Math.max(28,Math.max(...ys)-Math.min(...ys))+"px";
   }
-
-  if(window.cvVisionEvents) {
-    window.cvVisionEvents.publish("face",{
-      region:{x:pts.length?Math.min(...pts.map(p=>p.x)):0,
-              y:pts.length?Math.min(...pts.map(p=>p.y)):0},
-      emotion:state, score
-    });
-  }
-
   this.lastVideoTime=this.video.currentTime;
  },
 
  processMotion(){
   if(!this.motion)return;
-
-  const W=64,H=48,c=this.motion.ctx;
-  c.drawImage(this.video,0,0,W,H);
-  const d=c.getImageData(0,0,W,H).data;
-  const g=new Uint8Array(W*H);
-
-  for(let i=0;i<W*H;i++)
-    g[i]=(d[i*4]*.3+d[i*4+1]*.59+d[i*4+2]*.11)|0;
-
+  const W=48,H=36,c=this.motion.ctx;c.drawImage(this.video,0,0,W,H);
+  const d=c.getImageData(0,0,W,H).data,g=new Uint8Array(W*H);
+  for(let i=0;i<W*H;i++)g[i]=(d[i*4]*.3+d[i*4+1]*.59+d[i*4+2]*.11)|0;
   if(this.motion.prev){
-   const active=new Uint8Array(W*H);
-   let activeCount=0;
-
-   for(let i=0;i<g.length;i++){
-    if(Math.abs(g[i]-this.motion.prev[i])>30){
-      active[i]=1;activeCount++;
-    }
-   }
-
-   const seen=new Uint8Array(W*H);
-   const regions=[];
-
-   // Connected components: each sufficiently large moving island
-   // becomes its own cerulean rectangle.
-   for(let start=0;start<active.length;start++){
-    if(!active[start]||seen[start])continue;
-
-    const q=[start];seen[start]=1;
-    let minX=W,maxX=0,minY=H,maxY=0,count=0;
-
-    while(q.length){
-      const idx=q.pop();
-      const x=idx%W,y=(idx/W)|0;
-      count++;
-      if(x<minX)minX=x;if(x>maxX)maxX=x;
-      if(y<minY)minY=y;if(y>maxY)maxY=y;
-
-      const neighbors=[];
-      if(x>0)neighbors.push(idx-1);
-      if(x<W-1)neighbors.push(idx+1);
-      if(y>0)neighbors.push(idx-W);
-      if(y<H-1)neighbors.push(idx+W);
-
-      for(const n of neighbors){
-       if(active[n]&&!seen[n]){
-        seen[n]=1;q.push(n);
-       }
-      }
-    }
-
-    if(count>=4){
-      regions.push({
-       x:minX/W,y:minY/H,
-       w:Math.max(1,(maxX-minX+1)/W),
-       h:Math.max(1,(maxY-minY+1)/H),
-       area:count
-      });
-    }
-   }
-
-   // Keep the most meaningful moving regions and discard tiny noise.
-   regions.sort((a,b)=>b.area-a.area);
-   const selected=regions.slice(0,8);
-
-   const layer=$("#movementRegions");
-   if(layer){
-    layer.innerHTML="";
-    const Wc=this.canvas.clientWidth,Hc=this.canvas.clientHeight;
-
-    selected.forEach((r,i)=>{
-      const el=document.createElement("div");
-      el.className="movement-region";
-      el.style.left=(r.x*Wc)+"px";
-      el.style.top=(r.y*Hc)+"px";
-      el.style.width=(r.w*Wc)+"px";
-      el.style.height=(r.h*Hc)+"px";
-      el.innerHTML='<span class="movement-region-label">MOVEMENT</span>';
-      layer.appendChild(el);
-
-      if(window.cvVisionEvents){
-       window.cvVisionEvents.publish("movement",{
-        index:i,region:r,active:true
-       });
-      }
-    });
-
-    $("#motionTag").style.display=selected.length?"none":"none";
-   }
-
-   const value=activeCount/(W*H)*100;
-   this.lastMotion=value;
-   $("#motion-reading").textContent=selected.length?"MOVING":"STILL";
-   $("#motionValue").textContent=value.toFixed(2)+"%";
+   let n=0;for(let i=0;i<g.length;i++)if(Math.abs(g[i]-this.motion.prev[i])>30)n++;
+   const value=n/g.length*100;this.lastMotion=value;
+   $("#motion-reading").textContent=value>.9?"MOVING":"STILL";$("#motionValue").textContent=value.toFixed(2)+"%";
+   $("#motionTag").textContent="MOVEMENT · "+(value>.9?"ACTIVE":"STILL")+(UI.percent.checked?" · "+Math.min(100,value*10).toFixed(0)+"%":"");
+   this.setTagColor("#motionTag",value>.9?"#2f9bff":"#55a8ff");
   }
-
   this.motion.prev=g;
  },
 
  async processOCR(t){
   if(!this.stream||this.ocrBusy||t-this.lastOCR<1600)return;
   this.lastOCR=t;this.ocrBusy=true;
-
   try{
    if(!await this.ensureOCR()){this.ocrBusy=false;return}
-
-   const off=document.createElement("canvas");
-   off.width=this.video.videoWidth;off.height=this.video.videoHeight;
+   const off=document.createElement("canvas");off.width=this.video.videoWidth;off.height=this.video.videoHeight;
    const c=off.getContext("2d");
-
-   c.filter=document.querySelector("#manuscriptMode").checked
-    ?"grayscale(1) contrast(1.55)"
-    :"grayscale(1) contrast(1.35)";
+   c.filter=document.querySelector("#manuscriptMode").checked?"grayscale(1) contrast(1.55)":"grayscale(1) contrast(1.35)";
    c.drawImage(this.video,0,0);
-
-   const {data}=await this.ocr.recognize(off);
-   const text=(data.text||"").trim();
-   const clarity=Number(data.confidence)||0;
-
+   const {data}=await this.ocr.recognize(off),text=(data.text||"").trim(),clarity=Number(data.confidence)||0;
    let kind="NO TEXT";
    if(text){
-    if(document.querySelector("#numbersMode").checked&&
-       /^\s*[-+]?\d+(?:[.,]\d+)?\s*$/.test(text))
-      kind="NUMBER";
-    else if(/[=+\-*\/<>]|(?:\b(?:sin|cos|tan|sqrt|log|x|y)\b)/i.test(text))
-      kind="EXPRESSION";
-    else
-      kind="WORD / TEXT";
+    if(document.querySelector("#numbersMode").checked&&/^\s*[-+]?\d+(?:[.,]\d+)?\s*$/.test(text))kind="NUMBER";
+    else if(/[=+\-*\/<>]|(?:\b(?:sin|cos|tan|sqrt|log|x|y)\b)/i.test(text))kind="EXPRESSION";
+    else kind="WORD / TEXT";
    }
-
-   $("#ocr-reading").textContent=kind;
-   $("#ocrText").textContent=text.slice(0,500);
-
+   $("#ocr-reading").textContent=kind;$("#ocrText").textContent=text.slice(0,500);
    const shown=text?text.replace(/\s+/g," ").slice(0,90):"—";
-   const tag=$("#textTag");
-
-   const colors={
-    NUMBER:"#ff9d00",
-    EXPRESSION:"#42c8ff",
-    "WORD / TEXT":"#d7ff00",
-    "NO TEXT":"#ffffff"
-   };
+   $("#textTag").textContent="TEXT · "+shown+(UI.percent.checked&&text?" · "+clarity.toFixed(0)+"%":"");
+   const colors={"NUMBER":"#ff9d00","EXPRESSION":"#42c8ff","WORD / TEXT":"#d7ff00","NO TEXT":"#777"};
    this.setTagColor("#textTag",colors[kind]||"#d7ff00");
-
    const words=(data.words||[]).filter(w=>w.text&&w.bbox);
    if(words.length){
-    // Surround the complete recognized text region rather than one word.
-    const x0=Math.min(...words.map(w=>w.bbox.x0));
-    const y0=Math.min(...words.map(w=>w.bbox.y0));
-    const x1=Math.max(...words.map(w=>w.bbox.x1));
-    const y1=Math.max(...words.map(w=>w.bbox.y1));
-
-    const sx=this.canvas.clientWidth/this.canvas.width;
-    const sy=this.canvas.clientHeight/this.canvas.height;
-
-    tag.style.left=Math.max(2,x0*sx)+"px";
-    tag.style.top=Math.max(2,y0*sy)+"px";
-    tag.style.width=Math.max(20,(x1-x0)*sx)+"px";
-    tag.style.height=Math.max(18,(y1-y0)*sy)+"px";
-    tag.style.minHeight="0";
-    tag.innerHTML='<span class="text-label">'+
-      (kind==="NUMBER"?"NUMBER":shown)+
-      (UI.percent.checked&&text?" · "+clarity.toFixed(0)+"%":"")+
-      "</span>";
-
-    // Number rectangles are orange; ordinary text rectangles are lime-yellow.
-    tag.style.color=colors[kind]||"#d7ff00";
-    tag.style.borderColor=colors[kind]||"#d7ff00";
-   }else{
-    tag.style.display="none";
+    const w=words.slice().sort((a,b)=>(b.confidence||0)-(a.confidence||0))[0],tag=$("#textTag");
+    tag.style.left=Math.max(4,w.bbox.x0*this.canvas.clientWidth/this.canvas.width)+"px";
+    tag.style.top=Math.max(4,w.bbox.y0*this.canvas.clientHeight/this.canvas.height)+"px";
+    tag.style.width=Math.max(70,(w.bbox.x1-w.bbox.x0)*this.canvas.clientWidth/this.canvas.width)+"px";
+    tag.style.minHeight=Math.max(22,(w.bbox.y1-w.bbox.y0)*this.canvas.clientHeight/this.canvas.height)+"px";
    }
-
-   // Keep the readable duplicate immediately below the camera.
-   const below=document.getElementById("ocrBelowText");
-   if(below)below.textContent=text||"—";
-
-   if(window.cvVisionEvents){
-    window.cvVisionEvents.publish("text",{
-      text:shown,type:kind,clarity,
-      region:words.length?{
-       x0:Math.min(...words.map(w=>w.bbox.x0)),
-       y0:Math.min(...words.map(w=>w.bbox.y0)),
-       x1:Math.max(...words.map(w=>w.bbox.x1)),
-       y1:Math.max(...words.map(w=>w.bbox.y1))
-      }:null
-    });
-   }
-
-  }catch(e){
-   console.warn("OCR frame skipped",e);
-  }
+  }catch(e){console.warn("OCR frame skipped",e)}
   this.ocrBusy=false;
  },
 
  stop(clear=true){
   clearTimeout(SESSION.timer);cancelAnimationFrame(this.raf);
   if(this.stream)this.stream.getTracks().forEach(t=>t.stop());
-  this.stream=null;this.face?.close?.();this.face=null;this.ocr?.terminate?.();this.ocr=null;this.motion=null;$("#movementRegions")?.replaceChildren();
+  this.stream=null;this.face?.close?.();this.face=null;this.ocr?.terminate?.();this.ocr=null;this.motion=null;
   if(clear){
    $("#cameraStatus").textContent="camera stopped";$("#face-reading").textContent="—";$("#motion-reading").textContent="—";$("#ocr-reading").textContent="—";$("#ocrText").textContent="";
    $("#faceTag").textContent="FACE · —";$("#motionTag").textContent="MOVEMENT · —";$("#textTag").textContent="TEXT · —";
@@ -1838,7 +1608,36 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)Camera.stop
 </script>
 
 
+<script id="movement-region-positioning">
+(() => {
+  function wire() {
+    const tag = document.getElementById("motionTag");
+    const canvas = document.getElementById("cameraCanvas");
+    if (!tag || !canvas || tag.dataset.regionWired) return;
+    tag.dataset.regionWired = "1";
 
+    // The existing movement detector can provide a bounding rectangle by
+    // assigning window.cvMovementRegion = {x,y,w,h}.
+    window.setMovementRegion = function(region){
+      if (!region || !canvas.width || !canvas.height) {
+        tag.style.display = "none";
+        return;
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      tag.style.left = ((region.x / canvas.width) * 100) + "%";
+      tag.style.top = ((region.y / canvas.height) * 100) + "%";
+      tag.style.width = ((region.w / canvas.width) * 100) + "%";
+      tag.style.height = ((region.h / canvas.height) * 100) + "%";
+      tag.style.display = "block";
+    };
+  }
+
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", wire);
+  else wire();
+})();
+</script>
 
 
 <script id="ocr-below-bridge">
@@ -1869,7 +1668,30 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden)Camera.stop
 </script>
 
 
+<script id="face-follow-controller">
+(() => {
+  window.setFaceRegion = function(region){
+    const tag = document.getElementById("faceTag");
+    const canvas = document.getElementById("cameraCanvas");
+    if(!tag || !canvas || !region) return;
 
+    const x = Number(region.x);
+    const y = Number(region.y);
+    const w = Number(region.w);
+    const h = Number(region.h);
+
+    if(!Number.isFinite(x)||!Number.isFinite(y)||
+       !Number.isFinite(w)||!Number.isFinite(h)||
+       w <= 0 || h <= 0) return;
+
+    tag.style.left = (x / canvas.width * 100) + "%";
+    tag.style.top = (y / canvas.height * 100) + "%";
+    tag.style.width = (w / canvas.width * 100) + "%";
+    tag.style.height = (h / canvas.height * 100) + "%";
+    tag.style.display = "block";
+  };
+})();
+</script>
 
 
 <script id="ocr-language-classifier">
