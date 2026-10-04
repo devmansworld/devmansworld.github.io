@@ -1,252 +1,1933 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CV Demo</title>
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>camera studies</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
-
-*{
-    box-sizing:border-box;
+:root{
+  --bg:#0b0b0b; --panel:#151515; --ink:#eeeeee; --mute:#a8a8a8;
+  --line:#383838; --acc:#e53935; --hi:#f2c94c; --lo:#d0d0d0;
+  --camera:#111; --camera-grid:#292929;
+  --mono:Consolas,"Courier New",monospace;
+  --serif:Georgia,"Times New Roman",serif;
 }
-
+[data-theme="kuromi"]{
+  --bg:#111018;--panel:#1b1823;--ink:#f3eff7;--mute:#aaa2b5;
+  --line:#41394c;--acc:#a879c5;--hi:#ff77b7;--lo:#c9b5d9;
+}
+[data-theme="dark"]{
+  --bg:#080808;--panel:#151515;--ink:#f0f0f0;--mute:#a5a5a5;
+  --line:#373737;--acc:#e53935;--hi:#f2c94c;--lo:#d0d0d0;
+}
+[data-theme="pastel"]{
+  --bg:#eee9e1;--panel:#faf7f0;--ink:#252525;--mute:#716d66;
+  --line:#cfc8bb;--acc:#d95f59;--hi:#4c9b83;--lo:#e4a24c;
+}
+[data-theme="fluor"]{
+  --bg:#111;--panel:#181818;--ink:#f5f5f5;--mute:#bcbcbc;
+  --line:#393939;--acc:#ff5a00;--hi:#d7ff00;--lo:#ff9d00;
+}
+[data-theme="greyscale"]{
+  --bg:#0e0e0e;--panel:#1b1b1b;--ink:#f2f2f2;--mute:#999;
+  --line:#3c3c3c;--acc:#bdbdbd;--hi:#fff;--lo:#777;
+}
+[data-theme="solarized"]{
+  --bg:#002b36;--panel:#073642;--ink:#eee8d5;--mute:#93a1a1;
+  --line:#18525e;--acc:#268bd2;--hi:#b7c900;--lo:#cb4b16;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
 body{
-    background:#000;
-    color:#99ff00;
-    font-family:Consolas,"Courier New",monospace;
-    max-width:1200px;
-    margin:auto;
-    padding:40px;
+ margin:0;background:var(--bg);color:var(--ink);
+ font:300 14px/1.55 var(--mono);
+ transition:background .2s,color .2s;
 }
+button{
+ font:inherit;color:inherit;background:transparent;border:1px solid var(--line);
+ padding:.45rem .7rem;cursor:pointer;
+}
+button:hover{border-color:var(--hi)}
+button.primary{background:var(--acc);color:#fff;border-color:var(--acc)}
+button[aria-selected=true]{border-color:var(--acc)}
+header{
+ max-width:1120px;margin:auto;padding:1.4rem 1.25rem;
+ border-bottom:1px solid var(--line);display:flex;align-items:center;gap:1.5rem;
+}
+header h1{margin:0;font:600 1.2rem var(--mono);letter-spacing:.08em;text-transform:uppercase}
+header p{margin:0;color:var(--mute);flex:1;font-size:.8rem}
+nav{display:flex;gap:.4rem}
+main{max-width:1120px;margin:auto;padding:1.5rem 1.25rem 4rem}
+section[hidden]{display:none}
+.intro{max-width:780px;margin-bottom:1.4rem}
+.eyebrow{font-size:.68rem;letter-spacing:.18em;color:var(--mute);text-transform:uppercase}
+h2{font:600 1.7rem var(--mono);margin:.35rem 0 .55rem}
+.intro p,.notes p{max-width:70ch;color:var(--mute)}
+.intro button{margin-right:.4rem}
+.multi-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,320px);gap:1rem}
+.module{background:var(--panel);border:1px solid var(--line);padding:1rem;min-width:0}
+.module-title{font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.module-blurb{font-size:.78rem;color:var(--mute);margin:.4rem 0 .8rem}
+.view{
+ position:relative;aspect-ratio:16/9;background:#000;
+ border:1px solid var(--line);overflow:hidden;
+}
+#cameraView{grid-row:1 / span 3}
+#cameraView video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
+#cameraCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.module canvas{display:block}
+.status{font-size:.72rem;color:var(--mute);padding-top:.45rem;min-height:1.35rem}
+.reading{font-size:1.35rem;font-weight:600;color:var(--hi);margin:.4rem 0 .7rem}
+.meter{margin:.5rem 0}
+.meter-label{display:flex;justify-content:space-between;font-size:.7rem;color:var(--mute)}
+.meter-track{height:3px;background:var(--line);margin-top:3px}
+.meter-track i{display:block;height:100%;width:0;background:var(--acc)}
+.micro{font-size:.7rem;color:var(--mute)}
+.emotion-mode{display:flex;gap:.25rem;margin:.25rem 0 .55rem}
+.emotion-mode button{font-size:.62rem;padding:.22rem .4rem}
+#facePanel>div:not(.emotion-mode){font-size:.69rem;line-height:1.35;margin:.13rem 0}
+#faceState{font-weight:600;color:var(--hi);text-transform:uppercase}
+#faceBlend{color:var(--mute);min-height:2.5em}
+select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:.35rem}
+.ocr-text{font:.75rem/1.45 var(--mono);white-space:pre-wrap;max-height:8rem;overflow:auto}
+.empty{border:1px dashed var(--line);padding:3rem;text-align:center;color:var(--mute)}
+.controls{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;padding:.6rem;background:var(--panel);border:1px solid var(--line);margin-bottom:1rem}.switch{font-size:.7rem;cursor:pointer}.switch input{accent-color:var(--acc)}.menu-toggle{margin-left:auto}.tag{position:absolute;z-index:8;padding:3px 6px;background:rgba(0,0,0,.78);border:1px solid currentColor;font:600 11px/1.25 Consolas,"Courier New",monospace;pointer-events:none}.tag.face{color:#ff4fb3}.tag.motion{color:#55a8ff}.tag.text{color:var(--tag,#d7ff00)}#faceTag{left:34%;top:22%}#motionTag{right:10px;bottom:10px}#textTag{left:10px;bottom:10px;max-width:72%;white-space:normal}#consoleFeed{position:absolute;left:10px;top:10px;z-index:8;max-width:60%;padding:7px 9px;background:rgba(0,0,0,.72);border-left:2px solid var(--hi);color:#eee;font:11px/1.45 Consolas,"Courier New",monospace;white-space:pre-wrap;pointer-events:none}.session-note{display:none;border:1px solid var(--hi);padding:.8rem;margin-bottom:1rem;background:var(--panel)}.session-note.show{display:block}body.ui-hidden .theme-dock,body.ui-hidden header nav,body.ui-hidden .controls,body.ui-hidden .intro,body.ui-hidden .module:not(#cameraView){display:none}body.ui-hidden main{padding:0}body.ui-hidden header{display:none}body.ui-hidden #cameraView{position:fixed;inset:0;width:100vw;height:100vh;z-index:100;border:0;padding:0}body.ui-hidden #cameraView .module-title,body.ui-hidden #cameraView .module-blurb,body.ui-hidden #cameraView .status{display:none}body.ui-hidden #cameraView .view{height:100vh;aspect-ratio:auto;border:0}.theme-dock{
+ display:flex;flex-wrap:wrap;gap:.35rem;margin:0 0 1.4rem;
+ padding:.6rem 0;border-bottom:1px solid var(--line);
+}
+.theme-dock button{
+ font-size:.7rem;padding:.3rem .5rem;border:1px solid var(--line);
+ background:var(--panel);color:var(--ink);cursor:pointer
+}
+.theme-dock button[aria-selected="true"]{border-color:var(--hi);box-shadow:0 0 0 1px var(--hi)}
+.swatch{width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:5px;border:1px solid #888}
+.notes{max-width:720px}
+@media(max-width:800px){
+ .multi-grid{grid-template-columns:1fr}
+ #cameraView{grid-row:auto}
+}
+</style>
 
-h1{
-    text-align:center;
-    letter-spacing:6px;
-    border-bottom:1px solid #333;
-    padding-bottom:20px;
-}
-
-a{
-    color:#99ff00;
-    text-decoration:none;
-}
-a:hover{
-    color:#ffaa00;
-}
-
+<style id="clean-menu-overrides">
 /* ================================================================
-   PASSWORD LOCK SCREEN (same pattern as Acquarelles / NewApps)
+   CLEAN CONSOLE UI OVERRIDES
    ================================================================ */
-#lockScreen{
-    max-width:400px;
-    margin:120px auto;
-    text-align:center;
+.camera-controls-top{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:8px 0 6px;
+  padding:0;
 }
-#lockScreen input{
-    background:#111;
-    color:#99ff00;
-    border:1px solid #333;
-    font-family:inherit;
-    padding:10px;
-    font-size:15px;
-    width:200px;
-    text-align:center;
+.camera-controls-top button{
+  font-family:Consolas,"Courier New",monospace;
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:6px 10px;
+  border:1px solid currentColor;
+  background:transparent;
+  color:inherit;
+  cursor:pointer;
 }
-#lockScreen button{
-    background:#111;
-    color:#99ff00;
-    border:1px solid #333;
-    font-family:inherit;
-    padding:10px 16px;
-    font-size:15px;
-    cursor:pointer;
-    margin-left:8px;
-}
-#lockScreen button:hover{
-    border-color:#ffaa00;
-    color:#ffaa00;
-}
-#lockError{
-    color:#ff5555;
-    margin-top:14px;
-    min-height:1.2em;
+.camera-controls-top button:hover{
+  background:rgba(255,255,255,.08);
 }
 
-#pageContent{
-    display:none;
-    text-align:center;
-    margin-top:40px;
+.small-menus-below{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:4px 0 10px;
+  font-family:Consolas,"Courier New",monospace;
+}
+.small-menu-group{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px 11px;
+  font-size:10px;
+  letter-spacing:.05em;
+}
+.small-menu-label{
+  opacity:.65;
+  margin-right:2px;
+}
+.small-menu-group label{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  cursor:pointer;
 }
 
+/* Scientific / console square checkboxes */
+.small-menu-group input[type="checkbox"]{
+  appearance:none;
+  -webkit-appearance:none;
+  width:11px;
+  height:11px;
+  min-width:11px;
+  margin:0;
+  border:1px solid currentColor;
+  border-radius:0;
+  background:transparent;
+  box-sizing:border-box;
+  cursor:pointer;
+}
+.small-menu-group input[type="checkbox"]:checked{
+  background:currentColor;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.55);
+}
+
+/* Camera is always a black independent visual surface */
+#video,
+#cameraCanvas{
+  background:#000 !important;
+}
+
+/* Bracket overlays: clearer, thinner and genuinely see-through.
+   The rectangle indicates the measured region without obscuring it. */
+.tag.bracket{
+  background:rgba(0,0,0,.08) !important;
+  border:1px solid rgba(255,255,255,.72) !important;
+  color:#fff !important;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.18),
+    0 0 10px rgba(255,255,255,.10);
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  pointer-events:none;
+}
+.tag.bracket::before,
+.tag.bracket::after{
+  background:transparent !important;
+  color:currentColor !important;
+}
+#faceTag.bracket{
+  background:rgba(0,0,0,.035) !important;
+  border-color:rgba(255,255,255,.82) !important;
+}
+#textTag.bracket{
+  background:rgba(180,255,0,.035) !important;
+  border-color:rgba(205,255,70,.90) !important;
+}
+#motionTag.bracket{
+  background:rgba(0,120,255,.035) !important;
+  border-color:rgba(80,180,255,.90) !important;
+}
+
+/* Labels stay readable while the measured area stays visible */
+.tag.bracket .tag-label,
+.tag.bracket span{
+  background:rgba(0,0,0,.55);
+  padding:1px 4px;
+}
+
+/* Hide menu mode should not kill the camera */
+body.menus-hidden .camera-controls-top,
+body.menus-hidden .small-menus-below,
+body.menus-hidden header,
+body.menus-hidden .controls{
+  display:none !important;
+}
+</style>
+
+
+<style id="memory-controls-style">
+.memory-controls{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px 9px;
+  margin:0 0 8px;
+  padding:5px 0;
+  font-family:Consolas,"Courier New",monospace;
+  font-size:10px;
+  letter-spacing:.05em;
+}
+.memory-controls button{
+  font-family:inherit;
+  font-size:10px;
+  letter-spacing:.06em;
+  padding:4px 8px;
+  border:1px solid currentColor;
+  border-radius:0;
+  background:transparent;
+  color:inherit;
+  cursor:pointer;
+}
+.memory-controls button:hover{
+  background:rgba(255,255,255,.08);
+}
+.memory-controls button:active{
+  transform:translateY(1px);
+}
+.memory-status{
+  opacity:.65;
+  min-height:12px;
+}
+</style>
+
+
+<style id="translucent-camera-layers">
 /* ================================================================
-   VIDEO PLACEHOLDER
-   16:9 box, ready for cv-demo.mp4 to be dropped into this folder.
+   CAMERA VISUAL SAFETY
+   Video is the only photographic layer.
+   Analytical layers are transparent UI overlays.
    ================================================================ */
-.videoWrapper{
-    max-width:960px;
-    margin:30px auto;
-    aspect-ratio:16/9;
-    background:#111;
-    border:1px solid #333;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+#cameraView .view{
+  background:#000 !important;
+  isolation:isolate;
 }
-.videoWrapper video{
-    width:100%;
-    height:100%;
+#cameraView video{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  background:#000;
+  opacity:1 !important;
+  filter:none !important;
 }
-.videoPlaceholderText{
-    color:#555;
-    font-size:14px;
+#cameraCanvas{
+  position:absolute !important;
+  inset:0;
+  z-index:2;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  opacity:0 !important;
+  visibility:hidden !important;
+  background:transparent !important;
+  mix-blend-mode:normal !important;
 }
-
-.backToMain{
-    display:inline-block;
-    margin-top:30px;
+/* Tags are the visualization: color belongs to the tag, never the canvas. */
+#cameraView .tag{
+  z-index:10;
+  background:rgba(0,0,0,.045) !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  box-shadow:none !important;
 }
-
-/* ================================================================
-   HAMBURGER SIDEBAR NAV
-   ================================================================ */
-#hamburgerBtn{
-    position:fixed;
-    top:16px;
-    left:16px;
-    z-index:200;
-    background:#111;
-    color:#99ff00;
-    border:1px solid #333;
-    font-family:inherit;
-    font-size:22px;
-    padding:6px 12px;
-    cursor:pointer;
+#cameraView .tag.bracket{
+  background:rgba(0,0,0,.025) !important;
+  border-width:1px !important;
 }
-#hamburgerBtn:hover{
-    border-color:#ffaa00;
-    color:#ffaa00;
+#cameraView #faceTag{
+  color:#ff4fb3 !important;
+  border-color:#ff4fb3 !important;
 }
-#sidebar{
-    position:fixed;
-    top:0; left:0;
-    height:100%;
-    width:240px;
-    background:#0a0a0a;
-    border-right:1px solid #333;
-    transform:translateX(-100%);
-    transition:transform 0.25s ease;
-    z-index:199;
-    padding:70px 20px 20px 20px;
+#cameraView #motionTag{
+  color:#55a8ff !important;
+  border-color:#55a8ff !important;
 }
-#sidebar.open{
-    transform:translateX(0);
+#cameraView #textTag{
+  color:#d7ff00 !important;
+  border-color:#d7ff00 !important;
 }
-#sidebar a{
-    display:block;
-    padding:10px 0;
-    border-bottom:1px solid #222;
-    font-size:15px;
+/* Console is also translucent so it cannot hide the camera. */
+#cameraView #consoleFeed{
+  background:rgba(0,0,0,.18) !important;
+  border-left:2px solid currentColor;
+  opacity:.9;
 }
-#sidebar a.lastItem{
-    margin-top:20px;
-    color:#ffaa00;
-}
-#sidebarOverlay{
-    position:fixed;
-    top:0; left:0; right:0; bottom:0;
-    background:rgba(0,0,0,0.6);
-    z-index:198;
-    display:none;
-}
-#sidebarOverlay.open{
-    display:block;
+/* Keep the tag label readable without filling the measured rectangle. */
+#cameraView .tag.bracket span,
+#cameraView .tag.bracket .tag-label{
+  background:rgba(0,0,0,.28) !important;
 }
 
+/* Top controls remain compact and never cover the camera. */
+.camera-controls-top,
+.memory-controls,
+.small-menus-below{
+  position:relative;
+  z-index:20;
+}
+</style>
+
+
+<style id="theme-shade-overrides">
+body[data-theme="solarized"]{--bg:#f8f6ef;--panel:#fffdf6;--fg:#657b83;--muted:#93a1a1;--accent:#b58900;}
+body[data-theme="greyscale"]{--bg:#f5f5f5;--panel:#fff;--fg:#444;--muted:#888;--accent:#222;}
+body[data-theme="fluor"]{--bg:#fbfff8;--panel:#fff;--fg:#151515;--muted:#666;--accent:#b7ff00;}
+body.solarized{--bg:#f8f6ef;--panel:#fffdf6;--fg:#657b83;--muted:#93a1a1;--accent:#b58900;}
+body.greyscale{--bg:#f5f5f5;--panel:#fff;--fg:#444;--muted:#888;--accent:#222;}
+body.fluor{--bg:#fbfff8;--panel:#fff;--fg:#151515;--muted:#666;--accent:#b7ff00;}
+</style>
+
+
+<style id="bottom-menu-style">
+.bottom-language-menu{
+ display:flex;align-items:center;flex-wrap:wrap;gap:7px 11px;
+ margin:12px 0 4px;padding:7px 0 2px;border-top:1px solid currentColor;
+ opacity:.82;font-family:Consolas,"Courier New",monospace;font-size:10px;letter-spacing:.05em;
+}
+.bottom-language-menu label{display:inline-flex;align-items:center;gap:5px;cursor:pointer;}
+.bottom-language-menu input[type="checkbox"]{
+ appearance:none;-webkit-appearance:none;width:11px;height:11px;min-width:11px;
+ margin:0;border:1px solid currentColor;border-radius:0;background:transparent;
+}
+.bottom-language-menu input[type="checkbox"]:checked{
+ background:currentColor;box-shadow:inset 0 0 0 2px rgba(0,0,0,.45);
+}
+</style>
+
+
+<style id="single-light-surface">
+/* One page background per light theme — no competing white panels. */
+body[data-theme="solarized"]{
+  --bg:#f7f3e8;
+  --panel:transparent;
+}
+body[data-theme="greyscale"]{
+  --bg:#f1f1ef;
+  --panel:transparent;
+}
+body[data-theme="fluor"]{
+  --bg:#f4f8ed;
+  --panel:transparent;
+}
+body.solarized{--bg:#f7f3e8;--panel:transparent;}
+body.greyscale{--bg:#f1f1ef;--panel:transparent;}
+body.fluor{--bg:#f4f8ed;--panel:transparent;}
+
+main, header, section, .panel, .controls{
+  background:transparent;
+}
+</style>
+
+
+<style id="bottom-control-console">
+.bottom-view-menu,
+.bottom-language-menu,
+.bottom-theme-menu{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px 11px;
+  margin:8px 0 0;
+  padding:7px 0;
+  border-top:1px solid currentColor;
+  background:transparent !important;
+  font-family:Consolas,"Courier New",monospace;
+  font-size:10px;
+  letter-spacing:.05em;
+}
+.bottom-theme-menu{
+  margin-bottom:6px;
+  border-bottom:1px solid currentColor;
+}
+.bottom-view-menu label,
+.bottom-language-menu label{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  cursor:pointer;
+}
+.bottom-view-menu input[type="checkbox"],
+.bottom-language-menu input[type="checkbox"]{
+  appearance:none;
+  -webkit-appearance:none;
+  width:11px;
+  height:11px;
+  min-width:11px;
+  margin:0;
+  border:1px solid currentColor;
+  border-radius:0;
+  background:transparent;
+}
+.bottom-view-menu input[type="checkbox"]:checked,
+.bottom-language-menu input[type="checkbox"]:checked{
+  background:currentColor;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.42);
+}
+.bottom-theme-menu select{
+  appearance:none;
+  border:1px solid currentColor;
+  border-radius:0;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  padding:3px 20px 3px 6px;
+}
+#motionTag{
+  color:#3da9ff !important;
+  border-color:#3da9ff !important;
+}
+</style>
+
+
+<style id="event-export-style">
+.event-export-menu{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px 10px;
+  padding:7px 0;
+  font:10px Consolas,"Courier New",monospace;
+  letter-spacing:.05em;
+  background:transparent !important;
+}
+.event-export-menu button{
+  font:inherit;
+  border:1px solid currentColor;
+  border-radius:0;
+  background:transparent;
+  color:inherit;
+  padding:3px 7px;
+  cursor:pointer;
+}
+#eventExportStatus{opacity:.65;}
+</style>
+
+
+<style id="old-theme-ui-hide">
+#themeSelect,
+.theme-selector,
+.theme-control{
+  display:none !important;
+}
+</style>
+
+
+<style id="theme-ui-cleanup">
+/* Only the bottom scheme selector is visible. */
+#themeSelect,
+#themeSelector,
+.theme-selector,
+.theme-control,
+.theme-select,
+header .theme,
+header select[id*="theme" i]{
+  display:none !important;
+}
+
+/* Bottom console */
+.bottom-theme-menu{
+  display:flex !important;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  width:100%;
+  margin:10px 0 4px !important;
+  padding:8px 0 !important;
+  border-top:1px solid currentColor;
+  border-bottom:1px solid currentColor;
+  background:transparent !important;
+  font:10px Consolas,"Courier New",monospace;
+  letter-spacing:.07em;
+}
+.bottom-theme-menu .small-menu-label{
+  opacity:.65;
+}
+#themeSelectBottom{
+  appearance:none;
+  -webkit-appearance:none;
+  width:auto;
+  min-width:125px;
+  border:1px solid currentColor;
+  border-radius:0;
+  outline:none;
+  background:rgba(255,255,255,.06) !important;
+  color:currentColor !important;
+  font:10px Consolas,"Courier New",monospace;
+  letter-spacing:.07em;
+  padding:5px 24px 5px 7px;
+  cursor:pointer;
+}
+#themeSelectBottom option{
+  background:#111;
+  color:#fff;
+}
+</style>
+
+
+<style id="face-emotion-readability">
+/* Face measurement rectangle remains transparent; only the label gets
+   a readable translucent backing. */
+#faceTag{
+  min-width:92px !important;
+  min-height:30px !important;
+  padding:4px 8px !important;
+  color:#fff !important;
+  border:1px solid currentColor !important;
+  background:rgba(0,0,0,.08) !important;
+  text-shadow:
+    0 1px 2px #000,
+    0 0 4px #000;
+  font-family:Consolas,"Courier New",monospace !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  line-height:1.25 !important;
+  letter-spacing:.05em !important;
+  white-space:nowrap !important;
+  z-index:30 !important;
+}
+#faceTag .tag-label,
+#faceTag span{
+  display:inline-block;
+  background:rgba(0,0,0,.62) !important;
+  color:#fff !important;
+  padding:3px 6px !important;
+  text-shadow:none !important;
+}
+#textTag{
+  z-index:29 !important;
+  text-shadow:0 1px 2px #000;
+}
+#motionTag{
+  z-index:29 !important;
+  color:#38aaff !important;
+  border-color:#38aaff !important;
+  text-shadow:0 1px 2px #000;
+}
+</style>
+
+
+<style id="emotion-color-library">
+/* Human-readable visual vocabulary */
+#faceTag.emotion-neutral   { --emotion:#d9d9d9; color:#d9d9d9 !important; border-color:#d9d9d9 !important; }
+#faceTag.emotion-happy     { --emotion:#61e66a; color:#61e66a !important; border-color:#61e66a !important; }
+#faceTag.emotion-angry     { --emotion:#ff3b30; color:#ff3b30 !important; border-color:#ff3b30 !important; }
+#faceTag.emotion-sad       { --emotion:#4da3ff; color:#4da3ff !important; border-color:#4da3ff !important; }
+#faceTag.emotion-surprised { --emotion:#ffd43b; color:#ffd43b !important; border-color:#ffd43b !important; }
+#faceTag.emotion-disgusted { --emotion:#b66cff; color:#b66cff !important; border-color:#b66cff !important; }
+#faceTag.emotion-fearful   { --emotion:#ff7b45; color:#ff7b45 !important; border-color:#ff7b45 !important; }
+#faceTag.emotion-thinking  { --emotion:#55d6d6; color:#55d6d6 !important; border-color:#55d6d6 !important; }
+#faceTag.emotion-silent    { --emotion:#9fa8b3; color:#9fa8b3 !important; border-color:#9fa8b3 !important; }
+#faceTag.emotion-attentive { --emotion:#f5a3ff; color:#f5a3ff !important; border-color:#f5a3ff !important; }
+#faceTag.emotion-disdain   { --emotion:#d49a55; color:#d49a55 !important; border-color:#d49a55 !important; }
+#faceTag.emotion-complex   { --emotion:#ffffff; color:#ffffff !important; border-color:#ffffff !important; }
+</style>
+
+
+<style id="movement-blue-final">
+#motionTag,
+#motionTag.bracket{
+  color:#38aaff !important;
+  border-color:#38aaff !important;
+  background:rgba(56,170,255,.025) !important;
+}
+</style>
+
+
+<style id="movement-region-visual">
+#motionTag{
+  color:#18a9ff !important;
+  border:2px solid #18a9ff !important;
+  background:rgba(24,169,255,.035) !important;
+  box-shadow:0 0 0 1px rgba(24,169,255,.25) !important;
+  text-shadow:0 1px 2px #000;
+  pointer-events:none;
+  z-index:32 !important;
+  min-width:20px;
+  min-height:20px;
+}
+#motionTag::before,
+#motionTag::after{
+  color:#18a9ff !important;
+}
+</style>
+
+
+<style id="ocr-spatial-style">
+.ocr-below-camera{
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  width:100%;
+  min-height:25px;
+  margin:4px 0 8px;
+  padding:5px 7px;
+  box-sizing:border-box;
+  border-left:2px solid #d7ff00;
+  background:rgba(215,255,0,.025);
+  color:#d7ff00;
+  font:11px/1.3 Consolas,"Courier New",monospace;
+  letter-spacing:.03em;
+}
+.ocr-below-camera .ocr-label{
+  flex:0 0 auto;
+  opacity:.7;
+}
+#ocrBelowText{
+  color:inherit;
+  overflow-wrap:anywhere;
+}
+.top-theme-menu{
+  display:flex !important;
+  align-items:center;
+  gap:8px;
+  margin:5px 0 8px;
+  font:10px Consolas,"Courier New",monospace;
+  letter-spacing:.07em;
+}
+.top-theme-menu select{
+  appearance:none;
+  border:1px solid currentColor;
+  border-radius:0;
+  background:rgba(255,255,255,.04);
+  color:currentColor;
+  font:inherit;
+  padding:4px 22px 4px 6px;
+}
+.top-theme-menu select option{
+  background:#111;
+  color:#fff;
+}
+</style>
+
+
+<style id="face-follow-visual">
+#faceTag{
+  position:absolute !important;
+  pointer-events:none !important;
+  box-sizing:border-box;
+  z-index:40 !important;
+  background:rgba(0,0,0,.035) !important;
+}
+#faceTag .tag-label,
+#faceTag span{
+  position:absolute;
+  left:4px;
+  top:-27px;
+  white-space:nowrap;
+  background:rgba(0,0,0,.72) !important;
+  color:#fff !important;
+  border:1px solid currentColor;
+  padding:3px 6px;
+  font:700 11px/1.15 Consolas,"Courier New",monospace;
+}
+</style>
+
+
+<style id="movement-follow-visual">
+#motionTag{
+  position:absolute !important;
+  pointer-events:none !important;
+  box-sizing:border-box;
+  z-index:38 !important;
+  color:#18bfff !important;
+  border:2px solid #18bfff !important;
+  background:rgba(24,191,255,.025) !important;
+  box-shadow:0 0 0 1px rgba(24,191,255,.24);
+}
+#motionTag .tag-label{
+  position:absolute;
+  left:3px;
+  top:-23px;
+  white-space:nowrap;
+  background:rgba(0,0,0,.68) !important;
+  color:#18bfff !important;
+  padding:2px 5px;
+  font:700 10px/1.1 Consolas,"Courier New",monospace;
+}
+</style>
+
+
+<style id="ocr-language-colors">
+#textTag{
+  color:#b9ff24 !important;
+  border-color:#b9ff24 !important;
+  background:rgba(185,255,36,.025) !important;
+  text-shadow:0 1px 2px #000;
+}
+#textTag.lang-es{color:#ff9f43 !important;border-color:#ff9f43 !important;}
+#textTag.lang-en{color:#6ee7ff !important;border-color:#6ee7ff !important;}
+#textTag.lang-de{color:#ffd34d !important;border-color:#ffd34d !important;}
+#textTag.lang-fr{color:#8f9cff !important;border-color:#8f9cff !important;}
+#textTag.lang-it{color:#6ee7a8 !important;border-color:#6ee7a8 !important;}
+#textTag.lang-pt{color:#79e66b !important;border-color:#79e66b !important;}
+#textTag.lang-unknown{color:#fff !important;border-color:#fff !important;}
+#textTag.number-detected{color:#39a9ff !important;border-color:#39a9ff !important;}
+#ocrBelowCamera{
+  color:#b9ff24 !important;
+  border-left-color:#b9ff24 !important;
+}
+#ocrBelowCamera.lang-es{color:#ff9f43 !important;border-left-color:#ff9f43 !important;}
+#ocrBelowCamera.lang-en{color:#6ee7ff !important;border-left-color:#6ee7ff !important;}
+#ocrBelowCamera.lang-de{color:#ffd34d !important;border-left-color:#ffd34d !important;}
+#ocrBelowCamera.lang-fr{color:#8f9cff !important;border-left-color:#8f9cff !important;}
+#ocrBelowCamera.lang-it{color:#6ee7a8 !important;border-left-color:#6ee7a8 !important;}
+#ocrBelowCamera.lang-pt{color:#79e66b !important;border-left-color:#79e66b !important;}
+#ocrBelowCamera.lang-unknown{color:#fff !important;border-left-color:#fff !important;}
+#ocrBelowCamera.number-detected{color:#39a9ff !important;border-left-color:#39a9ff !important;}
+</style>
+
+
+<style id="bottom-view-polish">
+.bottom-view-menu,
+.bottom-language-menu,
+.event-export-menu{
+  background:transparent !important;
+  font-family:Consolas,"Courier New",monospace;
+  font-size:10px;
+  letter-spacing:.05em;
+}
+.bottom-view-menu{
+  display:flex !important;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:7px 11px;
+  margin-top:8px;
+  padding-top:7px;
+  border-top:1px solid currentColor;
+}
+</style>
+
+
+<style id="true-region-tags">
+#movementRegions{
+  position:absolute;
+  inset:0;
+  z-index:39;
+  pointer-events:none;
+}
+.movement-region{
+  position:absolute;
+  box-sizing:border-box;
+  border:2px solid #18bfff !important;
+  background:rgba(24,191,255,.025) !important;
+  color:#18bfff !important;
+  box-shadow:0 0 0 1px rgba(24,191,255,.22);
+  pointer-events:none;
+}
+.movement-region-label{
+  position:absolute;
+  left:3px;
+  top:-22px;
+  white-space:nowrap;
+  padding:2px 5px;
+  background:rgba(0,0,0,.68);
+  color:#18bfff;
+  font:700 10px/1.1 Consolas,"Courier New",monospace;
+}
+#faceTag,
+#textTag{
+  overflow:visible !important;
+}
+#faceTag{
+  background:rgba(0,0,0,.025) !important;
+}
+#faceTag .face-label{
+  position:absolute;
+  left:4px;
+  top:-28px;
+  white-space:nowrap;
+  padding:3px 6px;
+  background:rgba(0,0,0,.72);
+  color:inherit;
+  border:1px solid currentColor;
+  font:700 11px/1.15 Consolas,"Courier New",monospace;
+}
+#textTag{
+  background:rgba(185,255,36,.025) !important;
+}
+#textTag .text-label{
+  position:absolute;
+  left:0;
+  top:100%;
+  margin-top:4px;
+  white-space:nowrap;
+  padding:3px 6px;
+  background:rgba(0,0,0,.72);
+  color:inherit;
+  border:1px solid currentColor;
+  font:700 11px/1.15 Consolas,"Courier New",monospace;
+}
 </style>
 
 </head>
-
 <body>
+      <div class="memory-controls" aria-label="session memory controls">
+        <span class="small-menu-label">SESSION</span>
+        <button type="button" id="saveLogsBtn">SAVE LOGS</button>
+        <button type="button" id="releaseMemoryBtn">RELEASE MEMORY</button>
+        <span id="memoryStatus" class="memory-status"></span>
+      </div>
 
-<!-- ============================================================
-     LOCK SCREEN
-     ============================================================ -->
-<div id="lockScreen">
-    <h1>CV Demo</h1>
-    <p>This page is password protected.</p>
-    <div>
-        <input type="password" id="passwordInput" placeholder="password" autocomplete="off">
-        <button onclick="checkPassword()">Enter</button>
-    </div>
-    <div id="lockError"></div>
-    <a class="backToMain" href="../index.html">&larr; Back to main</a>
+<header>
+<h1>computer vision / studies</h1>
+<p>camera, perception, measurement, experiment</p>
+<nav>
+<button aria-selected="true" data-tab="lab">LAB</button>
+<button aria-selected="false" data-tab="notes">NOTES</button>
+</nav>
+</header>
+
+<main>
+<div class="theme-dock" aria-label="Color scheme">
+ <button data-theme="kuromi"><span class="swatch" style="background:#a879c5"></span>KUROMI</button>
+ <button data-theme="dark"><span class="swatch" style="background:#e53935"></span>DARK</button>
+ <button data-theme="pastel"><span class="swatch" style="background:#d95f59"></span>PASTEL</button>
+ <button data-theme="fluor"><span class="swatch" style="background:#d7ff00"></span>FLUOR</button>
+ <button data-theme="greyscale"><span class="swatch" style="background:#aaa"></span>GREYSCALE</button>
+ <button data-theme="solarized"><span class="swatch" style="background:#268bd2"></span>SOLARIZED</button>
+<span id="themeCurrent" class="micro">THEME · DARK</span>
+</div>
+<div class="controls">
+ <label class="switch"><input id="showTags" type="checkbox" checked> TAGS</label>
+ <label class="switch"><input id="showEmotion" type="checkbox" checked> EMOTION</label>
+ <label class="switch"><input id="showMovement" type="checkbox" checked> MOVEMENT</label>
+ <label class="switch"><input id="showText" type="checkbox" checked> TEXT</label>
+ <label class="switch"><input id="showPercent" type="checkbox" checked> PERCENTAGES</label>
+ <button id="hideUI" class="menu-toggle">HIDE MENUS</button>
 </div>
 
-<!-- ============================================================
-     PROTECTED CONTENT
-     ============================================================ -->
-<div id="pageContent">
 
-    <button id="hamburgerBtn" onclick="toggleSidebar()">&#9776;</button>
-    <div id="sidebarOverlay" onclick="closeSidebar()"></div>
-    <nav id="sidebar">
-        <a href="../index.html">Main page</a>
-        <a href="../acquarelles/index.html">Acquarelles</a>
-        <a href="../newapps/index.html">NewApps</a>
-        <a href="../cvdemo/index.html">CV demo</a>
-        <a href="../archive/index.html">Archive</a>
-        <a class="lastItem" href="https://devmansworld.github.io/stencilize/">Try Stencilize app</a>
-    </nav>
-
-    <h1>CV Demo</h1>
-
-    <!-- Drop a file named cv-demo.mp4 into this same /cvdemo/
-         folder and it will play automatically -- nothing else on
-         this page needs to change. -->
-    <div class="videoWrapper">
-        <video controls poster="">
-            <source src="cv-demo.mp4" type="video/mp4">
-            <span class="videoPlaceholderText">
-                Video not uploaded yet. Add cv-demo.mp4 to this folder.
-            </span>
-        </video>
-    </div>
-
-    <a class="backToMain" href="../index.html">&larr; Back to main</a>
-
+      <div class="small-menus-below" aria-label="camera options">
+        <div class="small-menu-group">
+          <span class="small-menu-label">VIEW</span>
+          <label><input type="checkbox" id="toggleTags" checked> TAGS</label>
+          <label><input type="checkbox" id="toggleEmotion" checked> EMOTION</label>
+          <label><input type="checkbox" id="toggleMovement" checked> MOVEMENT</label>
+          <label><input type="checkbox" id="toggleText" checked> TEXT</label>
+          <label><input type="checkbox" id="togglePercentages" checked> %</label>
+          <label><input type="checkbox" id="hideMenus"> HIDE MENUS</label>
+        </div>
+      </div>
+<section id="lab">
+ <div class="intro">
+  <div class="eyebrow">01 / computer vision</div>
+  <h2>one camera / multiple measurements</h2>
+  <p>Face geometry, movement and visible text are measured simultaneously from a single camera stream.</p>
+  <div class="controls" style="margin-bottom:.6rem">
+ <span class="micro">LANGUAGE</span>
+ <div class="lang-controls">
+  <label><input class="square-check lang" type="checkbox" value="spa" checked> ES</label>
+  <label><input class="square-check lang" type="checkbox" value="eng" checked> EN</label>
+  <label><input class="square-check lang" type="checkbox" value="deu"> DE</label>
+  <label><input class="square-check lang" type="checkbox" value="fra"> FR</label>
+  <label><input class="square-check" id="numbersMode" type="checkbox" checked> NUMBERS</label>
+  <label><input class="square-check" id="manuscriptMode" type="checkbox"> MANUSCRIPT</label>
+ </div>
+ 
 </div>
+<button id="start" class="primary">START CAMERA</button>
+  <button id="stop">STOP</button>
+ </div>
+
+ <div class="multi-grid">
+  <article class="module" id="cameraView">
+   <div class="module-title">CAMERA / LIVE INPUT</div>
+
+<div id="ocrBelowCamera" class="ocr-below-camera" aria-live="polite">
+  <span class="ocr-label">TEXT</span>
+  <span id="ocrBelowText">—</span>
+</div>
+
+   <p class="module-blurb">single source frame</p>
+   <div class="view">
+    <video id="video" playsinline muted></video>
+    <canvas id="cameraCanvas"></canvas>
+    <div id="consoleFeed">[system] waiting for camera
+[system] processors idle</div>
+    <div id="faceTag" class="tag face bracket">FACE · —</div>
+    <div id="motionTag" class="tag motion bracket">MOVEMENT · —</div>
+    <div id="movementRegions" aria-hidden="true"></div>
+    <div id="textTag" class="tag text bracket">TEXT · —</div>
+   </div>
+   <div class="status" id="cameraStatus">camera stopped</div>
+  </article>
+
+  <article class="module" id="faceModule">
+   <div class="module-title">FACE / GEOMETRY</div>
+   <p class="module-blurb">MediaPipe face landmarks + blendshapes</p>
+   <div class="reading" id="face-reading">—</div>
+   <div id="facePanel"></div>
+  </article>
+
+  <article class="module" id="motionModule">
+   <div class="module-title">MOTION / DIFFERENCE</div>
+   <p class="module-blurb">frame-to-frame pixel change</p>
+   <div class="reading" id="motion-reading">—</div>
+   <div id="motionPanel"></div>
+  </article>
+
+  <article class="module" id="ocrModule">
+   <div class="module-title">TEXT / OCR</div>
+   <p class="module-blurb">Tesseract optical character recognition</p>
+   <div class="reading" id="ocr-reading">—</div>
+   <div id="ocrPanel"></div>
+  </article>
+ </div>
+</section>
+
+<section id="notes" hidden>
+ <div class="notes">
+  <div class="eyebrow">02 / notes</div>
+  <h2>COMPUTER VISION DEMO</h2>
+  <p>This is an educational art + technology experiment presented as a small computer-vision laboratory.</p>
+  <p><strong>FACE</strong> — MediaPipe Tasks Vision / WASM.</p>
+  <p><strong>MOTION</strong> — Canvas pixel comparison; no ML model.</p>
+  <p><strong>OCR</strong> — Tesseract.js / WASM.</p>
+  <p>The browser camera is one input. The processing modules are independent and run from the same video stream.</p>
+ </div>
+</section>
+</main>
+
 
 <script>
-/* ================================================================
-   PASSWORD GATE (same mechanism as the other protected pages)
-   ================================================================ */
-const correctPassword = "nvidia";
+const $=s=>document.querySelector(s);
 
-function checkPassword(){
-    let entered = document.getElementById("passwordInput").value;
-    if(entered === correctPassword){
-        document.getElementById("lockScreen").style.display = "none";
-        document.getElementById("pageContent").style.display = "block";
-    } else {
-        document.getElementById("lockError").innerText = "Incorrect password.";
-    }
+const CFG={
+ mpModule:"https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs",
+ mpWasm:"https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm",
+ faceModel:"https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
+};
+
+/* ---------- themes ---------- */
+const THEME_KEY="cv-theme";
+const THEMES=["kuromi","dark","pastel","fluor","greyscale","solarized"];
+
+function applyTheme(theme){
+  if(!THEMES.includes(theme)) theme="dark";
+  document.documentElement.setAttribute("data-theme",theme);
+  try{localStorage.setItem(THEME_KEY,theme)}catch(e){}
+  document.querySelectorAll("[data-theme]").forEach(btn=>{
+    const active=btn.dataset.theme===theme;
+    btn.setAttribute("aria-selected",active?"true":"false");
+  });
+  const indicator=document.querySelector("#themeCurrent");
+  if(indicator) indicator.textContent="THEME · "+theme.toUpperCase();
 }
 
-document.getElementById("passwordInput").addEventListener("keydown", function(e){
-    if(e.key === "Enter") checkPassword();
+let savedTheme="dark";
+try{savedTheme=localStorage.getItem(THEME_KEY)||"dark"}catch(e){}
+applyTheme(savedTheme);
+
+document.querySelectorAll("[data-theme]").forEach(btn=>{
+  btn.addEventListener("click",()=>applyTheme(btn.dataset.theme));
 });
 
-function toggleSidebar(){
-    document.getElementById("sidebar").classList.toggle("open");
-    document.getElementById("sidebarOverlay").classList.toggle("open");
+/* ---------- tabs ---------- */
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll("[data-tab]").forEach(x=>x.setAttribute("aria-selected",x===b));
+ $("#lab").hidden=b.dataset.tab!=="lab";
+ $("#notes").hidden=b.dataset.tab!=="notes";
+});
+
+/* ---------- visual feedback ---------- */
+const UI={tags:$("#showTags"),emotion:$("#showEmotion"),movement:$("#showMovement"),text:$("#showText"),percent:$("#showPercent")};
+function overlay(){
+ const on=UI.tags.checked;
+ $("#faceTag").style.display=on&&UI.emotion.checked?"block":"none";
+ $("#motionTag").style.display=on&&UI.movement.checked?"block":"none";
+ $("#textTag").style.display=on&&UI.text.checked?"block":"none";
 }
-function closeSidebar(){
-    document.getElementById("sidebar").classList.remove("open");
-    document.getElementById("sidebarOverlay").classList.remove("open");
+Object.values(UI).forEach(x=>x.onchange=overlay);
+overlay();
+
+$("#hideUI").onclick=()=>{
+ document.body.classList.toggle("ui-hidden");
+ $("#hideUI").textContent=document.body.classList.contains("ui-hidden")?"SHOW MENUS":"HIDE MENUS";
+};
+
+const SESSION={n:0,timer:0};
+function sessionMessage(){
+ const old=$("#sessionNotice"); if(old) old.remove();
+ const box=document.createElement("div");
+ box.id="sessionNotice"; box.className="session-note show";
+ box.innerHTML=SESSION.n>=7
+ ? "<strong>DO YOU LIKE?</strong><br>send <code>hello</code> and close the app simply.<br><button id=\"sessionClose\">CLOSE APP</button>"
+ : "<strong>SESSION LIMIT</strong><br>The demonstration window is finished. Enable the camera again to continue.<br><button id=\"sessionAgain\">ENABLE CAMERA AGAIN</button>";
+ $("#lab").prepend(box);
+ $("#sessionClose,#sessionAgain").onclick=()=>{box.remove();Camera.stop();};
 }
+function armSession(){
+ clearTimeout(SESSION.timer);
+ /* 40 seconds initially; each new iteration gets 15 seconds more. */
+ SESSION.timer=setTimeout(sessionMessage,40000+(SESSION.n-1)*15000);
+}
+
+/* ---------- camera ---------- */
+const Camera={
+ stream:null,video:$("#video"),canvas:$("#cameraCanvas"),ctx:null,raf:0,face:null,ocr:null,motion:null,
+ lastVideoTime:-1,ocrBusy:false,lastOCR:0,lastEmotion:"—",lastEmotionScore:0,lastMotion:0,lastText:"—",
+
+ async start(){
+  this.stop(false); SESSION.n++;
+  $("#cameraStatus").textContent="requesting camera…";
+  $("#consoleFeed").textContent="[camera] requesting permission\n[session] #"+SESSION.n+"\n[system] loading processors";
+  try{
+   this.stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720},facingMode:"user"},audio:false});
+  }catch(e){$("#cameraStatus").textContent="camera permission denied";return}
+  this.video.srcObject=this.stream; await this.video.play();
+  this.canvas.width=this.video.videoWidth||1280;this.canvas.height=this.video.videoHeight||720;
+  this.ctx=this.canvas.getContext("2d",{willReadFrequently:true});
+  $("#cameraStatus").textContent="camera active · input ready";
+  try{await this.initFace()}catch(e){console.warn("face unavailable",e)}
+  try{this.initMotion()}catch(e){console.warn("motion unavailable",e)}
+  try{await this.initOCR()}catch(e){console.warn("ocr unavailable",e)}
+  $("#cameraStatus").textContent="camera active · processors independent";
+  $("#consoleFeed").textContent="[camera] LIVE / "+this.video.videoWidth+"x"+this.video.videoHeight+
+   "\n[face] geometry + emotion\n[motion] frame difference\n[text] OCR\n[clarity] percentages";
+  armSession();this.loop();
+ },
+
+ async initFace(){
+  const {FaceLandmarker,FilesetResolver}=await import(CFG.mpModule);
+  const files=await FilesetResolver.forVisionTasks(CFG.mpWasm);
+  this.face=await FaceLandmarker.createFromOptions(files,{baseOptions:{modelAssetPath:CFG.faceModel},runningMode:"VIDEO",numFaces:1,outputFaceBlendshapes:true});
+  $("#facePanel").innerHTML=
+   '<div class="emotion-mode"><button type="button" id="emotionSimple" aria-selected="true">SIMPLE</button><button type="button" id="emotionComplex" aria-selected="false">COMPLEX</button></div>'+
+   '<div id="faceState"></div><div id="faceBlend"></div>'+
+   '<div id="faceSmile"></div><div id="faceFrown"></div><div id="faceSurprise"></div>'+
+   '<div id="faceAttention"></div><div id="faceSadness"></div><div id="faceAnger"></div>'+
+   '<p class="micro">derived emotion · combinations of visible facial signals</p>';
+  this.emotionMode="simple";
+  $("#emotionSimple").onclick=()=>{
+   this.emotionMode="simple";
+   $("#emotionSimple").setAttribute("aria-selected","true");
+   $("#emotionComplex").setAttribute("aria-selected","false");
+  };
+  $("#emotionComplex").onclick=()=>{
+   this.emotionMode="complex";
+   $("#emotionSimple").setAttribute("aria-selected","false");
+   $("#emotionComplex").setAttribute("aria-selected","true");
+  };
+ },
+
+ initMotion(){
+  this.motion={canvas:document.createElement("canvas"),prev:null};this.motion.canvas.width=48;this.motion.canvas.height=36;
+  this.motion.ctx=this.motion.canvas.getContext("2d",{willReadFrequently:true});
+  $("#motionPanel").innerHTML='<div id="motionValue">0.0%</div><p class="micro">movement intensity · frame difference</p>';
+ },
+
+ async initOCR(){
+  $("#ocrPanel").innerHTML='<div class="ocr-state">OCR READY / OPTIONAL</div><pre class="ocr-text" id="ocrText"></pre><p class="micro">text clarity · recognition strength</p>';
+  this.ocr=null;this.ocrReady=false;this.configureOCRLanguage();
+ },
+ configureOCRLanguage(){
+  const selected=[...document.querySelectorAll(".lang:checked")].map(x=>x.value);
+  this.ocrLangs=selected.length?selected.join("+"):"eng";
+  $("#ocrPanel .ocr-state").textContent="OCR · "+this.ocrLangs.toUpperCase()+(document.querySelector("#manuscriptMode").checked?" · MANUSCRIPT":"");
+ },
+ async ensureOCR(){
+  if(this.ocrReady&&this.ocr)return true;
+  try{
+   this.configureOCRLanguage();
+   $("#ocrPanel .ocr-state").textContent="OCR · loading…";
+   this.ocr=await Tesseract.createWorker(this.ocrLangs,1);
+   this.ocrReady=true;
+   $("#ocrPanel .ocr-state").textContent="OCR · "+this.ocrLangs.toUpperCase()+" · READY";
+   return true;
+  }catch(e){
+   console.warn("OCR unavailable",e);this.ocr=null;this.ocrReady=false;
+   $("#ocrPanel .ocr-state").textContent="OCR unavailable · camera continues";
+   return false;
+  }
+ },
+ async reloadOCR(){
+  const old=this.ocr;this.ocr=null;this.ocrReady=false;
+  if(old){try{await old.terminate()}catch(e){}}
+  this.configureOCRLanguage();
+  if(this.stream)await this.ensureOCR();
+ },
+
+ loop(){
+  cancelAnimationFrame(this.raf);
+  const run=t=>{if(!this.stream)return;this.processFace(t);this.processMotion();this.processOCR(t);this.raf=requestAnimationFrame(run)};
+  this.raf=requestAnimationFrame(run);
+ },
+
+ setTagColor(id,color){
+  const el=$(id); if(el) el.style.color=color;
+ },
+
+ processFace(t){
+  if(!this.face||this.video.currentTime===this.lastVideoTime)return;
+  const r=this.face.detectForVideo(this.video,t);
+
+  if(!r.faceLandmarks.length){
+   $("#face-reading").textContent="NO FACE";
+   $("#faceTag").innerHTML='<span class="face-label">FACE · NO FACE</span>';
+   $("#faceState").textContent="NO FACE";
+   $("#faceBlend").textContent="";
+   this.lastEmotion="NO FACE";this.lastEmotionScore=0;
+   this.lastVideoTime=this.video.currentTime;return;
+  }
+
+  const d={};(r.faceBlendshapes[0]?.categories||[]).forEach(x=>d[x.categoryName]=x.score);
+  const v=n=>d[n]||0, avg=(a,b)=>(v(a)+v(b))/2;
+
+  const smile=avg("mouthSmileLeft","mouthSmileRight");
+  const frown=avg("mouthFrownLeft","mouthFrownRight");
+  const browDown=avg("browDownLeft","browDownRight");
+  const browInner=v("browInnerUp");
+  const eyeWide=avg("eyeWideLeft","eyeWideRight");
+  const blink=avg("eyeBlinkLeft","eyeBlinkRight");
+  const mouthOpen=v("mouthOpen");
+  const eyeSquint=avg("eyeSquintLeft","eyeSquintRight");
+  const pucker=v("mouthPucker");
+
+  const derived={
+   HAPPY:.55*smile+.20*browInner+.15*(1-eyeSquint)+.10*(1-blink),
+   SAD:.42*browInner+.30*frown+.18*(1-mouthOpen)+.10*blink,
+   ANGRY:.48*browDown+.30*frown+.14*eyeSquint+.08*(1-smile),
+   SURPRISED:.45*eyeWide+.35*mouthOpen+.20*browInner,
+   FEARFUL:.38*eyeWide+.27*browInner+.20*mouthOpen+.15*browDown,
+   DISDAIN:.42*frown+.28*eyeSquint+.18*pucker+.12*(1-smile)
+  };
+
+  const ranked=Object.entries(derived)
+   .map(([name,score])=>[name,Math.max(0,Math.min(1,score))*100])
+   .sort((a,b)=>b[1]-a[1]);
+
+  const primary=ranked[0],secondary=ranked[1];
+  const mixed=primary[1]>=32&&secondary[1]>=24;
+  const simple=primary[0];
+  const complex=mixed?primary[0]+" + "+secondary[0]:simple;
+  const state=this.emotionMode==="complex"?complex:simple;
+  const score=primary[1];
+
+  this.lastEmotion=state;this.lastEmotionScore=score;
+  $("#face-reading").textContent=state;
+  $("#faceState").textContent=state+" · "+score.toFixed(0)+"%";
+  $("#faceBlend").textContent=this.emotionMode==="complex"
+   ?"PRIMARY "+primary[0]+" "+primary[1].toFixed(0)+"% · SECONDARY "+secondary[0]+" "+secondary[1].toFixed(0)+"%"
+   :"PRIMARY SIGNAL · "+primary[0]+" "+primary[1].toFixed(0)+"%";
+
+  $("#faceSmile").textContent="smile      "+(smile*100).toFixed(1)+"%";
+  $("#faceFrown").textContent="frown      "+(frown*100).toFixed(1)+"%";
+  $("#faceSurprise").textContent="surprise   "+(derived.SURPRISED*100).toFixed(1)+"%";
+  $("#faceAttention").textContent="attention  "+((1-blink)*100).toFixed(1)+"%";
+  $("#faceSadness").textContent="sad        "+(derived.SAD*100).toFixed(1)+"%";
+  $("#faceAnger").textContent="anger      "+(derived.ANGRY*100).toFixed(1)+"%";
+
+  const colors={
+   HAPPY:"#72e66f", SAD:"#55a8ff", ANGRY:"#ff3b30",
+   SURPRISED:"#ffd43b", FEARFUL:"#ff7b45", DISDAIN:"#b66cff"
+  };
+  this.setTagColor("#faceTag",colors[primary[0]]||"#ffffff");
+
+  // The rectangle hugs the face geometry. The label lives OUTSIDE the box.
+  const pts=r.faceLandmarks[0]||[];
+  if(pts.length){
+   const W=this.canvas.clientWidth,H=this.canvas.clientHeight;
+   const xs=pts.map(p=>p.x*W),ys=pts.map(p=>p.y*H);
+   const x=Math.max(2,Math.min(W-2,Math.min(...xs)));
+   const y=Math.max(2,Math.min(H-2,Math.min(...ys)));
+   const w=Math.max(20,Math.min(W-x,Math.max(...xs)-Math.min(...xs)));
+   const h=Math.max(20,Math.min(H-y,Math.max(...ys)-Math.min(...ys)));
+
+   const tag=$("#faceTag");
+   tag.style.left=x+"px";
+   tag.style.top=y+"px";
+   tag.style.width=w+"px";
+   tag.style.height=h+"px";
+   tag.style.minHeight="0";
+   tag.innerHTML='<span class="face-label">FACE · '+state+
+     (UI.percent.checked?" · "+score.toFixed(0)+"%":"")+"</span>";
+  }
+
+  if(window.cvVisionEvents) {
+    window.cvVisionEvents.publish("face",{
+      region:{x:pts.length?Math.min(...pts.map(p=>p.x)):0,
+              y:pts.length?Math.min(...pts.map(p=>p.y)):0},
+      emotion:state, score
+    });
+  }
+
+  this.lastVideoTime=this.video.currentTime;
+ },
+
+ processMotion(){
+  if(!this.motion)return;
+
+  const W=64,H=48,c=this.motion.ctx;
+  c.drawImage(this.video,0,0,W,H);
+  const d=c.getImageData(0,0,W,H).data;
+  const g=new Uint8Array(W*H);
+
+  for(let i=0;i<W*H;i++)
+    g[i]=(d[i*4]*.3+d[i*4+1]*.59+d[i*4+2]*.11)|0;
+
+  if(this.motion.prev){
+   const active=new Uint8Array(W*H);
+   let activeCount=0;
+
+   for(let i=0;i<g.length;i++){
+    if(Math.abs(g[i]-this.motion.prev[i])>30){
+      active[i]=1;activeCount++;
+    }
+   }
+
+   const seen=new Uint8Array(W*H);
+   const regions=[];
+
+   // Connected components: each sufficiently large moving island
+   // becomes its own cerulean rectangle.
+   for(let start=0;start<active.length;start++){
+    if(!active[start]||seen[start])continue;
+
+    const q=[start];seen[start]=1;
+    let minX=W,maxX=0,minY=H,maxY=0,count=0;
+
+    while(q.length){
+      const idx=q.pop();
+      const x=idx%W,y=(idx/W)|0;
+      count++;
+      if(x<minX)minX=x;if(x>maxX)maxX=x;
+      if(y<minY)minY=y;if(y>maxY)maxY=y;
+
+      const neighbors=[];
+      if(x>0)neighbors.push(idx-1);
+      if(x<W-1)neighbors.push(idx+1);
+      if(y>0)neighbors.push(idx-W);
+      if(y<H-1)neighbors.push(idx+W);
+
+      for(const n of neighbors){
+       if(active[n]&&!seen[n]){
+        seen[n]=1;q.push(n);
+       }
+      }
+    }
+
+    if(count>=4){
+      regions.push({
+       x:minX/W,y:minY/H,
+       w:Math.max(1,(maxX-minX+1)/W),
+       h:Math.max(1,(maxY-minY+1)/H),
+       area:count
+      });
+    }
+   }
+
+   // Keep the most meaningful moving regions and discard tiny noise.
+   regions.sort((a,b)=>b.area-a.area);
+   const selected=regions.slice(0,8);
+
+   const layer=$("#movementRegions");
+   if(layer){
+    layer.innerHTML="";
+    const Wc=this.canvas.clientWidth,Hc=this.canvas.clientHeight;
+
+    selected.forEach((r,i)=>{
+      const el=document.createElement("div");
+      el.className="movement-region";
+      el.style.left=(r.x*Wc)+"px";
+      el.style.top=(r.y*Hc)+"px";
+      el.style.width=(r.w*Wc)+"px";
+      el.style.height=(r.h*Hc)+"px";
+      el.innerHTML='<span class="movement-region-label">MOVEMENT</span>';
+      layer.appendChild(el);
+
+      if(window.cvVisionEvents){
+       window.cvVisionEvents.publish("movement",{
+        index:i,region:r,active:true
+       });
+      }
+    });
+
+    $("#motionTag").style.display=selected.length?"none":"none";
+   }
+
+   const value=activeCount/(W*H)*100;
+   this.lastMotion=value;
+   $("#motion-reading").textContent=selected.length?"MOVING":"STILL";
+   $("#motionValue").textContent=value.toFixed(2)+"%";
+  }
+
+  this.motion.prev=g;
+ },
+
+ async processOCR(t){
+  if(!this.stream||this.ocrBusy||t-this.lastOCR<1600)return;
+  this.lastOCR=t;this.ocrBusy=true;
+
+  try{
+   if(!await this.ensureOCR()){this.ocrBusy=false;return}
+
+   const off=document.createElement("canvas");
+   off.width=this.video.videoWidth;off.height=this.video.videoHeight;
+   const c=off.getContext("2d");
+
+   c.filter=document.querySelector("#manuscriptMode").checked
+    ?"grayscale(1) contrast(1.55)"
+    :"grayscale(1) contrast(1.35)";
+   c.drawImage(this.video,0,0);
+
+   const {data}=await this.ocr.recognize(off);
+   const text=(data.text||"").trim();
+   const clarity=Number(data.confidence)||0;
+
+   let kind="NO TEXT";
+   if(text){
+    if(document.querySelector("#numbersMode").checked&&
+       /^\s*[-+]?\d+(?:[.,]\d+)?\s*$/.test(text))
+      kind="NUMBER";
+    else if(/[=+\-*\/<>]|(?:\b(?:sin|cos|tan|sqrt|log|x|y)\b)/i.test(text))
+      kind="EXPRESSION";
+    else
+      kind="WORD / TEXT";
+   }
+
+   $("#ocr-reading").textContent=kind;
+   $("#ocrText").textContent=text.slice(0,500);
+
+   const shown=text?text.replace(/\s+/g," ").slice(0,90):"—";
+   const tag=$("#textTag");
+
+   const colors={
+    NUMBER:"#ff9d00",
+    EXPRESSION:"#42c8ff",
+    "WORD / TEXT":"#d7ff00",
+    "NO TEXT":"#ffffff"
+   };
+   this.setTagColor("#textTag",colors[kind]||"#d7ff00");
+
+   const words=(data.words||[]).filter(w=>w.text&&w.bbox);
+   if(words.length){
+    // Surround the complete recognized text region rather than one word.
+    const x0=Math.min(...words.map(w=>w.bbox.x0));
+    const y0=Math.min(...words.map(w=>w.bbox.y0));
+    const x1=Math.max(...words.map(w=>w.bbox.x1));
+    const y1=Math.max(...words.map(w=>w.bbox.y1));
+
+    const sx=this.canvas.clientWidth/this.canvas.width;
+    const sy=this.canvas.clientHeight/this.canvas.height;
+
+    tag.style.left=Math.max(2,x0*sx)+"px";
+    tag.style.top=Math.max(2,y0*sy)+"px";
+    tag.style.width=Math.max(20,(x1-x0)*sx)+"px";
+    tag.style.height=Math.max(18,(y1-y0)*sy)+"px";
+    tag.style.minHeight="0";
+    tag.innerHTML='<span class="text-label">'+
+      (kind==="NUMBER"?"NUMBER":shown)+
+      (UI.percent.checked&&text?" · "+clarity.toFixed(0)+"%":"")+
+      "</span>";
+
+    // Number rectangles are orange; ordinary text rectangles are lime-yellow.
+    tag.style.color=colors[kind]||"#d7ff00";
+    tag.style.borderColor=colors[kind]||"#d7ff00";
+   }else{
+    tag.style.display="none";
+   }
+
+   // Keep the readable duplicate immediately below the camera.
+   const below=document.getElementById("ocrBelowText");
+   if(below)below.textContent=text||"—";
+
+   if(window.cvVisionEvents){
+    window.cvVisionEvents.publish("text",{
+      text:shown,type:kind,clarity,
+      region:words.length?{
+       x0:Math.min(...words.map(w=>w.bbox.x0)),
+       y0:Math.min(...words.map(w=>w.bbox.y0)),
+       x1:Math.max(...words.map(w=>w.bbox.x1)),
+       y1:Math.max(...words.map(w=>w.bbox.y1))
+      }:null
+    });
+   }
+
+  }catch(e){
+   console.warn("OCR frame skipped",e);
+  }
+  this.ocrBusy=false;
+ },
+
+ stop(clear=true){
+  clearTimeout(SESSION.timer);cancelAnimationFrame(this.raf);
+  if(this.stream)this.stream.getTracks().forEach(t=>t.stop());
+  this.stream=null;this.face?.close?.();this.face=null;this.ocr?.terminate?.();this.ocr=null;this.motion=null;$("#movementRegions")?.replaceChildren();
+  if(clear){
+   $("#cameraStatus").textContent="camera stopped";$("#face-reading").textContent="—";$("#motion-reading").textContent="—";$("#ocr-reading").textContent="—";$("#ocrText").textContent="";
+   $("#faceTag").textContent="FACE · —";$("#motionTag").textContent="MOVEMENT · —";$("#textTag").textContent="TEXT · —";
+   this.setTagColor("#faceTag","#ff4fb3");this.setTagColor("#motionTag","#55a8ff");this.setTagColor("#textTag","#d7ff00");
+   $("#consoleFeed").textContent="[system] camera stopped\n[system] enable camera to begin again";
+   this.ctx?.clearRect(0,0,this.canvas.width,this.canvas.height);
+  }
+ }
+};
+
+const TYPE_STATE={text:{size:12,case:"upper"},face:{size:12,case:"upper"},motion:{size:11,case:"upper"}};
+document.querySelectorAll("[data-size]").forEach(btn=>btn.onclick=()=>{
+ const t=btn.dataset.size,step=Number(btn.dataset.step)||0;
+ TYPE_STATE[t].size=Math.max(8,Math.min(28,TYPE_STATE[t].size+step));
+ document.documentElement.style.setProperty("--"+t+"-tag-size",TYPE_STATE[t].size+"px");
+});
+document.querySelectorAll("[data-case]").forEach(btn=>btn.onclick=()=>{
+ const t=btn.dataset.case;TYPE_STATE[t].case=btn.dataset.value;
+});
+document.querySelectorAll(".lang").forEach(x=>x.addEventListener("change",()=>Camera.reloadOCR()));
+$("#numbersMode").addEventListener("change",()=>Camera.reloadOCR());
+$("#manuscriptMode").addEventListener("change",()=>Camera.reloadOCR());
+
+$("#start").onclick=()=>Camera.start();
+$("#stop").onclick=()=>Camera.stop();
+document.addEventListener("visibilitychange",()=>{if(document.hidden)Camera.stop()});
+</script>
+
+<script id="memory-controls-script">
+(() => {
+  const saveBtn = document.getElementById("saveLogsBtn");
+  const releaseBtn = document.getElementById("releaseMemoryBtn");
+  const status = document.getElementById("memoryStatus");
+
+  function setStatus(message) {
+    if (status) {
+      status.textContent = message;
+      clearTimeout(setStatus.timer);
+      setStatus.timer = setTimeout(() => {
+        status.textContent = "";
+      }, 3500);
+    }
+  }
+
+  function collectLogs() {
+    const consoleEl = document.getElementById("consoleFeed");
+    const lines = consoleEl
+      ? consoleEl.innerText.split("\n").map(x => x.trim()).filter(Boolean)
+      : [];
+
+    return [
+      "COMPUTER VISION DEMO — SESSION LOG",
+      "Saved: " + new Date().toISOString(),
+      "URL: " + location.href,
+      "",
+      ...lines
+    ].join("\n");
+  }
+
+  function saveLogs() {
+    const blob = new Blob([collectLogs()], {
+      type: "text/plain;charset=utf-8"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const stamp = new Date().toISOString()
+      .replace(/[:.]/g, "-")
+      .replace("T", "_")
+      .replace("Z", "");
+
+    a.href = url;
+    a.download = "computer-vision-session-" + stamp + ".log";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    setStatus("LOG SAVED");
+  }
+
+  async function releaseMemory() {
+    const confirmed = window.confirm(
+      "RELEASE MEMORY / CLEAR CACHE?\n\n" +
+      "This will stop the camera and release active vision/OCR resources.\n" +
+      "Save the session logs first if you want to keep them."
+    );
+
+    if (!confirmed) return;
+
+    try {
+      // Stop the camera through the existing application controls.
+      const stopBtn = document.getElementById("stop");
+      if (stopBtn) stopBtn.click();
+
+      // Release common runtime objects exposed by the stable application.
+      if (typeof faceLandmarker !== "undefined" && faceLandmarker) {
+        try { faceLandmarker.close(); } catch (_) {}
+      }
+
+      if (typeof ocrWorker !== "undefined" && ocrWorker) {
+        try { await ocrWorker.terminate(); } catch (_) {}
+      }
+
+      // Release the canvas graphics buffer where possible.
+      const canvas = document.getElementById("cameraCanvas");
+      if (canvas) {
+        const ctx = canvas.getContext("2d");
+        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // Clear only this application's temporary session cache.
+      try {
+        sessionStorage.clear();
+      } catch (_) {}
+
+      // Do NOT clear localStorage: it contains persistent user preferences,
+      // including the selected visual theme.
+
+      if (window.gc) {
+        try { window.gc(); } catch (_) {}
+      }
+
+      setStatus("MEMORY RELEASED");
+    } catch (err) {
+      console.warn("Memory release completed with warning:", err);
+      setStatus("CLEANUP COMPLETE");
+    }
+  }
+
+  if (saveBtn) saveBtn.addEventListener("click", saveLogs);
+  if (releaseBtn) releaseBtn.addEventListener("click", releaseMemory);
+})();
+</script>
+
+
+<script id="real-session-counter">
+(() => {
+  const KEY = "cv-demo-session-count";
+  let count = Number(localStorage.getItem(KEY) || "0");
+  if (!Number.isFinite(count) || count < 0) count = 0;
+  count += 1;
+  localStorage.setItem(KEY, String(count));
+
+  window.cvDemoSession = {
+    count,
+    durationSeconds: 40 + Math.max(0, count - 1) * 15
+  };
+
+  function updateSessionUI() {
+    const el = document.getElementById("sessionLimit") ||
+               document.getElementById("sessionInfo") ||
+               document.querySelector(".session-limit");
+    if (!el) return;
+    el.textContent = "SESSION " + count + " · LIMIT " +
+                     window.cvDemoSession.durationSeconds + "s";
+  }
+
+  window.addEventListener("DOMContentLoaded", updateSessionUI);
+})();
+</script>
+
+
+      <div class="bottom-language-menu" aria-label="OCR language and recognition options">
+  <span class="small-menu-label">OCR</span>
+  <label><input type="checkbox" id="langES" checked> ES</label>
+  <label><input type="checkbox" id="langEN" checked> EN</label>
+  <label><input type="checkbox" id="langDE" checked> DE</label>
+  <label><input type="checkbox" id="langFR" checked> FR</label>
+  <label><input type="checkbox" id="langIT" checked> IT</label>
+  <label><input type="checkbox" id="langPT" checked> PT</label>
+  <label><input type="checkbox" id="numbersToggle"> NUMBERS</label>
+  <label><input type="checkbox" id="manuscriptToggle"> MANUSCRIPT</label>
+</div>
+
+
+<script id="movement-toggle-bridge">
+(() => {
+  function wireMovement() {
+    const cb = document.getElementById("toggleMovement");
+    const tag = document.getElementById("motionTag");
+    if (!cb || !tag || cb.dataset.wired) return;
+    cb.dataset.wired = "1";
+    const apply = () => {
+      tag.style.display = cb.checked ? "" : "none";
+      window.movementDetectionEnabled = cb.checked;
+    };
+    cb.addEventListener("change", apply);
+    apply();
+  }
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", wireMovement);
+  else wireMovement();
+})();
+</script>
+
+
+      <div class="bottom-view-menu" aria-label="visual feedback controls">
+        <span class="small-menu-label">VIEW</span>
+        <label><input type="checkbox" id="toggleTags" checked> TAGS</label>
+        <label><input type="checkbox" id="toggleEmotion" checked> EMOTION</label>
+        <label><input type="checkbox" id="toggleMovement" checked> MOVEMENT</label>
+        <label><input type="checkbox" id="toggleText" checked> TEXT</label>
+        <label><input type="checkbox" id="togglePercentages" checked> %</label>
+      </div>
+<div class="event-export-menu" aria-label="vision event export">
+        <span class="small-menu-label">EVENTS</span>
+        <label><input type="checkbox" id="exportEventsToggle"> EXPORT</label>
+        <button type="button" id="downloadEventsBtn">SAVE EVENTS</button>
+        <span id="eventExportStatus"></span>
+      </div>
+
+
+<script id="vision-event-export">
+(() => {
+  const MAX_EVENTS = 500;
+  const buffer = [];
+  const toggle = document.getElementById("exportEventsToggle");
+  const saveBtn = document.getElementById("downloadEventsBtn");
+  const status = document.getElementById("eventExportStatus");
+
+  function setStatus(s){
+    if(status){
+      status.textContent = s;
+      clearTimeout(setStatus.t);
+      setStatus.t = setTimeout(() => status.textContent="", 2500);
+    }
+  }
+
+  function publish(type, payload = {}){
+    if(!toggle || !toggle.checked) return null;
+
+    const event = {
+      event_id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random()),
+      schema: "cv-demo.vision-event.v1",
+      timestamp: new Date().toISOString(),
+      source: "computer-vision-demo",
+      session: window.cvDemoSession ? window.cvDemoSession.count : null,
+      type,
+      payload
+    };
+
+    buffer.push(event);
+    if(buffer.length > MAX_EVENTS) buffer.shift();
+
+    window.dispatchEvent(new CustomEvent("cv:vision-event", {detail:event}));
+    return event;
+  }
+
+  window.cvVisionEvents = {
+    publish,
+    getBuffer: () => buffer.slice(),
+    clear: () => buffer.splice(0, buffer.length)
+  };
+
+  // Adapter point for a future transport:
+  // Kafka: POST/broker adapter -> topic "vision.events"
+  // AWS SQS: enqueue JSON event body
+  // Other queue: subscribe to "cv:vision-event"
+  window.addEventListener("cv:vision-event", (e) => {
+    // Intentionally no network call here.
+    // This keeps the camera demo independent of backend availability.
+  });
+
+  if(saveBtn){
+    saveBtn.addEventListener("click", () => {
+      const blob = new Blob(
+        [JSON.stringify(buffer, null, 2)],
+        {type:"application/json;charset=utf-8"}
+      );
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "vision-events-" +
+        new Date().toISOString().replace(/[:.]/g,"-") + ".json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setStatus(buffer.length + " EVENTS SAVED");
+    });
+  }
+})();
+</script>
+
+
+<script id="emotion-color-controller">
+(() => {
+  const FACE = () => document.getElementById("faceTag");
+
+  const aliases = {
+    "HAPPY":"happy",
+    "SAD":"sad",
+    "ANGRY":"angry",
+    "SURPRISED":"surprised",
+    "SURPRISE":"surprised",
+    "FEARFUL":"fearful",
+    "FEAR":"fearful",
+    "DISGUSTED":"disgusted",
+    "DISGUST":"disgusted",
+    "THINKING":"thinking",
+    "SILENT":"silent",
+    "NEUTRAL":"neutral",
+    "ATTENTIVE":"attentive",
+    "DISDAIN":"disdain"
+  };
+
+  function emotionClass(text) {
+    const value = String(text || "").toUpperCase();
+
+    if (value.includes("ANGRY")) return "emotion-angry";
+    if (value.includes("HAPPY")) return "emotion-happy";
+    if (value.includes("SURPRIS")) return "emotion-surprised";
+    if (value.includes("DISGUST")) return "emotion-disgusted";
+    if (value.includes("FEAR")) return "emotion-fearful";
+    if (value.includes("SAD")) return "emotion-sad";
+    if (value.includes("THINK")) return "emotion-thinking";
+    if (value.includes("SILENT")) return "emotion-silent";
+    if (value.includes("DISDAIN")) return "emotion-disdain";
+    if (value.includes("ATTENT")) return "emotion-attentive";
+    if (value.includes("NEUTRAL")) return "emotion-neutral";
+    if (value.includes("+")) return "emotion-complex";
+
+    return "emotion-neutral";
+  }
+
+  function update() {
+    const face = FACE();
+    if (!face) return;
+
+    const text = face.textContent || face.innerText || "";
+    Object.keys(aliases).forEach(key => {
+      face.classList.remove("emotion-" + aliases[key]);
+    });
+    face.classList.add(emotionClass(text));
+  }
+
+  // Observe the existing tag so the color follows whatever the stable
+  // emotion calculator has already assigned.
+  function wire() {
+    const face = FACE();
+    if (!face || face.dataset.emotionColorWired) return;
+
+    face.dataset.emotionColorWired = "1";
+    const observer = new MutationObserver(update);
+    observer.observe(face, {childList:true, subtree:true, characterData:true});
+    update();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", wire);
+  } else {
+    wire();
+  }
+})();
+</script>
+
+
+<script id="bottom-theme-controller">
+(() => {
+  function wire() {
+    const select = document.getElementById("themeSelectBottom");
+    if (!select || select.dataset.wired) return;
+    select.dataset.wired = "1";
+
+    const legacy = document.getElementById("themeSelect");
+
+    const apply = value => {
+      if (legacy) {
+        legacy.value = value;
+        legacy.dispatchEvent(new Event("change", {bubbles:true}));
+      }
+
+      document.body.dataset.theme = value;
+      document.body.classList.remove(
+        "kuromi","dark","pastel","fluor","greyscale","solarized"
+      );
+      document.body.classList.add(value);
+
+      try {
+        localStorage.setItem("cv-demo-theme", value);
+      } catch (_) {}
+    };
+
+    let saved = null;
+    try { saved = localStorage.getItem("cv-demo-theme"); } catch (_) {}
+
+    if (saved && [...select.options].some(o => o.value === saved)) {
+      select.value = saved;
+      apply(saved);
+    }
+
+    select.addEventListener("change", () => apply(select.value));
+  }
+
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", wire);
+  else
+    wire();
+})();
+</script>
+
+
+
+
+
+<script id="ocr-below-bridge">
+(() => {
+  function wire(){
+    const source = document.getElementById("textTag");
+    const target = document.getElementById("ocrBelowText");
+    if (!source || !target || source.dataset.belowWired) return;
+    source.dataset.belowWired = "1";
+
+    const update = () => {
+      const text = (source.innerText || source.textContent || "").trim();
+      target.textContent = text || "—";
+    };
+
+    new MutationObserver(update).observe(source, {
+      childList:true,
+      subtree:true,
+      characterData:true
+    });
+    update();
+  }
+
+  if(document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", wire);
+  else wire();
+})();
+</script>
+
+
+
+
+
+<script id="ocr-language-classifier">
+(() => {
+  const languages = [
+    ["lang-es", /\b(el|la|los|las|que|de|del|una|uno|para|con|por|como|hola)\b/i],
+    ["lang-en", /\b(the|and|this|that|with|from|hello|you|is|are)\b/i],
+    ["lang-de", /\b(der|die|das|und|ist|nicht|mit|ein|eine)\b/i],
+    ["lang-fr", /\b(le|la|les|des|une|un|avec|pour|bonjour|est|et)\b/i],
+    ["lang-it", /\b(il|lo|la|gli|le|che|con|per|una|uno|ciao|è|e)\b/i],
+    ["lang-pt", /\b(o|a|os|as|que|com|para|uma|um|olá|não|é|e)\b/i]
+  ];
+
+  function classify(text){
+    const value = String(text || "").trim();
+    if(!value) return "lang-unknown";
+
+    // Numbers always receive the dedicated blue visual treatment.
+    if(/^\s*[\d\s.,:%+\-/$€£¥]+$/.test(value)) {
+      return "number-detected";
+    }
+
+    for(const [cls, rx] of languages){
+      if(rx.test(value)) return cls;
+    }
+
+    return "lang-unknown";
+  }
+
+  function update(){
+    const source = document.getElementById("textTag");
+    const below = document.getElementById("ocrBelowCamera");
+    const text = source ? (source.innerText || source.textContent || "") : "";
+    const cls = classify(text);
+
+    [source, below].filter(Boolean).forEach(el => {
+      el.classList.remove(
+        "lang-es","lang-en","lang-de","lang-fr","lang-it","lang-pt",
+        "lang-unknown","number-detected"
+      );
+      el.classList.add(cls);
+    });
+  }
+
+  function wire(){
+    const source = document.getElementById("textTag");
+    if(!source || source.dataset.langWired) return;
+    source.dataset.langWired = "1";
+    new MutationObserver(update).observe(source,{
+      childList:true, subtree:true, characterData:true
+    });
+    update();
+  }
+
+  if(document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded",wire);
+  else wire();
+})();
 </script>
 
 </body>
