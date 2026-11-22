@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0",
+  "updatedAt": "2026-11-21",
+  "services": [
+    {
+      "id": "consulta-general",
+      "name": "Consulta general",
+      "category": "Consulta"
+    },
+    {
+      "id": "asesoria",
+      "name": "Asesoría profesional",
+      "category": "Asesoría"
+    },
+    {
+      "id": "sesion",
+      "name": "Sesión individual",
+      "category": "Sesión"
+    },
+    {
+      "id": "visita",
+      "name": "Visita a domicilio",
+      "category": "Visita"
+    },
+    {
+      "id": "control",
+      "name": "Control / seguimiento",
+      "category": "Seguimiento"
+    }
+  ]
+}
