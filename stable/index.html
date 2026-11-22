@@ -77,12 +77,13 @@ language.addEventListener("click",()=>{lang=lang==="en"?"es":"en";document.docum
 const statusBox=document.getElementById("devstatus"),statusToggle=document.getElementById("status-toggle");
 statusToggle.addEventListener("click",()=>{const open=statusBox.classList.toggle("open");statusToggle.setAttribute("aria-expanded",String(open));});
 document.addEventListener("click",e=>{if(!statusBox.contains(e.target)){statusBox.classList.remove("open");statusToggle.setAttribute("aria-expanded","false");}});
-document.addEventListener("click",e=>{if(!typeBox.contains(e.target)){typeBox.classList.remove("open");typeToggle.setAttribute("aria-expanded","false");}});
+
 const palette=document.getElementById("palette"),toggle=document.getElementById("palette-toggle");
 toggle.addEventListener("click",()=>{const open=palette.classList.toggle("open");toggle.setAttribute("aria-expanded",String(open));});
 const savedTheme=localStorage.getItem("arigato-site-theme")||"main";document.body.dataset.theme=savedTheme;
 document.querySelectorAll("#palette .theme").forEach(btn=>btn.addEventListener("click",()=>{document.body.dataset.theme=btn.dataset.theme;localStorage.setItem("arigato-site-theme",btn.dataset.theme);palette.classList.remove("open");toggle.setAttribute("aria-expanded","false");}));
 const typeBox=document.getElementById("typography"),typeToggle=document.getElementById("type-toggle"),savedType=localStorage.getItem("arigato-site-type")||"century";document.body.dataset.type=savedType;
+document.addEventListener("click",e=>{if(!typeBox.contains(e.target)){typeBox.classList.remove("open");typeToggle.setAttribute("aria-expanded","false");}});
 typeToggle.addEventListener("click",()=>{const open=typeBox.classList.toggle("open");typeToggle.setAttribute("aria-expanded",String(open));});
 document.querySelectorAll("#typography .theme").forEach(btn=>btn.addEventListener("click",()=>{document.body.dataset.type=btn.dataset.type;localStorage.setItem("arigato-site-type",btn.dataset.type);typeBox.classList.remove("open");typeToggle.setAttribute("aria-expanded","false");}));
 })();
