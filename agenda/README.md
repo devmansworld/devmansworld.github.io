@@ -1,10 +1,17 @@
-# Agenda Demo v0.1.0
+# Agenda Demo v0.2.0
 
-Free static local-first HTML demo.
+Public static local-first HTML demo.
 
-- Appointments stay in this browser's localStorage.
-- Import/export uses user-selected JSON files.
-- The only remote request retrieves the public service catalogue from GitHub Pages (`services.json`).
-- No API server, account, backend, analytics, or remote appointment storage.
-- The ZIP download is generated locally in the browser and contains `index.html`.
-- A basic service remains available if the catalogue cannot be reached.
+## Data boundaries
+- `services.json` and `mock-requestors.json` are public, read-only GitHub Pages resources.
+- Mock requestor names are invented synthetic demo data.
+- Select **Plantilla vacía** to work without the mock requestor list.
+- Real names and appointments entered by a visitor remain in that visitor's browser localStorage.
+- No real appointment/requestor information is sent to the public catalogue.
+- Import/export is local; never place real patient data in public repository files or issue reports.
+
+## Portable ZIP
+The browser-generated ZIP contains the standalone HTML. It retrieves public mock catalogues from GitHub Pages while online. It does not contain a backend or local SQL Server.
+
+## Scope
+No login, backend, remote appointment storage, or real patient records.
