@@ -1,0 +1,65 @@
+name: Agenda Stable — validate index
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "stable/**"
+      - ".github/workflows/agenda-stable-index.yml"
+  pull_request:
+    branches: [master]
+    paths:
+      - "stable/**"
+      - ".github/workflows/agenda-stable-index.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate launch index
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Download the repository content into the runner.
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      # 2. Use Python's standard library; no third-party dependencies needed.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      # 3. Fail early if the launch page is missing or its six project cards change.
+      - name: Smoke-test the Stable index
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          page = Path("stable/index.html")
+          assert page.is_file(), "stable/index.html is missing"
+          source = page.read_text(encoding="utf-8")
+
+          class CardCounter(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.cards = 0
+              def handle_starttag(self, tag, attrs):
+                  if tag == "article" and ("data-repo", None) in attrs:
+                      self.cards += 1
+
+          parser = CardCounter()
+          parser.feed(source)
+
+          expected = [
+              "agenda-one", "agenda-two", "agenda-three",
+              "agenda-four", "agenda-go", "agenda-ruby"
+          ]
+          missing = [name for name in expected if f'data-repo="{name}"' not in source]
+          assert not missing, f"Missing project cards: {missing}"
+          assert parser.cards == 6, f"Expected 6 cards, found {parser.cards}"
+          assert "<title>Agenda Stable" in source, "Page title is missing"
+          print("Agenda Stable index OK — six project cards found.")
+          PY
