@@ -26,6 +26,7 @@ h1{font:400 clamp(64px,11vw,128px)/.82 var(--display);letter-spacing:.015em;marg
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.action{display:inline-block;padding:11px 15px;border:1px solid var(--fg);font-size:12px;font-weight:bold;letter-spacing:.06em;text-transform:uppercase}.action.primary{background:var(--fg);color:var(--bg)}
 section{border-top:1px solid var(--line);padding:28px 0}.sectionhead{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:16px}h2{font:400 36px var(--display);color:var(--accent);margin:0}.note{font:16px var(--reading);color:var(--muted);margin:5px 0 0}
 .demo-shell{background:var(--panel);border:1px solid var(--line);padding:10px}.demo-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:5px 4px 12px;font-size:12px;color:var(--muted)}.demo-bar a{font-weight:bold}
+.devstatus{position:relative}.status-menu{display:none;position:absolute;right:0;top:38px;z-index:8;width:270px;padding:13px;background:var(--panel);border:1px solid var(--line);box-shadow:0 8px 24px #0002}.devstatus.open .status-menu{display:grid;gap:10px}.status-title{font-size:11px;font-weight:bold;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-bottom:7px;border-bottom:1px solid var(--line)}.status-row{display:grid;grid-template-columns:10px 1fr;gap:8px;align-items:start;font-size:12px}.status-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;background:#c58a26}.status-dot.ready{background:#32845b}.status-row strong{display:block;font-size:12px}.status-row small{display:block;color:var(--muted);font:11px/1.4 var(--reading);margin-top:2px}.status-foot{font:10px var(--console);color:var(--muted);border-top:1px solid var(--line);padding-top:8px}
 iframe{display:block;width:100%;height:980px;border:1px solid var(--line);background:white}
 .thanks{font:19px/1.55 var(--reading);max-width:760px}.thanks strong{font-family:var(--geo)}
 footer{border-top:1px solid var(--line);padding:20px 0;display:flex;justify-content:space-between;gap:15px;color:var(--muted);font-size:11px}
@@ -37,6 +38,14 @@ footer{border-top:1px solid var(--line);padding:20px 0;display:flex;justify-cont
 <a class="brand" href="./"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>ARIGATO</a>
 <div class="controls">
 <button class="control" id="language" type="button" aria-label="Change language">🌐 EN</button>
+<div class="devstatus" id="devstatus"><button class="control" id="status-toggle" type="button" aria-expanded="false" aria-controls="status-menu">● Status</button>
+<div class="status-menu" id="status-menu" role="status" aria-label="Development status">
+<div class="status-title">ARIGATO · Development status</div>
+<div class="status-row"><i class="status-dot ready"></i><div><strong>Public demo</strong><small>Available for exploration</small></div></div>
+<div class="status-row"><i class="status-dot"></i><div><strong>Core workflows</strong><small>Under verification · appointments and people</small></div></div>
+<div class="status-row"><i class="status-dot"></i><div><strong>Other editions</strong><small>Paused · not part of this public preview</small></div></div>
+<div class="status-foot">STATUS IS HONESTLY MANUAL · LAST CHECK: SOURCE REVIEW</div>
+</div></div>
 <div class="palette" id="palette"><button class="control" id="palette-toggle" type="button" aria-expanded="false" aria-label="Choose colour palette">🎨</button>
 <div class="palette-menu" role="group" aria-label="Colour palettes">
 <button class="theme" data-theme="main">Main page</button><button class="theme" data-theme="solarized">Solarized</button><button class="theme" data-theme="kuromi">Kuromi</button><button class="theme" data-theme="pastel">Pastel</button><button class="theme" data-theme="black">Minimal black</button><button class="theme" data-theme="greyscale">Greyscale</button>
@@ -65,6 +74,9 @@ footer{border-top:1px solid var(--line);padding:20px 0;display:flex;justify-cont
 const language=document.getElementById("language");
 let lang="en";
 language.addEventListener("click",()=>{lang=lang==="en"?"es":"en";document.documentElement.lang=lang;language.textContent=lang==="en"?"🌐 EN":"🌐 ES";document.querySelectorAll("[data-en][data-es]").forEach(el=>el.textContent=el.dataset[lang]);});
+const statusBox=document.getElementById("devstatus"),statusToggle=document.getElementById("status-toggle");
+statusToggle.addEventListener("click",()=>{const open=statusBox.classList.toggle("open");statusToggle.setAttribute("aria-expanded",String(open));});
+document.addEventListener("click",e=>{if(!statusBox.contains(e.target)){statusBox.classList.remove("open");statusToggle.setAttribute("aria-expanded","false");}});
 const palette=document.getElementById("palette"),toggle=document.getElementById("palette-toggle");
 toggle.addEventListener("click",()=>{const open=palette.classList.toggle("open");toggle.setAttribute("aria-expanded",String(open));});
 document.querySelectorAll(".theme").forEach(btn=>btn.addEventListener("click",()=>{document.body.dataset.theme=btn.dataset.theme;palette.classList.remove("open");toggle.setAttribute("aria-expanded","false");}));
