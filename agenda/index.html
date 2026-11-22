@@ -25,8 +25,20 @@ footer{border-top:1px solid var(--line);padding:15px 0;color:var(--muted);font-s
 <script>
 "use strict";
 const SERVICES_URL="https://devmansworld.github.io/agenda/services.json",MOCK_URL="https://devmansworld.github.io/agenda/mock-requestors.json",KEY="agenda-demo-v0.1.0";
-let services=[{id:"general",name:"Consulta general"}],mockRequestors=[],appointments=read(),loadMocks="mock";
-function read(){try{let v=JSON.parse(localStorage.getItem(KEY)||"[]");return Array.isArray(v)?v:[]}catch{return[]}}
+const DATA_SCHEMA=2;
+let services=[{id:"general",name:"Servicio general"}],mockRequestors=[],appointments=read(),mockEnabled=false;
+function read(){
+ try{
+  const current=localStorage.getItem(KEY);
+  if(current){const parsed=JSON.parse(current);return Array.isArray(parsed)?parsed:[]}
+  const legacy=JSON.parse(localStorage.getItem(LEGACY_KEY)||"[]");
+  if(!Array.isArray(legacy))return [];
+  const migrated=legacy.map(a=>({...a,requestorName:a.requestorName||a.person||"",schemaVersion:DATA_SCHEMA}));
+  localStorage.setItem(KEY,JSON.stringify(migrated));
+  localStorage.setItem(KEY+"-migration","v0.1.0-to-v0.3.0");
+  return migrated;
+ }catch{return []}
+}
 function safe(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function notify(t){let e=document.getElementById("toast");e.textContent=t;e.style.display="block";clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>e.style.display="none",2400)}
 function render(){let sorted=[...appointments].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));document.getElementById("appointments").innerHTML=sorted.length?sorted.map(a=>'<article class="entry"><div class="date">'+safe(a.date)+'<br>'+safe(a.time)+'</div><div><div class="person">'+safe(a.requestorName||a.person)+'</div><div class="meta">'+safe(a.serviceName||a.service)+'</div></div><span class="status">'+safe(a.status)+'</span></article>').join(""):'<div class="empty">Todavía no hay citas. Crea la primera para comenzar.</div>';document.getElementById("total").textContent=appointments.length;document.getElementById("confirmed").textContent=appointments.filter(a=>a.status==="Confirmada").length;document.getElementById("pending").textContent=appointments.filter(a=>a.status==="Pendiente").length}
@@ -35,7 +47,8 @@ async function loadServices(){try{let r=await fetch(SERVICES_URL,{cache:"no-stor
 function renderMockPeople(){let el=document.getElementById("mockPeople"),dl=document.getElementById("requestorSuggestions");if(!mockEnabled){el.textContent="No se han cargado datos de ejemplo.";dl.innerHTML="";return}el.innerHTML=mockRequestors.length?mockRequestors.map(p=>'<div style="padding:5px 0;border-bottom:1px solid #eee">'+safe(p.name)+' <span class="meta">· '+safe(p.reference||"Demo")+'</span></div>').join(""):"No se pudo cargar la lista de ejemplo.";dl.innerHTML=mockRequestors.map(p=>'<option value="'+safe(p.name)+'">').join("")}
 async function loadMockRequestors(){if(!mockEnabled)return;try{let r=await fetch(MOCK_URL,{cache:"no-store"});if(!r.ok)throw Error();let d=await r.json();if(!Array.isArray(d.requestors))throw Error();mockRequestors=d.requestors}catch{mockRequestors=[]}renderMockPeople()}
 function modal(open){document.getElementById("modal").classList.toggle("open",open);if(open)document.getElementById("date").value=new Date().toISOString().slice(0,10)}
-document.getElementById("dataMode").onchange=e=>{dataMode=e.target.value;renderMockPeople();notify(dataMode==="empty"?"Plantilla vacía activada":"Datos ficticios de demostración activados")};\ndocument.getElementById("new").onclick=()=>modal(true);document.getElementById("close").onclick=()=>modal(false);document.getElementById("cancel").onclick=()=>modal(false);
+document.getElementById("dataMode").onchange=e=>{dataMode=e.target.value;renderMockPeople();notify(dataMode==="empty"?"Plantilla vacía activada":"Datos ficticios de demostración activados")};\ndocument.getElementById("loadMocks").onchange=async e=>{mockEnabled=e.target.checked;if(mockEnabled){notify("Solicitando datos ficticios de demostración");await loadMockRequestors()}else{mockRequestors=[];renderMockPeople();notify("Datos de demostración desactivados")}};
+document.getElementById("new").onclick=()=>modal(true);document.getElementById("close").onclick=()=>modal(false);document.getElementById("cancel").onclick=()=>modal(false);
 document.getElementById("form").onsubmit=e=>{e.preventDefault();let s=services.find(x=>x.id===document.getElementById("service").value)||services[0];appointments.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),requestorName:document.getElementById("person").value.trim(),schemaVersion:DATA_SCHEMA,date:document.getElementById("date").value,time:document.getElementById("time").value,service:s.id,serviceName:s.name,status:document.getElementById("status").value,createdAt:new Date().toISOString()});save();e.target.reset();modal(false);notify("Cita guardada localmente")};
 document.getElementById("export").onclick=()=>{let b=new Blob([JSON.stringify({format:"agenda-local-backup-v2",schemaVersion:DATA_SCHEMA,exportedAt:new Date().toISOString(),appointments},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="agenda-backup.json";a.click();URL.revokeObjectURL(a.href)};
 document.getElementById("import").onclick=()=>document.getElementById("file").click();document.getElementById("file").onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text()),v=Array.isArray(d)?d:d.appointments;if(!Array.isArray(v))throw Error();if(confirm("¿Reemplazar las citas actuales?")){appointments=v.filter(a=>a&&(typeof a.requestorName==="string"||typeof a.person==="string")&&typeof a.date==="string"&&typeof a.time==="string").slice(0,5000);save();notify("Importación completada")}}catch{notify("Archivo JSON no válido")}e.target.value=""};
