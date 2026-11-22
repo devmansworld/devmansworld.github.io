@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ffffff">
-<title>ARIGATO — Your time. Your people. Your practice.</title>
+<title>ARIGATO — a simple agenda freeware</title>
 <meta name="description" content="ARIGATO is a simple, independent agenda for organizing appointments, people and your practice.">
 <style>
 *{box-sizing:border-box}
@@ -53,14 +53,14 @@ footer{border-top:1px solid var(--line);padding:20px 0;display:flex;justify-cont
 </header>
 <main>
 <header class="hero">
-<div class="kicker" data-en="Independent · Freeware · Made with gratitude" data-es="Independiente · Freeware · Hecho con gratitud">Independent · Freeware · Made with gratitude</div>
+
 <h1>ARIGATO<span>.</span></h1>
-<p class="tagline" data-en="Your time. Your people. Your practice." data-es="Tu tiempo. Tu gente. Tu práctica.">Your time. Your people. Your practice.</p>
-<p class="intro" data-en="A simple, independent agenda for people who work with people. Keep your appointments, the people you serve and the rhythm of your practice in one friendly place." data-es="Una agenda sencilla e independiente para quienes trabajan con personas. Organiza tus citas, las personas a quienes atiendes y el ritmo de tu práctica en un solo lugar.">A simple, independent agenda for people who work with people. Keep your appointments, the people you serve and the rhythm of your practice in one friendly place.</p>
+<p class="tagline" data-en="A simple agenda freeware." data-es="Una agenda freeware sencilla.">A simple agenda freeware.</p>
+
 <div class="actions"><a class="action primary" href="#demo" data-en="Try the demo ↓" data-es="Probar la demo ↓">Try the demo ↓</a><a class="action" href="https://github.com/devmansworld/devmansworld.github.io/issues" target="_blank" rel="noopener" data-en="Share feedback ↗" data-es="Compartir comentarios ↗">Share feedback ↗</a></div>
 </header>
 <section id="demo">
-<div class="sectionhead"><div><h2 data-en="Come on in." data-es="Pasa, estás en casa.">Come on in.</h2><p class="note" data-en="Simulated data. Try the portable edition for real-world use when available." data-es="Datos simulados. Pruebe la versión portátil para su uso real cuando esté disponible.">Datos simulados. Pruebe la versión portátil para su uso real cuando esté disponible.</p></div></div>
+<div class="sectionhead"><div><h2 data-en="Come on in." data-es="Pasa, estás en casa.">Come on in.</h2><p class="note" data-en="Simulated data. Try the portable edition for real use." data-es="Datos simulados. Pruebe la versión portátil para su uso real.">Datos simulados. Pruebe la versión portátil para su uso real.</p></div></div>
 <div class="demo-shell"><div class="demo-bar"><span data-en="ARIGATO · Free demo" data-es="ARIGATO · Demo gratuita">ARIGATO · Interactive demo</span><a href="../agenda/" target="_blank" rel="noopener" data-en="Open separately ↗" data-es="Abrir por separado ↗">Open separately ↗</a></div>
 <iframe src="../agenda/" title="ARIGATO interactive agenda demo" loading="eager" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
 </section>
@@ -76,7 +76,8 @@ let lang="en";
 language.addEventListener("click",()=>{lang=lang==="en"?"es":"en";document.documentElement.lang=lang;language.textContent=lang==="en"?"🌐 EN":"🌐 ES";document.querySelectorAll("[data-en][data-es]").forEach(el=>el.textContent=el.dataset[lang]);});
 const statusBox=document.getElementById("devstatus"),statusToggle=document.getElementById("status-toggle");
 statusToggle.addEventListener("click",()=>{const open=statusBox.classList.toggle("open");statusToggle.setAttribute("aria-expanded",String(open));});
-document.addEventListener("click",e=>{if(!statusBox.contains(e.target)){statusBox.classList.remove("open");statusToggle.setAttribute("aria-expanded","false");}if(!typeBox.contains(e.target)){typeBox.classList.remove("open");typeToggle.setAttribute("aria-expanded","false");}});
+document.addEventListener("click",e=>{if(!statusBox.contains(e.target)){statusBox.classList.remove("open");statusToggle.setAttribute("aria-expanded","false");}});
+document.addEventListener("click",e=>{if(!typeBox.contains(e.target)){typeBox.classList.remove("open");typeToggle.setAttribute("aria-expanded","false");}});
 const palette=document.getElementById("palette"),toggle=document.getElementById("palette-toggle");
 toggle.addEventListener("click",()=>{const open=palette.classList.toggle("open");toggle.setAttribute("aria-expanded",String(open));});
 const savedTheme=localStorage.getItem("arigato-site-theme")||"main";document.body.dataset.theme=savedTheme;
