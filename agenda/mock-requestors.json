@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "dataClassification": "SYNTHETIC_DEMO_ONLY",
+  "disclaimer": "Todos los nombres son ficticios y se han creado exclusivamente para pruebas.",
+  "requestors": [
+    {
+      "id": "demo-001",
+      "name": "Camila Rojas",
+      "reference": "Paciente ficticia"
+    },
+    {
+      "id": "demo-002",
+      "name": "Tomás Fuentes",
+      "reference": "Paciente ficticio"
+    },
+    {
+      "id": "demo-003",
+      "name": "Valentina Soto",
+      "reference": "Paciente ficticia"
+    },
+    {
+      "id": "demo-004",
+      "name": "Benjamín Araya",
+      "reference": "Paciente ficticio"
+    },
+    {
+      "id": "demo-005",
+      "name": "Isidora Muñoz",
+      "reference": "Paciente ficticia"
+    }
+  ]
+}
