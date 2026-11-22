@@ -47,7 +47,7 @@ jobs:
                   super().__init__()
                   self.cards = 0
               def handle_starttag(self, tag, attrs):
-                  if tag == "article" and ("data-repo", None) in attrs:
+                  if tag == "article" and any(name == "data-repo" for name, value in attrs):
                       self.cards += 1
 
           parser = CardCounter()
