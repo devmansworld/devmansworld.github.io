@@ -24,7 +24,7 @@ footer{border-top:1px solid var(--line);padding:15px 0;color:var(--muted);font-s
 <div class="field"><label>Solicitante del servicio</label><input id="person" list="requestorSuggestions" maxlength="90" required><datalist id="requestorSuggestions"></datalist></div><div class="field"><label>Fecha</label><input id="date" type="date" required></div><div class="field"><label>Hora</label><input id="time" type="time" required></div><div class="field"><label>Servicio</label><select id="service" required></select></div><div class="field full"><label>Estado</label><select id="status"><option>Pendiente</option><option>Confirmada</option></select></div></div><div class="modal-actions"><button type="button" class="btn" id="cancel">Cancelar</button><button class="btn primary">Guardar cita</button></div></form></div><div id="toast" role="status" aria-live="polite"></div>
 <script>
 "use strict";
-const SERVICES_URL="https://devmansworld.github.io/agenda/services.json",MOCK_URL="https://devmansworld.github.io/agenda/mock-requestors.json",KEY="agenda-demo-v0.1.0";
+const SERVICES_URL="https://devmansworld.github.io/agenda/services.json",MOCK_URL="https://devmansworld.github.io/agenda/mock-requestors.json",LEGACY_KEY="agenda-demo-v0.1.0",KEY="agenda-demo-v0.3.0";
 const DATA_SCHEMA=2;
 let services=[{id:"general",name:"Servicio general"}],mockRequestors=[],appointments=read(),mockEnabled=false;
 function read(){
