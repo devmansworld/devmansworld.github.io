@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arigato-db-bridge"
+version = "0.1.0"
+description = "Isolated FastAPI and SQLModel backend for ARIGATO"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115,<1.0",
+  "uvicorn[standard]>=0.30,<1.0",
+  "sqlmodel>=0.0.22,<1.0",
+  "psycopg[binary]>=3.2,<4.0",
+  "python-dotenv>=1.0,<2.0"
+]
+
+[tool.setuptools]
+packages = ["app"]
