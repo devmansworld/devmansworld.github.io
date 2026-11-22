@@ -30,7 +30,8 @@ main{padding:25px 0 44px}.heading{display:flex;justify-content:space-between;ali
 "use strict";
 const SERVICES_URL="https://devmansworld.github.io/agenda/services.json";
 const MOCK_URL="https://devmansworld.github.io/agenda/mock-requestors.json";
-const KEYS={appointments:"agenda-demo-v0.3.0",requestors:"agenda-requestors-v1"};\nlet language=localStorage.getItem("agenda-language")||"es";
+const KEYS={appointments:"agenda-demo-v0.3.0",requestors:"agenda-requestors-v1"};
+let language=localStorage.getItem("agenda-language")||"es";
 let services=[{id:"general",name:"Servicio general"}],appointments=[],requestors=[],mockIds=new Set(),quickAdd=false;
 function readArray(key){try{const v=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(v)?v:[]}catch{return[]}}
 function loadLocalData(){
